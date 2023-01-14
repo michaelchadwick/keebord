@@ -8,6 +8,7 @@ let NebyooKeys = {
 let context = new AudioContext();
 let oscillators = {};
 
+// add midi support
 if ('requestMIDIAccess' in navigator) {
   console.log('navigator.requestMIDIAccess() supported!');
 
@@ -16,8 +17,15 @@ if ('requestMIDIAccess' in navigator) {
   console.error('navigator.requestMIDIAccess() not supported');
 }
 
-document.addEventListener('keydown', keyController)
-document.addEventListener('keyup', keyController)
+// add computer keyboard support
+// document.addEventListener('keypress', compKeysController)
+// document.addEventListener('keyup', compKeysController)
+
+// add mouse support
+// for (var i = 0; i < btn.length; i++) {
+//   btn[i].addEventListener('mousedown', clickPlayOn);
+//   btn[i].addEventListener('mouseup', clickPlayOff);
+// }
 
 function onMIDISuccess(midi) {
   console.log("MIDI ready!");
@@ -27,12 +35,8 @@ function onMIDISuccess(midi) {
   NebyooKeys.midiAccessSupport = true;
   NebyooKeys.midi = midi;
 
-  // for (var i = 0; i < btn.length; i++) {
-  //   btn[i].addEventListener('mousedown', clickPlayOn);
-  //   btn[i].addEventListener('mouseup', clickPlayOff);
-  // }
-
   listInputsAndOutputs(NebyooKeys.midi);
+  // add MIDI device support
   startLoggingMIDIInput(NebyooKeys.midi);
 }
 
@@ -92,37 +96,31 @@ function onMIDIMessage(event) {
 
 function noteOn(note, vel) {
   const freq = midiToFreq(note);
+  const gainNode = context.createGain();
 
-  if (!oscillators[freq]) {
-    const gainNode = context.createGain();
+  oscillators[freq] = context.createOscillator();
+  oscillators[freq].frequency.value = freq;
+  oscillators[freq].type = 'square';
+  oscillators[freq].addEventListener('ended', () => {
+    // console.log('osc stopped')
+  });
 
-    oscillators[freq] = context.createOscillator();
-    oscillators[freq].frequency.value = freq;
-    oscillators[freq].type = 'triangle';
-    oscillators[freq].addEventListener('ended', () => {
-      // console.log('osc stopped')
-    });
+  gainNode.gain.value = vel / 127;
 
-    gainNode.gain.value = vel / 127;
+  oscillators[freq].connect(gainNode)
+  oscillators[freq].connect(context.destination);
 
-    oscillators[freq].connect(gainNode).connect(context.destination);
+  console.log('osc', oscillators);
 
-    console.log('osc', oscillators[freq]);
-
-    oscillators[freq].start(context.currentTime);
-  }
+  oscillators[freq].start(context.currentTime);
 }
 
 function noteOff(note) {
   const freq = midiToFreq(note);
 
-  oscillators[freq].stop(context.currentTime);
-  oscillators[freq].disconnect();
-
-  const oscIndex = oscillators.indexOf(freq);
-
-  if (oscIndex > -1) {
-    oscillators.splice(oscIndex, 1);
+  if (oscillators[freq]) {
+    oscillators[freq].stop(context.currentTime);
+    oscillators[freq].disconnect();
   }
 }
 
@@ -138,7 +136,7 @@ function midiToFreq(note) {
 // [261.63,            440,   ]
 // midi
 // [60,    62,64,65,67,69,  71]
-function keyController(e) {
+function compKeysController(e) {
   const key2midi = {
     'z': 60, 's': 61, 'x': 62, 'd': 63, 'c': 64, 'v': 65,
     'g': 66, 'b': 67, 'h': 68, 'n': 69, 'j': 70, 'm': 71
@@ -159,13 +157,38 @@ function keyController(e) {
 <template>
   <h3>NebyooKeys.vue</h3>
 
-  <ul v-if="NebyooKeys.midi">
-    <li v-for="entry in NebyooKeys.midi.inputs">
-      name: {{ entry[1].name }}
-    </li>
-  </ul>
+  <template v-if="NebyooKeys.midi">
+    <ul v-if="NebyooKeys.midi">
+      <li v-for="entry in NebyooKeys.midi.inputs">
+        name: {{ entry[1].name }}
+      </li>
+    </ul>
+  </template>
+
+  <button data-noteid="c3" class="white c"></button>
+  <button data-noteid="d3" class="white d"></button>
+  <button data-noteid="e3" class="white e"></button>
+  <button data-noteid="f3" class="white f"></button>
+  <button data-noteid="g3" class="white g"></button>
+  <button data-noteid="a3" class="white a"></button>
+  <button data-noteid="b3" class="white b"></button>
 </template>
 
 <style scoped>
-
+button {
+  border: 3px solid #222222;
+  height: 50px;
+  margin-right: 10px;
+  width: 20px;
+}
+  button.white {
+    background-color: #ffffff;
+  }
+    button.white.e,
+    button.white.b {
+      margin-right: 0;
+    }
+  button.black {
+    background-color: #111111;
+  }
 </style>

@@ -1,6 +1,5 @@
 <script>
 import NebyooKeys from './components/NebyooKeys.vue'
-import Keyboard from './components/Keyboard.vue'
 
 export default {
   components: {
@@ -23,7 +22,7 @@ export default {
     <NebyooKeys
       @midi-support="(midiSupport) => hasMidiSupport = midiSupport"
     />
-    <Keyboard />
+
     <template v-if="!hasMidiSupport">
       <div>
         <span class="failure">No MIDI Access supported.</span><br />
