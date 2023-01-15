@@ -15,7 +15,7 @@ export default {
 
 <template>
   <header>
-    <h2>App.vue</h2>
+    <h1>NebyooKeys on VueJS</h1>
   </header>
 
   <main>

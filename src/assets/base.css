@@ -19,6 +19,9 @@
   --vt-c-text-light-2: rgba(60, 60, 60, 0.66);
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
+
+  --text-color: #282828;
+  --bkgr-color: #f6f6f6ee;
 }
 
 /* semantic color variables for this project */
@@ -48,6 +51,16 @@
     --color-heading: var(--vt-c-text-dark-1);
     --color-text: var(--vt-c-text-dark-2);
   }
+
+  /* defaults to dark theme */
+  body {
+    --text-color: #f3f3f3;
+    --bkgr-color: #282828ee;
+  }
+  body.light-theme {
+    --text-color: #282828;
+    --bkgr-color: #f6f6f6ee;
+  }
 }
 
 *,
@@ -70,4 +83,43 @@ body {
   transition: color 0.5s, background-color 0.5s;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+button#theme-toggler {
+  background-color: var(--bkgr-color);
+  bottom: 5px;
+  font-size: 1.5rem;
+  font-weight: 600;
+  height: 40px;
+  margin-bottom: 0;
+  opacity: 0.9;
+  padding: 0 10px;
+  position: fixed;
+  right: 5px;
+  text-align: center;
+  width: 40px;
+  z-index: 10000;
+}
+  button#theme-toggler span.theme-image::after {
+    display: none;
+  }
+
+@media (min-width: 550px) {
+  button#theme-toggler {
+    width: 95px;
+  }
+    button#theme-toggler span.theme-image::after {
+      display: inline;
+    }
+
+  body.dark-theme button#theme-toggler span.theme-image::after {
+    content: " dark"
+  }
+  body.light-theme button#theme-toggler span.theme-image::after {
+    content: " light"
+  }
+}
+
+body.dark-theme button#theme-toggler {
+  color: var(--text-color);
 }

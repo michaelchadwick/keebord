@@ -1,12 +1,32 @@
 <script setup>
-const midiAccessSupportEmit = defineEmits(['midiSupport'])
+import Note from '../note.js';
+import ADSREnvelope from 'adsr-envelope';
+
+const midiAccessSupportEmit = defineEmits(['midiSupport']);
+const audioContext = new AudioContext();
+const adsr = new ADSREnvelope({
+  attackTime: 0.1,
+  decayTime: 0.5,
+  sustainLevel: 0.01,
+  releaseTime: 1,
+  gateTime: 1,
+  peakLevel: 0.5,
+  attackCurve: 'lin',
+  decayCurve: 'lin',
+  releaseCurve: 'exp',
+});
 
 let NebyooKeys = {
   midiAccessSupport: false,
   midi: null
 };
-let context = new AudioContext();
-let oscillators = {};
+let noteMap = {};
+let oscTypes = [
+  { text: 'Sine', value: 'sine' },
+  { text: 'Sawtooth', value: 'sawtooth' },
+  { text: 'Square', value: 'square' },
+  { text: 'Triangle', value: 'triangle' }
+];
 
 // add midi support
 if ('requestMIDIAccess' in navigator) {
@@ -23,8 +43,8 @@ if ('requestMIDIAccess' in navigator) {
 
 // add mouse support
 // for (var i = 0; i < btn.length; i++) {
-//   btn[i].addEventListener('mousedown', clickPlayOn);
-//   btn[i].addEventListener('mouseup', clickPlayOff);
+//   btn[i].addEventListener('mousedown', mouseController);
+//   btn[i].addEventListener('mouseup', mouseController);
 // }
 
 function onMIDISuccess(midi) {
@@ -68,73 +88,67 @@ function startLoggingMIDIInput(midiAccess, indexOfPort) {
 }
 
 function onMIDIMessage(event) {
-  let str = `MIDI message received at timestamp ${event.timeStamp}[${event.data.length} bytes]: `;
+  let str = `MIDI message received at ${event.timeStamp}[${event.data.length} bytes]: `;
+  for (const character of event.data) {
+    str += `0x${character.toString(16)} `;
+  }
+  console.log(str);
 
   let data = event.data
   let cmd = data[0] >> 4, channel = data[0] & 0xf,
-      type = data[0] & 0xf0, note = data[1], vel = data[2]
+      type = data[0] & 0xf0, noteNumber = data[1], velocity = data[2]
 
   switch (type) {
+    case 224: // TODO: pitch change
+      break;
+    case 176: // TODO: mod change
+      break;
     case 144: // noteOn message
-      noteOn(note, vel);
-      console.log(`ON - note: ${note}, freq: ${midiToFreq(note)}, vel: ${vel}`);
+      makeNote(noteNumber, velocity);
+
       break;
     case 128: // noteOff message
-      noteOff(note, vel);
-      console.log(`OFF - note: ${note}, freq: ${midiToFreq(note)}, vel: ${vel}`);
+      stopNote(noteNumber)
+
       break;
     default: // other message
-      for (const character of event.data) {
-        str += `0x${character.toString(16)} `;
-      }
-      console.log(str);
-  }
+      // console.log('type', type);
 
-  console.log(str);
-
-}
-
-function noteOn(note, vel) {
-  const freq = midiToFreq(note);
-  const gainNode = context.createGain();
-
-  oscillators[freq] = context.createOscillator();
-  oscillators[freq].frequency.value = freq;
-  oscillators[freq].type = 'square';
-  oscillators[freq].addEventListener('ended', () => {
-    // console.log('osc stopped')
-  });
-
-  gainNode.gain.value = vel / 127;
-
-  oscillators[freq].connect(gainNode)
-  oscillators[freq].connect(context.destination);
-
-  console.log('osc', oscillators);
-
-  oscillators[freq].start(context.currentTime);
-}
-
-function noteOff(note) {
-  const freq = midiToFreq(note);
-
-  if (oscillators[freq]) {
-    oscillators[freq].stop(context.currentTime);
-    oscillators[freq].disconnect();
+      break;
   }
 }
 
-function midiToFreq(note) {
-  return Math.pow(2, ((note - 69) / 12)) * 440;
+function makeNote(noteNumber, velocity) {
+  console.log(`ON - note: ${noteNumber}, vel: ${velocity}`);
+
+  if (noteMap[noteNumber]) {
+    noteMap[freq].noteOff();
+  }
+
+  const envelope = adsr.clone();
+  envelope.peakLevel = velocity / 127;
+  const type = document.querySelector('#osc-type').value;
+  noteMap[noteNumber] = new Note(audioContext, noteNumber, type, envelope);
+  noteMap[noteNumber].noteOn();
 }
 
-// keyboard controls
+function stopNote(noteNumber) {
+  console.log(`OFF - note: ${noteNumber}`);
+
+  if (noteMap[noteNumber]) {
+    noteMap[noteNumber].noteOff();
+  }
+
+  noteMap[noteNumber] = null;
+}
+
+// computer keyboard controls
 // [z,     x, c, v, b, n,   m ]
 // musical note
 // [C4,    D4,E4,F4,G4,A4,  B4]
 // frequency
 // [261.63,            440,   ]
-// midi
+// midi number
 // [60,    62,64,65,67,69,  71]
 function compKeysController(e) {
   const key2midi = {
@@ -155,8 +169,6 @@ function compKeysController(e) {
 </script>
 
 <template>
-  <h3>NebyooKeys.vue</h3>
-
   <template v-if="NebyooKeys.midi">
     <ul v-if="NebyooKeys.midi">
       <li v-for="entry in NebyooKeys.midi.inputs">
@@ -165,21 +177,53 @@ function compKeysController(e) {
     </ul>
   </template>
 
-  <button data-noteid="c3" class="white c"></button>
-  <button data-noteid="d3" class="white d"></button>
-  <button data-noteid="e3" class="white e"></button>
-  <button data-noteid="f3" class="white f"></button>
-  <button data-noteid="g3" class="white g"></button>
-  <button data-noteid="a3" class="white a"></button>
-  <button data-noteid="b3" class="white b"></button>
+  <select id="osc-type">
+    <option v-for="option in oscTypes" v-bind:value="option.value">
+      {{ option.text }}
+    </option>
+  </select>
+
+  <div id="keyboard">
+    <button data-noteid="60" class="white c">C3</button>
+      <button data-noteid="61" class="black c#">C#3</button>
+    <button data-noteid="62" class="white d">D3</button>
+      <button data-noteid="63" class="black d#">D#3</button>
+    <button data-noteid="64" class="white e">E3</button>
+    <button data-noteid="65" class="white f">F3</button>
+      <button data-noteid="66" class="black f#">F#3</button>
+    <button data-noteid="67" class="white g">G3</button>
+      <button data-noteid="68" class="black g#">G#3</button>
+    <button data-noteid="69" class="white a">A3</button>
+      <button data-noteid="70" class="black a#">A#3</button>
+    <button data-noteid="71" class="white b">B3</button>
+
+    <button data-noteid="72" class="white c">C4</button>
+      <button data-noteid="73" class="black c#">C#4</button>
+    <button data-noteid="74" class="white d">D4</button>
+      <button data-noteid="75" class="black d#">D#4</button>
+    <button data-noteid="76" class="white e">E4</button>
+    <button data-noteid="77" class="white f">F4</button>
+      <button data-noteid="78" class="black f#">F#4</button>
+    <button data-noteid="79" class="white g">G4</button>
+      <button data-noteid="80" class="black g#">G#4</button>
+    <button data-noteid="81" class="white a">A4</button>
+      <button data-noteid="82" class="black a#">A#4</button>
+    <button data-noteid="83" class="white b">B4</button>
+  </div>
 </template>
 
 <style scoped>
+#keyboard {
+  display: flex;
+}
 button {
   border: 3px solid #222222;
-  height: 50px;
-  margin-right: 10px;
-  width: 20px;
+  font-weight: bold;
+  height: 200px;
+  margin-right: 0;
+  margin-top: 20px;
+  padding: 0;
+  width: 40px;
 }
   button.white {
     background-color: #ffffff;
@@ -190,5 +234,11 @@ button {
     }
   button.black {
     background-color: #111111;
+    color: #ffffff;
+    margin-top: 0;
+  }
+  button.active {
+    background-color: #e0de70;
+    color: rgb(22, 46, 180);
   }
 </style>
