@@ -215,15 +215,17 @@ function compKeysController(e) {
 <style scoped>
 #keyboard {
   display: flex;
+  justify-content: flex-start;
 }
 button {
   border: 3px solid #222222;
-  font-weight: bold;
+  font-size: 1.5rem;
+  font-weight: 700;
   height: 200px;
   margin-right: 0;
   margin-top: 20px;
+  min-width: 40px;
   padding: 0;
-  width: 40px;
 }
   button.white {
     background-color: #ffffff;
@@ -237,8 +239,12 @@ button {
     color: #ffffff;
     margin-top: 0;
   }
+  button:hover {
+    background-color: #aead72;
+    color: #282828;
+  }
   button.active {
     background-color: #e0de70;
-    color: rgb(22, 46, 180);
+    color: #000000;
   }
 </style>

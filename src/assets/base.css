@@ -54,12 +54,12 @@
 
   /* defaults to dark theme */
   body {
-    --text-color: #f3f3f3;
-    --bkgr-color: #282828ee;
+    --color-background: #282828ee;
+    --color-text: #f3f3f3;
   }
   body.light-theme {
-    --text-color: #282828;
-    --bkgr-color: #f6f6f6ee;
+    --color-background: #f6f6f6ee;
+    --color-text: #282828;
   }
 }
 
@@ -70,6 +70,10 @@
   font-weight: normal;
   margin: 0;
   position: relative;
+}
+
+html {
+  font-size: 62.5%;
 }
 
 body {
@@ -85,8 +89,32 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+.button,
+button,
+input[type="submit"],
+input[type="reset"],
+input[type="button"] {
+  display: inline-block;
+  height: 38px;
+  padding: 0 30px;
+  color: #555;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 38px;
+  letter-spacing: .1rem;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  background-color: transparent;
+  border-radius: 4px;
+  border: 1px solid #bbb;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
 button#theme-toggler {
-  background-color: var(--bkgr-color);
+  background-color: var(--color-background);
   bottom: 5px;
   font-size: 1.5rem;
   font-weight: 600;
@@ -120,6 +148,10 @@ button#theme-toggler {
   }
 }
 
+body.dark-theme select {
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
 body.dark-theme button#theme-toggler {
-  color: var(--text-color);
+  color: var(--color-text);
 }
