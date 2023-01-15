@@ -15,7 +15,7 @@ export default {
 
 <template>
   <header>
-    <h1>NebyooKeys on VueJS</h1>
+    <h1>NebyooKeys on <img src="./assets/logo.svg" width="24" height="24"></h1>
   </header>
 
   <main>
