@@ -38,8 +38,8 @@ if ('requestMIDIAccess' in navigator) {
 }
 
 // add computer keyboard support
-// document.addEventListener('keypress', compKeysController)
-// document.addEventListener('keyup', compKeysController)
+document.addEventListener('keydown', compKeysController)
+document.addEventListener('keyup', compKeysController)
 
 // add mouse support
 // for (var i = 0; i < btn.length; i++) {
@@ -122,7 +122,7 @@ function makeNote(noteNumber, velocity) {
   console.log(`ON - note: ${noteNumber}, vel: ${velocity}`);
 
   if (noteMap[noteNumber]) {
-    noteMap[freq].noteOff();
+    noteMap[noteNumber].noteOff();
   }
 
   const envelope = adsr.clone();
@@ -153,17 +153,20 @@ function stopNote(noteNumber) {
 function compKeysController(e) {
   const key2midi = {
     'z': 60, 's': 61, 'x': 62, 'd': 63, 'c': 64, 'v': 65,
-    'g': 66, 'b': 67, 'h': 68, 'n': 69, 'j': 70, 'm': 71
+    'g': 66, 'b': 67, 'h': 68, 'n': 69, 'j': 70, 'm': 71,
+    'q': 72, '2': 73, 'w': 74, '3': 75, 'e': 76, 'r': 77,
+    '5': 78, 't': 79, '6': 80, 'y': 81, '7': 82, 'u': 83,
+    'i': 84
   }
 
   let note = key2midi[e.key];
 
   if (e.type == 'keydown') {
-    if (note >= 60 && note < 72) {
-      noteOn(note, 127);
+    if (note >= 60 && note <= 84) {
+      makeNote(note, 64);
     }
   } else if (e.type == 'keyup') {
-    noteOff(note, 0);
+    stopNote(note);
   }
 }
 </script>
@@ -184,36 +187,39 @@ function compKeysController(e) {
   </select>
 
   <div id="keyboard">
-    <button data-noteid="60" class="white c">C3</button>
-      <button data-noteid="61" class="black c#">C#3</button>
-    <button data-noteid="62" class="white d">D3</button>
-      <button data-noteid="63" class="black d#">D#3</button>
-    <button data-noteid="64" class="white e">E3</button>
-    <button data-noteid="65" class="white f">F3</button>
-      <button data-noteid="66" class="black f#">F#3</button>
-    <button data-noteid="67" class="white g">G3</button>
-      <button data-noteid="68" class="black g#">G#3</button>
-    <button data-noteid="69" class="white a">A3</button>
-      <button data-noteid="70" class="black a#">A#3</button>
-    <button data-noteid="71" class="white b">B3</button>
+    <button data-noteid="60" class="white c">C3<br /><span>z</span></button>
+      <button data-noteid="61" class="black c#">C#3<br /><span>s</span></button>
+    <button data-noteid="62" class="white d">D3<br /><span>x</span></button>
+      <button data-noteid="63" class="black d#">D#3<br /><span>d</span></button>
+    <button data-noteid="64" class="white e">E3<br /><span>c</span></button>
+    <button data-noteid="65" class="white f">F3<br /><span>v</span></button>
+      <button data-noteid="66" class="black f#">F#3<br /><span>g</span></button>
+    <button data-noteid="67" class="white g">G3<br /><span>b</span></button>
+      <button data-noteid="68" class="black g#">G#3<br /><span>h</span></button>
+    <button data-noteid="69" class="white a">A3<br /><span>n</span></button>
+      <button data-noteid="70" class="black a#">A#3<br /><span>j</span></button>
+    <button data-noteid="71" class="white b">B3<br /><span>m</span></button>
 
-    <button data-noteid="72" class="white c">C4</button>
-      <button data-noteid="73" class="black c#">C#4</button>
-    <button data-noteid="74" class="white d">D4</button>
-      <button data-noteid="75" class="black d#">D#4</button>
-    <button data-noteid="76" class="white e">E4</button>
-    <button data-noteid="77" class="white f">F4</button>
-      <button data-noteid="78" class="black f#">F#4</button>
-    <button data-noteid="79" class="white g">G4</button>
-      <button data-noteid="80" class="black g#">G#4</button>
-    <button data-noteid="81" class="white a">A4</button>
-      <button data-noteid="82" class="black a#">A#4</button>
-    <button data-noteid="83" class="white b">B4</button>
+    <button data-noteid="72" class="white c">C4<br /><span>q</span></button>
+      <button data-noteid="73" class="black c#">C#4<br /><span>2</span></button>
+    <button data-noteid="74" class="white d">D4<br /><span>w</span></button>
+      <button data-noteid="75" class="black d#">D#4<br /><span>3</span></button>
+    <button data-noteid="76" class="white e">E4<br /><span>e</span></button>
+    <button data-noteid="77" class="white f">F4<br /><span>r</span></button>
+      <button data-noteid="78" class="black f#">F#4<br /><span>5</span></button>
+    <button data-noteid="79" class="white g">G4<br /><span>t</span></button>
+      <button data-noteid="80" class="black g#">G#4<br /><span>6</span></button>
+    <button data-noteid="81" class="white a">A4<br /><span>y</span></button>
+      <button data-noteid="82" class="black a#">A#4<br /><span>7</span></button>
+    <button data-noteid="83" class="white b">B4<br /><span>u</span></button>
+
+    <button data-noteid="84" class="white c">C5<br /><span>i</span></button>
   </div>
 </template>
 
 <style scoped>
 #keyboard {
+  align-items: flex-start;
   display: flex;
   justify-content: flex-start;
 }
@@ -224,9 +230,15 @@ button {
   height: 200px;
   margin-right: 0;
   margin-top: 20px;
+  max-width: 50px;
   min-width: 40px;
   padding: 0;
 }
+  button span {
+    border: 1px solid #000;
+    border-radius: 5px;
+    padding: 5px;
+  }
   button.white {
     background-color: #ffffff;
   }
@@ -239,6 +251,9 @@ button {
     color: #ffffff;
     margin-top: 0;
   }
+    button.black span {
+      border: 1px solid #ffffff;
+    }
   button:hover {
     background-color: #aead72;
     color: #282828;
