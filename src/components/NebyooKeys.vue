@@ -42,10 +42,13 @@ document.addEventListener('keydown', compKeysController)
 document.addEventListener('keyup', compKeysController)
 
 // add mouse support
-// for (var i = 0; i < btn.length; i++) {
-//   btn[i].addEventListener('mousedown', mouseController);
-//   btn[i].addEventListener('mouseup', mouseController);
-// }
+const keys = document.querySelectorAll('#keyboard button');
+
+for (const key in keys) {
+  console.log('key', key);
+  // key.addEventListener('mousedown', mouseController);
+  // key.addEventListener('mouseup', mouseController);
+};
 
 function onMIDISuccess(midi) {
   console.log("MIDI ready!");
@@ -159,13 +162,24 @@ function compKeysController(e) {
     'i': 84
   }
 
-  let note = key2midi[e.key];
+  const note = key2midi[e.key];
 
   if (e.type == 'keydown') {
     if (note >= 60 && note <= 84) {
       makeNote(note, 64);
     }
   } else if (e.type == 'keyup') {
+    stopNote(note);
+  }
+}
+
+function mouseController(e) {
+  console.log('e', e);
+  if (e.type == 'mousedown') {
+    const note = e.target;
+    makeNote(note, 64);
+  } else if (e.type == 'mouseup') {
+    const note = e.target;
     stopNote(note);
   }
 }
@@ -187,79 +201,183 @@ function compKeysController(e) {
   </select>
 
   <div id="keyboard">
-    <button data-noteid="60" class="white c">C3<br /><span>z</span></button>
-      <button data-noteid="61" class="black c#">C#3<br /><span>s</span></button>
-    <button data-noteid="62" class="white d">D3<br /><span>x</span></button>
-      <button data-noteid="63" class="black d#">D#3<br /><span>d</span></button>
-    <button data-noteid="64" class="white e">E3<br /><span>c</span></button>
-    <button data-noteid="65" class="white f">F3<br /><span>v</span></button>
-      <button data-noteid="66" class="black f#">F#3<br /><span>g</span></button>
-    <button data-noteid="67" class="white g">G3<br /><span>b</span></button>
-      <button data-noteid="68" class="black g#">G#3<br /><span>h</span></button>
-    <button data-noteid="69" class="white a">A3<br /><span>n</span></button>
-      <button data-noteid="70" class="black a#">A#3<br /><span>j</span></button>
-    <button data-noteid="71" class="white b">B3<br /><span>m</span></button>
+    <div class="octave">
+      <div class="key-row white">
+        <button data-noteid="60" class="c">
+          <div class="notename">C3</div>
+          <span>z</span>
+        </button>
+        <button data-noteid="62" class="d">
+          <div class="notename">D3</div>
+          <span>x</span>
+        </button>
+        <button data-noteid="64" class="e">
+          <div class="notename">E3</div>
+          <span>c</span>
+        </button>
+        <button data-noteid="65" class="f">
+          <div class="notename">F3</div>
+          <span>v</span>
+        </button>
+        <button data-noteid="67" class="g">
+          <div class="notename">G3</div>
+          <span>b</span>
+        </button>
+        <button data-noteid="69" class="a">
+          <div class="notename">A3</div>
+          <span>n</span>
+        </button>
+        <button data-noteid="71" class="b">
+          <div class="notename">B3</div>
+          <span>m</span>
+        </button>
+      </div>
+      <div class="key-row black">
+        <button data-noteid="61" class="db">
+          <div class="notename">C#3</div>
+          <span>s</span>
+        </button>
+        <button data-noteid="63" class="eb">
+          <div class="notename">D#3</div>
+          <span>d</span>
+        </button>
+        <button data-noteid="66" class="gb">
+          <div class="notename">F#3</div>
+          <span>g</span>
+        </button>
+        <button data-noteid="68" class="ab">
+          <div class="notename">G#3</div>
+          <span>h</span>
+        </button>
+        <button data-noteid="70" class="bb">
+          <div class="notename">A#3</div>
+          <span>j</span>
+        </button>
+      </div>
+    </div>
 
-    <button data-noteid="72" class="white c">C4<br /><span>q</span></button>
-      <button data-noteid="73" class="black c#">C#4<br /><span>2</span></button>
-    <button data-noteid="74" class="white d">D4<br /><span>w</span></button>
-      <button data-noteid="75" class="black d#">D#4<br /><span>3</span></button>
-    <button data-noteid="76" class="white e">E4<br /><span>e</span></button>
-    <button data-noteid="77" class="white f">F4<br /><span>r</span></button>
-      <button data-noteid="78" class="black f#">F#4<br /><span>5</span></button>
-    <button data-noteid="79" class="white g">G4<br /><span>t</span></button>
-      <button data-noteid="80" class="black g#">G#4<br /><span>6</span></button>
-    <button data-noteid="81" class="white a">A4<br /><span>y</span></button>
-      <button data-noteid="82" class="black a#">A#4<br /><span>7</span></button>
-    <button data-noteid="83" class="white b">B4<br /><span>u</span></button>
+    <div class="octave">
+      <div class="key-row white">
+        <button data-noteid="72" class="c">C4<br /><span>q</span></button>
+        <button data-noteid="74" class="d">D4<br /><span>w</span></button>
+        <button data-noteid="76" class="e">E4<br /><span>e</span></button>
+        <button data-noteid="77" class="f">F4<br /><span>r</span></button>
+        <button data-noteid="79" class="g">G4<br /><span>t</span></button>
+        <button data-noteid="81" class="a">A4<br /><span>y</span></button>
+        <button data-noteid="83" class="b">B4<br /><span>u</span></button>
+      </div>
+      <div class="key-row black">
+        <button data-noteid="73" class="db">C#4<br /><span>2</span></button>
+        <button data-noteid="75" class="eb">D#4<br /><span>3</span></button>
+        <button data-noteid="78" class="gb">F#4<br /><span>5</span></button>
+        <button data-noteid="80" class="ab">G#4<br /><span>6</span></button>
+        <button data-noteid="82" class="bb">A#4<br /><span>7</span></button>
+      </div>
+    </div>
 
-    <button data-noteid="84" class="white c">C5<br /><span>i</span></button>
+    <div class="octave">
+      <div class="key-row white">
+        <button data-noteid="84" class="c">C5<br /><span>i</span></button>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-#keyboard {
-  align-items: flex-start;
-  display: flex;
-  justify-content: flex-start;
-}
 button {
-  border: 3px solid #222222;
+  border: 2px solid #222222;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
   font-size: 1.5rem;
   font-weight: 700;
   height: 200px;
-  margin-right: 0;
-  margin-top: 20px;
+  margin: 0;
   max-width: 50px;
-  min-width: 40px;
   padding: 0;
 }
+  button div.notename {
+    font-weight: bold;
+  }
   button span {
     border: 1px solid #000;
     border-radius: 5px;
     padding: 5px;
   }
-  button.white {
-    background-color: #ffffff;
+
+#keyboard {
+  align-items: flex-start;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.octave {
+  display: flex;
+}
+  .octave .key-row {
+    display: flex;
   }
-    button.white.e,
-    button.white.b {
-      margin-right: 0;
+    .octave .key-row.white {
+
     }
-  button.black {
-    background-color: #111111;
-    color: #ffffff;
-    margin-top: 0;
-  }
-    button.black span {
-      border: 1px solid #ffffff;
+      .octave .key-row.white button {
+        align-items: stretch;
+        background-color: #ffffff;
+        display: flex;
+        flex-direction: column-reverse;
+        min-width: 50px;
+      }
+        .octave .key-row.white button:hover {
+          background-color: #e9e9e9;
+          color: #282828;
+        }
+        .octave .key-row.white button.active {
+          background-color: #f6f6f6;
+          color: #000000;
+        }
+        .octave .key-row.white button span {
+          padding: 0;
+        }
+    .octave .key-row.black {
+      position: absolute;
+      top: 0;
     }
-  button:hover {
-    background-color: #aead72;
-    color: #282828;
-  }
-  button.active {
-    background-color: #e0de70;
-    color: #000000;
-  }
+      .octave .key-row.black button {
+        align-items: stretch;
+        background-color: #111111;
+        color: #ffffff;
+        display: flex;
+        flex-direction: column-reverse;
+        font-size: 1.25rem;
+        height: 100px;
+        margin-top: 0;
+        max-width: 30px;
+      }
+        .octave .key-row.black button.db {
+          left: 18%;
+        }
+        .octave .key-row.black button.eb {
+          left: 42%;
+        }
+        .octave .key-row.black button.gb {
+          left: 79%;
+        }
+        .octave .key-row.black button.ab {
+          left: 99%;
+        }
+        .octave .key-row.black button.bb {
+          left: 118%;
+        }
+
+        .octave .key-row.black button:hover {
+          background-color: #201181;
+          color: #ededed;
+        }
+        .octave .key-row.black button.active {
+          background-color: #3546a7;
+          color: #ffffff;
+        }
+
+        .octave .key-row.black button span {
+          border: 1px solid #ffffff;
+        }
 </style>
