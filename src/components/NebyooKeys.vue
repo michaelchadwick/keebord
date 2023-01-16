@@ -42,13 +42,8 @@ document.addEventListener('keydown', compKeysController)
 document.addEventListener('keyup', compKeysController)
 
 // add mouse support
-const keys = document.querySelectorAll('#keyboard button');
-
-for (const key in keys) {
-  console.log('key', key);
-  // key.addEventListener('mousedown', mouseController);
-  // key.addEventListener('mouseup', mouseController);
-};
+document.addEventListener('mousedown', mouseController);
+document.addEventListener('mouseup', mouseController);
 
 function onMIDISuccess(midi) {
   console.log("MIDI ready!");
@@ -173,15 +168,44 @@ function compKeysController(e) {
   }
 }
 
+// TODO:
 function mouseController(e) {
-  console.log('e', e);
-  if (e.type == 'mousedown') {
-    const note = e.target;
-    makeNote(note, 64);
-  } else if (e.type == 'mouseup') {
-    const note = e.target;
-    stopNote(note);
-  }
+  // if (e.type == 'mousedown') {
+  //   const target = e.target;
+  //   let note = null;
+
+  //   if (target.classList) {
+  //     if (target.classList.contains('key')) {
+  //       note = target.data.noteid;
+  //     }
+  //     else if (target.parentElement.classList) {
+  //       if (target.parentElement.classList.contains('key')) {
+  //         note = target.parentElement.data.noteid;
+  //       }
+  //     }
+  //   }
+
+  //   if (note) {
+  //     makeNote(note, 64);
+  //   }
+  // } else if (e.type == 'mouseup') {
+  //   let note = null;
+
+  //   if (target.classList) {
+  //     if (target.classList.contains('key')) {
+  //       note = target.data.noteid;
+  //     }
+  //     else if (target.parentElement.classList) {
+  //       if (target.parentElement.classList.contains('key')) {
+  //         note = target.parentElement.data.noteid;
+  //       }
+  //     }
+  //   }
+
+  //   if (note) {
+  //     stopNote(note);
+  //   }
+  // }
 }
 </script>
 
@@ -203,53 +227,53 @@ function mouseController(e) {
   <div id="keyboard">
     <div class="octave">
       <div class="key-row white">
-        <button data-noteid="60" class="c">
+        <button data-noteid="60" class="key c">
           <div class="notename">C3</div>
           <span>z</span>
         </button>
-        <button data-noteid="62" class="d">
+        <button data-noteid="62" class="key d">
           <div class="notename">D3</div>
           <span>x</span>
         </button>
-        <button data-noteid="64" class="e">
+        <button data-noteid="64" class="key e">
           <div class="notename">E3</div>
           <span>c</span>
         </button>
-        <button data-noteid="65" class="f">
+        <button data-noteid="65" class="key f">
           <div class="notename">F3</div>
           <span>v</span>
         </button>
-        <button data-noteid="67" class="g">
+        <button data-noteid="67" class="key g">
           <div class="notename">G3</div>
           <span>b</span>
         </button>
-        <button data-noteid="69" class="a">
+        <button data-noteid="69" class="key a">
           <div class="notename">A3</div>
           <span>n</span>
         </button>
-        <button data-noteid="71" class="b">
+        <button data-noteid="71" class="key b">
           <div class="notename">B3</div>
           <span>m</span>
         </button>
       </div>
       <div class="key-row black">
-        <button data-noteid="61" class="db">
+        <button data-noteid="61" class="key db">
           <div class="notename">C#3</div>
           <span>s</span>
         </button>
-        <button data-noteid="63" class="eb">
+        <button data-noteid="63" class="key eb">
           <div class="notename">D#3</div>
           <span>d</span>
         </button>
-        <button data-noteid="66" class="gb">
+        <button data-noteid="66" class="key gb">
           <div class="notename">F#3</div>
           <span>g</span>
         </button>
-        <button data-noteid="68" class="ab">
+        <button data-noteid="68" class="key ab">
           <div class="notename">G#3</div>
           <span>h</span>
         </button>
-        <button data-noteid="70" class="bb">
+        <button data-noteid="70" class="key bb">
           <div class="notename">A#3</div>
           <span>j</span>
         </button>
@@ -258,20 +282,20 @@ function mouseController(e) {
 
     <div class="octave">
       <div class="key-row white">
-        <button data-noteid="72" class="c">C4<br /><span>q</span></button>
-        <button data-noteid="74" class="d">D4<br /><span>w</span></button>
-        <button data-noteid="76" class="e">E4<br /><span>e</span></button>
-        <button data-noteid="77" class="f">F4<br /><span>r</span></button>
-        <button data-noteid="79" class="g">G4<br /><span>t</span></button>
-        <button data-noteid="81" class="a">A4<br /><span>y</span></button>
-        <button data-noteid="83" class="b">B4<br /><span>u</span></button>
+        <button data-noteid="72" class="key c">C4<br /><span>q</span></button>
+        <button data-noteid="74" class="key d">D4<br /><span>w</span></button>
+        <button data-noteid="76" class="key e">E4<br /><span>e</span></button>
+        <button data-noteid="77" class="key f">F4<br /><span>r</span></button>
+        <button data-noteid="79" class="key g">G4<br /><span>t</span></button>
+        <button data-noteid="81" class="key a">A4<br /><span>y</span></button>
+        <button data-noteid="83" class="key b">B4<br /><span>u</span></button>
       </div>
       <div class="key-row black">
-        <button data-noteid="73" class="db">C#4<br /><span>2</span></button>
-        <button data-noteid="75" class="eb">D#4<br /><span>3</span></button>
-        <button data-noteid="78" class="gb">F#4<br /><span>5</span></button>
-        <button data-noteid="80" class="ab">G#4<br /><span>6</span></button>
-        <button data-noteid="82" class="bb">A#4<br /><span>7</span></button>
+        <button data-noteid="73" class="key db">C#4<br /><span>2</span></button>
+        <button data-noteid="75" class="key eb">D#4<br /><span>3</span></button>
+        <button data-noteid="78" class="key gb">F#4<br /><span>5</span></button>
+        <button data-noteid="80" class="key ab">G#4<br /><span>6</span></button>
+        <button data-noteid="82" class="key bb">A#4<br /><span>7</span></button>
       </div>
     </div>
 
