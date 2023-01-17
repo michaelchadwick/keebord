@@ -1,16 +1,15 @@
-# nebyookeys
+# NebyooKeys
 
 Play piano using the keyboard, mouse, or MIDI input. Built using VueJS.
 
-## Project Setup
+Much thanks to [dabbmedia/web-audio-synth](https://github.com/dabbmedia/web-audio-synth?ref=vuejsexamples.com) for providing a starting point for someone who has never done VueJS before.
+
+## Contributions
 
 ```sh
+git clone git@github.com:michaelchadwick/nebyookeys.git
+cd nebyookeys
 npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
 npm run dev
 ```
 
@@ -18,6 +17,9 @@ npm run dev
 
 ```sh
 npm run build
+cd /path/to/nebyookeys/public
+scp . user@host:/var/www/nebyookeys
+sudo systemctl restart [httpd|apache2|nginx]
 ```
 
 ### Lint with [ESLint](https://eslint.org/)
