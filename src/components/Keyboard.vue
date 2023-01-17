@@ -18,12 +18,10 @@ const emitPressed = (e) => {
 
   if (target.dataset.noteid) {
     noteid = parseInt(target.dataset.noteid)
-    console.log('emitting noteOn', noteid)
     emit('notePressed', noteid)
     target.classList.add('active')
   } else if (target_parent.dataset.noteid) {
     noteid = parseInt(target_parent.dataset.noteid)
-    console.log('emitting noteOn', noteid)
     emit('notePressed', noteid)
     target_parent.classList.add('active')
   }
@@ -38,12 +36,10 @@ const emitReleased = (e) => {
 
   if (target.dataset.noteid) {
     noteid = target.dataset.noteid
-    console.log('emitting noteOff', noteid)
     emit('noteReleased', noteid)
     target.classList.remove('active')
   } else if (target_parent.dataset.noteid) {
     noteid = target_parent.dataset.noteid
-    console.log('emitting noteOff', noteid)
     emit('noteReleased', noteid)
     target_parent.classList.remove('active')
   }
