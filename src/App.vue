@@ -1,34 +1,14 @@
-<script>
-import NebyooKeys from './components/NebyooKeys.vue'
-
-export default {
-  components: {
-    NebyooKeys
-  },
-  data() {
-    return {
-      hasMidiSupport: false
-    }
-  }
-}
+<script setup>
+import Synth from './components/Synth.vue'
 </script>
 
 <template>
   <header>
-    <h1>NebyooKeys on <img src="./assets/logo.svg" width="24" height="24"></h1>
+    <h1>NebyooKeys on <img src="./assets/logo.svg" class="logo" width="24" height="24"></h1>
   </header>
 
   <main>
-    <NebyooKeys
-      @midi-support="(midiSupport) => hasMidiSupport = midiSupport"
-    />
-
-    <template v-if="!hasMidiSupport">
-      <div>
-        <span class="failure">No MIDI Access supported.</span><br />
-        <span>Please try <a href="https://www.google.com/chrome/">Chrome</a> or <a href="https://www.mozilla.org/en-US/firefox/new/">Firefox</a>, instead.</span>
-      </div>
-    </template>
+    <Synth />
   </main>
 </template>
 
@@ -42,7 +22,7 @@ header {
 }
 
 .logo {
-  display: block;
-  margin: 0 auto 2rem;
+  height: 24px;
+  width: 24px;
 }
 </style>

@@ -7,6 +7,7 @@ const app = createApp(App)
 
 app.mount('#app')
 
+// theme toggling
 let theme = 'light'
 
 const bodyClasses = document.body.classList
@@ -26,22 +27,25 @@ if (themeToggler) {
 
     imgThemeToggler.innerHTML = '☀️'
   }
+
+  themeToggler.addEventListener('click', function() {
+    bodyClasses.toggle('dark-theme')
+    bodyClasses.toggle('light-theme')
+
+    theme = bodyClasses.contains('light-theme') ? 'light' : 'dark'
+
+    // update text inside toggler
+    imgThemeToggler.innerHTML = theme == 'light' ? '☀️' : '🌙'
+
+    localStorage.setItem('nebyookeys-theme', theme)
+  })
 }
-
-themeToggler.addEventListener('click', function() {
-  bodyClasses.toggle('dark-theme')
-  bodyClasses.toggle('light-theme')
-
-  theme = bodyClasses.contains('light-theme') ? 'light' : 'dark'
-
-  // update text inside toggler
-  imgThemeToggler.innerHTML = theme == 'light' ? '☀️' : '🌙'
-
-  localStorage.setItem('nebyookeys-theme', theme)
-})
 
 if (prefersDarkScheme.matches) {
   bodyClasses.add('dark-theme')
   bodyClasses.remove('light-theme')
-  imgThemeToggler.innerHTML = '🌙'
+
+  if (themeToggler) {
+    imgThemeToggler.innerHTML = '🌙'
+  }
 }
