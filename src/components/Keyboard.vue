@@ -1,12 +1,19 @@
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 
-let piano = null
+let pianoDiv = null
+let mousedown = false
 
+document.body.onmousedown = () => mousedown = true
+document.body.onmouseup = () => mousedown = false
+
+const props = defineProps(['musicalNotes', 'rootNote'])
 const emit = defineEmits(['notePressed', 'noteReleased'])
 
 onMounted(() => {
-  piano = document.getElementById('keyboard')
+  pianoDiv = document.getElementById('keyboard')
+  pianoDiv.scrollLeft = (pianoDiv.scrollWidth / 9) * 3
+  // pianoDiv.scrollLeft = (props.rootNote[1] * 40 * 7)
 })
 
 const emitPressed = (e) => {
@@ -17,9 +24,17 @@ const emitPressed = (e) => {
   let target_parent = e.target.parentElement
 
   if (target.dataset.noteid) {
-    noteid = parseInt(target.dataset.noteid)
-    emit('notePressed', noteid)
-    target.classList.add('active')
+    if (e.type == 'mouseenter') {
+      if (mousedown) {
+        noteid = parseInt(target.dataset.noteid)
+        emit('notePressed', noteid)
+        target.classList.add('active')
+      }
+    } else {
+      noteid = parseInt(target.dataset.noteid)
+      emit('notePressed', noteid)
+      target.classList.add('active')
+    }
   } else if (target_parent.dataset.noteid) {
     noteid = parseInt(target_parent.dataset.noteid)
     emit('notePressed', noteid)
@@ -48,229 +63,117 @@ const emitReleased = (e) => {
 
 <template>
   <div id="keyboard">
-    <div class="octave">
-      <div class="key-row white">
-        <button data-noteid="60" class="key c"
-          @mousedown="emitPressed($event)"
-          @mouseup="emitReleased($event)"
-          @touchstart="emitPressed($event)"
-          @touchend="emitReleased($event)"
-          @touchcancel="emitReleased($event)"
-        >
-          <div class="notename">C3</div>
-          <span>z</span>
-        </button>
-        <button data-noteid="62" class="key d"
-          @mousedown="emitPressed($event)"
-          @mouseup="emitReleased($event)"
-          @touchstart="emitPressed($event)"
-          @touchend="emitReleased($event)"
-          @touchcancel="emitReleased($event)"
-        >
-          <div class="notename">D3</div>
-          <span>x</span>
-        </button>
-        <button data-noteid="64" class="key e"
-          @mousedown="emitPressed($event)"
-          @mouseup="emitReleased($event)"
-          @touchstart="emitPressed($event)"
-          @touchend="emitReleased($event)"
-          @touchcancel="emitReleased($event)"
-        >
-          <div class="notename">E3</div>
-          <span>c</span>
-        </button>
-        <button data-noteid="65" class="key f"
-          @mousedown="emitPressed($event)"
-          @mouseup="emitReleased($event)"
-          @touchstart="emitPressed($event)"
-          @touchend="emitReleased($event)"
-          @touchcancel="emitReleased($event)"
-        >
-          <div class="notename">F3</div>
-          <span>v</span>
-        </button>
-        <button data-noteid="67" class="key g"
-          @mousedown="emitPressed($event)"
-          @mouseup="emitReleased($event)"
-          @touchstart="emitPressed($event)"
-          @touchend="emitReleased($event)"
-          @touchcancel="emitReleased($event)"
-        >
-          <div class="notename">G3</div>
-          <span>b</span>
-        </button>
-        <button data-noteid="69" class="key a"
-          @mousedown="emitPressed($event)"
-          @mouseup="emitReleased($event)"
-          @touchstart="emitPressed($event)"
-          @touchend="emitReleased($event)"
-          @touchcancel="emitReleased($event)"
-        >
-          <div class="notename">A3</div>
-          <span>n</span>
-        </button>
-        <button data-noteid="71" class="key b"
-          @mousedown="emitPressed($event)"
-          @mouseup="emitReleased($event)"
-          @touchstart="emitPressed($event)"
-          @touchend="emitReleased($event)"
-          @touchcancel="emitReleased($event)"
-        >
-          <div class="notename">B3</div>
-          <span>m</span>
-        </button>
-      </div>
-      <div class="key-row black">
-        <button data-noteid="61" class="key db"
-          @mousedown="emitPressed($event)"
-          @mouseup="emitReleased($event)"
-          @touchstart="emitPressed($event)"
-          @touchend="emitReleased($event)"
-          @touchcancel="emitReleased($event)"
-        >
-          <div class="notename">C#3</div>
-          <span>s</span>
-        </button>
-        <button data-noteid="63" class="key eb"
-          @mousedown="emitPressed($event)"
-          @mouseup="emitReleased($event)"
-          @touchstart="emitPressed($event)"
-          @touchend="emitReleased($event)"
-          @touchcancel="emitReleased($event)"
-        >
-          <div class="notename">D#3</div>
-          <span>d</span>
-        </button>
-        <button data-noteid="66" class="key gb"
-          @mousedown="emitPressed($event)"
-          @mouseup="emitReleased($event)"
-          @touchstart="emitPressed($event)"
-          @touchend="emitReleased($event)"
-          @touchcancel="emitReleased($event)"
-        >
-          <div class="notename">F#3</div>
-          <span>g</span>
-        </button>
-        <button data-noteid="68" class="key ab"
-          @mousedown="emitPressed($event)"
-          @mouseup="emitReleased($event)"
-          @touchstart="emitPressed($event)"
-          @touchend="emitReleased($event)"
-          @touchcancel="emitReleased($event)"
-        >
-          <div class="notename">G#3</div>
-          <span>h</span>
-        </button>
-        <button data-noteid="70" class="key bb"
-          @mousedown="emitPressed($event)"
-          @mouseup="emitReleased($event)"
-          @touchstart="emitPressed($event)"
-          @touchend="emitReleased($event)"
-          @touchcancel="emitReleased($event)"
-        >
-          <div class="notename">A#3</div>
-          <span>j</span>
-        </button>
-      </div>
-    </div>
+    <button
+      v-for="(note, index) in props.musicalNotes"
+      :data-noteid="note.midi"
+      :class="(note.name[1] != 'b') ? 'key-white' : 'key-black'"
+      @mousedown="emitPressed($event, index)"
+      @mouseenter="emitPressed($event, index)"
+      @mouseup="emitReleased($event, index)"
+      @mouseleave="emitReleased($event, index)"
+      @touchstart="emitPressed($event, index)"
+      @touchend="emitReleased($event, index)"
+      @touchcancel="emitReleased($event, index)"
+    >
+      <div v-if="note.key" class="key-label">{{ note.key }}</div>
+      <div class="note-name">{{ note.name }}</div>
+    </button>
   </div>
 </template>
 
 <style scoped>
 #keyboard {
-  align-items: flex-start;
-  display: flex;
-  justify-content: flex-start;
+  background-color: transparent;
+  height: 300px;
+  overflow-x: scroll;
+  position: absolute;
+  white-space: nowrap;
+  width: 100%;
+  -moz-box-shadow:    0 2px 4px 2px #333333;
+  -webkit-box-shadow: 0 2px 4px 2px #333333;
+  box-shadow:         0 2px 4px 2px #333333;
 }
-button {
-  border: 2px solid #222222;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-  font-size: 1.5rem;
-  font-weight: 700;
-  height: 200px;
-  margin: 0;
-  max-width: 50px;
-  padding: 0;
-}
-  button div.notename {
-    font-weight: bold;
+  #keyboard button {
+    border: 2px solid #222222;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    display: inline-block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    height: 300px;
+    margin: 0;
+    padding: 0;
+    position: relative;
   }
-  button span {
-    border: 1px solid #000;
-    border-radius: 5px;
-    padding: 5px;
-  }
-
-.octave {
-  display: flex;
-}
-  .octave .key-row {
-    display: flex;
-  }
-    .octave .key-row.white {
-
+    #keyboard button div {
+      font-weight: bold;
+      line-height: 2;
+      margin: 0 auto;
+      position: absolute;
+      text-align: center;
+      width: 100%;
     }
-      .octave .key-row.white button {
-        align-items: stretch;
-        background-color: #ffffff;
-        display: flex;
-        flex-direction: column-reverse;
-        min-width: 50px;
+      #keyboard button div.key-label {
+        border: 1px solid #000000;
+        border-radius: 5px;
+        bottom: 40px;
+        height: 24px;
+        padding: 5px;
+        width: 24px;
       }
-        .octave .key-row.white button:hover {
-          background-color: #e9e9e9;
-          color: #282828;
-        }
-        .octave .key-row.white button.active {
-          background-color: #f6f6f6;
+      #keyboard button div.note-name {
+        bottom: 0;
+        text-transform: none;
+      }
+
+    #keyboard button.key-white {
+      border-top: 0;
+      height: 100%;
+      width: 40px;
+      z-index: 1;
+    }
+      #keyboard button.key-white:hover {
+        background-color: #89bcff;
+        color: #282828;
+      }
+      #keyboard button.key-white.active {
+        background-color: #67a8ff;
+        color: #000000;
+      }
+        #keyboard button.key-white div {
           color: #000000;
-        }
-        .octave .key-row.white button span {
           padding: 0;
         }
-    .octave .key-row.black {
+          #keyboard button.key-white div.key-label {
+            height: 30px;
+            margin: 0 6px;
+          }
+
+    #keyboard button.key-black {
+      background-color: #111111;
+      color: #ffffff;
+      font-size: 1.25rem;
+      height: 40%;
+      margin-left: -20px;
+      margin-right: -20px;
+      margin-top: 0;
       position: absolute;
       top: 0;
+      width: 36px;
+      z-index: 10;
     }
-      .octave .key-row.black button {
-        align-items: stretch;
-        background-color: #111111;
-        color: #ffffff;
-        display: flex;
-        flex-direction: column-reverse;
-        font-size: 1.25rem;
-        height: 100px;
-        margin-top: 0;
-        max-width: 30px;
+      #keyboard button.key-black:hover {
+        background-color: #3e6eb6;
+        color: #ededed;
       }
-        .octave .key-row.black button.db {
-          left: 18%;
-        }
-        .octave .key-row.black button.eb {
-          left: 42%;
-        }
-        .octave .key-row.black button.gb {
-          left: 79%;
-        }
-        .octave .key-row.black button.ab {
-          left: 99%;
-        }
-        .octave .key-row.black button.bb {
-          left: 118%;
-        }
-
-        .octave .key-row.black button:hover {
-          background-color: #201181;
-          color: #ededed;
-        }
-        .octave .key-row.black button.active {
-          background-color: #3546a7;
-          color: #ffffff;
-        }
-
-        .octave .key-row.black button span {
+      #keyboard button.key-black.active {
+        background-color: #2c599d;
+        color: #ffffff;
+      }
+        #keyboard button.key-black div.key-label {
           border: 1px solid #ffffff;
+          height: 24px;
+          line-height: 1;
+          margin: 0 3px;
         }
 </style>

@@ -17,6 +17,7 @@ export default class Note {
       this.gain.disconnect()
     }
 
+    // individual key gain (midi vel 0-127)
     this.oscillator.connect(this.gain)
     this.gain.connect(audioContext.destination)
   }
