@@ -42,6 +42,107 @@ const nodeControls = reactive({
   //   enabled: true,
   //   isVertical: true
   // },
+  // distortion: {
+  //   title: 'Distortion',
+  //   type: 'range',
+  //   controlEnabledCheckId: 'send-effect-distortion-check',
+  //   numberInputId: 'distortion-value',
+  //   rangeInputId: 'distortion-range',
+  //   currentValue: '0.8',
+  //   audioNode: '',
+  //   step: '0.1',
+  //   min: '0.0',
+  //   max: '1.0',
+  //   parameter: 'gain',
+  //   enabled: false,
+  //   isVertical: true
+  // },
+  // delay: {
+  //   title: 'Delay',
+  //   type: 'range',
+  //   controlEnabledCheckId: 'send-effect-delay-check',
+  //   numberInputId: 'delay-value',
+  //   rangeInputId: 'delay-range',
+  //   currentValue: '2.0',
+  //   audioNode: '',
+  //   step: '0.1',
+  //   min: '0.0',
+  //   max: '6.0',
+  //   parameter: 'delayTime',
+  //   enabled: false,
+  //   isVertical: true
+  // },
+  // reverb: {
+  //   title: 'Reverb',
+  //   type: 'range',
+  //   controlEnabledCheckId: 'send-effect-reverb-check',
+  //   numberInputId: 'reverb-value',
+  //   rangeInputId: 'reverb-range',
+  //   currentValue: '0.8',
+  //   audioNode: '',
+  //   step: '0.1',
+  //   min: '0.0',
+  //   max: '1.0',
+  //   parameter: 'gain',
+  //   enabled: false,
+  //   isVertical: true
+  // },
+  // eqLow: {
+  //   title: 'EQ Low',
+  //   type: 'range',
+  //   numberInputId: 'eq-low-value',
+  //   rangeInputId: 'eq-low-range',
+  //   currentValue: '0.5',
+  //   audioNode: '',
+  //   step: '0.1',
+  //   min: '0.0',
+  //   max: '1.0',
+  //   parameter: 'gain',
+  //   enabled: false,
+  //   isVertical: true
+  // },
+  // eqMid: {
+  //   title: 'EQ Mid',
+  //   type: 'range',
+  //   numberInputId: 'eq-mid-value',
+  //   rangeInputId: 'eq-mid-range',
+  //   currentValue: '0.5',
+  //   audioNode: '',
+  //   step: '0.1',
+  //   min: '0.0',
+  //   max: '1.0',
+  //   parameter: 'gain',
+  //   enabled: false,
+  //   isVertical: true
+  // },
+  // eqHigh: {
+  //   title: 'EQ High',
+  //   type: 'range',
+  //   numberInputId: 'eq-high-value',
+  //   rangeInputId: 'eq-high-range',
+  //   currentValue: '0.5',
+  //   audioNode: '',
+  //   step: '0.1',
+  //   min: '0.0',
+  //   max: '1.0',
+  //   parameter: 'gain',
+  //   enabled: false,
+  //   isVertical: true
+  // },
+  // compressor: {
+  //   title: 'Compressor',
+  //   type: 'range',
+  //   numberInputId: 'eq-compressor-value',
+  //   rangeInputId: 'eq-compressor-range',
+  //   currentValue: '3.0',
+  //   audioNode: '',
+  //   step: '1',
+  //   min: '1',
+  //   max: '20',
+  //   parameter: 'ratio',
+  //   enabled: false,
+  //   isVertical: true
+  // },
   masterGain: {
     title: 'Volume',
     type: 'range',
@@ -55,28 +156,7 @@ const nodeControls = reactive({
     parameter: 'gain',
     enabled: true,
     isVertical: true
-  },
-  // distortion: {
-  //   title: 'Distortion', type: 'range', controlEnabledCheckId: 'send-effect-distortion-check', numberInputId: 'distortion-value', rangeInputId: 'distortion-range', currentValue: '0.8', audioNode: '', step: '0.1', min: '0.0', max: '1.0', parameter: 'gain', enabled: false, isVertical: true
-  // },
-  // delay: {
-  //   title: 'Delay', type: 'range', controlEnabledCheckId: 'send-effect-delay-check', numberInputId: 'delay-value', rangeInputId: 'delay-range', currentValue: '2.0', audioNode: '', step: '0.1', min: '0.0', max: '6.0', parameter: 'delayTime', enabled: false, isVertical: true
-  // },
-  // reverb: {
-  //   title: 'Reverb', type: 'range', controlEnabledCheckId: 'send-effect-reverb-check', numberInputId: 'reverb-value', rangeInputId: 'reverb-range', currentValue: '0.8', audioNode: '', step: '0.1', min: '0.0', max: '1.0', parameter: 'gain', enabled: true, isVertical: true
-  // },
-  // eqLow: {
-  //   title: 'EQ Low', type: 'range', numberInputId: 'eq-low-value', rangeInputId: 'eq-low-range', currentValue: '0.5', audioNode: '', step: '0.1', min: '0.0', max: '1.0', parameter: 'gain', enabled: true, isVertical: true
-  // },
-  // eqMid: {
-  //   title: 'EQ Mid', type: 'range', numberInputId: 'eq-mid-value', rangeInputId: 'eq-mid-range', currentValue: '0.5', audioNode: '', step: '0.1', min: '0.0', max: '1.0', parameter: 'gain', enabled: true, isVertical: true
-  // },
-  // eqHigh: {
-  //   title: 'EQ High', type: 'range', numberInputId: 'eq-high-value', rangeInputId: 'eq-high-range', currentValue: '0.5', audioNode: '', step: '0.1', min: '0.0', max: '1.0', parameter: 'gain', enabled: true, isVertical: true
-  // },
-  // compressor: {
-  //   title: 'Compressor', type: 'range', numberInputId: 'eq-compressor-value', rangeInputId: 'eq-compressor-range', currentValue: '3.0', audioNode: '', step: '1', min: '1', max: '20', parameter: 'ratio', enabled: true, isVertical: true
-  // }
+  }
 })
 
 const musicalNotes = [
