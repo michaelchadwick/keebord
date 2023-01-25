@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 
 let pianoDiv = null
 let mousedown = false
+let hasTouch = false
 
 document.body.onmousedown = () => mousedown = true
 document.body.onmouseup = () => mousedown = false
@@ -14,6 +15,10 @@ onMounted(() => {
   pianoDiv = document.getElementById('keyboard')
   pianoDiv.scrollLeft = (pianoDiv.scrollWidth / 9) * 3
   // pianoDiv.scrollLeft = (props.rootNote[1] * 40 * 7)
+
+  if ('ontouchstart' in window) {
+    hasTouch = true
+  }
 })
 
 const emitPressed = (e) => {
@@ -75,7 +80,7 @@ const emitReleased = (e) => {
       @touchend="emitReleased($event, index)"
       @touchcancel="emitReleased($event, index)"
     >
-      <div v-if="note.key" class="key-label">{{ note.key }}</div>
+      <div v-if="note.key && !hasTouch" class="key-label">{{ note.key }}</div>
       <div class="note-name">{{ note.name }}</div>
     </button>
   </div>
