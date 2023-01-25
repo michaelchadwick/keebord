@@ -1,6 +1,6 @@
 # NebyooKeys
 
-Play piano using the keyboard, mouse, or MIDI input. Built using VueJS.
+Play piano using keyboard, mouse, touch or MIDI input. Built using VueJS.
 
 Much thanks to [dabbmedia/web-audio-synth](https://github.com/dabbmedia/web-audio-synth?ref=vuejsexamples.com) for providing a starting point for someone who has never done VueJS before.
 

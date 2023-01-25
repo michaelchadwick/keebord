@@ -6,7 +6,7 @@
 
   --vt-c-black: #181818;
   --vt-c-black-soft: #222222;
-  --vt-c-black-mute: #282828;
+  --vt-c-black-mute: #282828ee;
 
   --vt-c-indigo: #2c3e50;
 
@@ -52,12 +52,12 @@
 
   /* defaults to dark theme */
   body {
-    --color-background: #282828ee;
-    --color-text: #f3f3f3;
+    --color-background: var(--vt-c-black-mute);
+    --color-text: var(--vt-c-white-mute);
   }
   body.light-theme {
-    --color-background: #f6f6f6ee;
-    --color-text: #282828;
+    --color-background: var(--bkgr-color);
+    --color-text: var(--vt-c-black-mute);
   }
 }
 
@@ -67,11 +67,12 @@
   box-sizing: border-box;
   font-weight: normal;
   margin: 0;
-  position: relative;
+  padding: 0;
 }
 
 html {
   font-size: 62.5%;
+  height: 100%;
 }
 
 body {
@@ -80,7 +81,9 @@ body {
   font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   font-size: 15px;
   line-height: 1.6;
+  margin: 0;
   min-height: 100vh;
+  padding: 0;
   text-rendering: optimizeLegibility;
   transition: color 0.5s, background-color 0.5s;
   -webkit-font-smoothing: antialiased;
@@ -154,6 +157,19 @@ body.dark-theme button#theme-toggler {
   color: var(--color-text);
 }
 
+a.icon,
+button.icon {
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 24px;
+  padding: 2px 4px;
+}
+  button.icon:hover {
+    color: #fffca3;
+  }
+
 input[type=number],
 select {
   -webkit-appearance: none;
@@ -191,16 +207,16 @@ select::after {
 #app {
   font-weight: normal;
   margin: 0 auto;
-  max-width: 1280px;
-  padding: 2rem;
+  padding: 0;
 }
 
 #controls-container {
-  align-items: space-between;
+  align-items: normal;
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
   margin-bottom: 10px;
+  padding: 0 10px 0 15px;
 }
   #controls-container .control-column {
     display: flex;
@@ -246,4 +262,29 @@ select::after {
 }
 .failure {
   color: rgb(189, 0, 0);
+}
+
+/* animation */
+@keyFrames SlideRight {
+  0% {
+    opacity: 0;
+    transform: translateX(-100px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0px);
+  }
+}
+@keyFrames SlideLeft {
+  0% {
+    opacity: 1;
+    transform: translateX(0px);
+  }
+  90% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-200px);
+  }
 }

@@ -13,7 +13,8 @@ const emit = defineEmits([
 <template>
   <fieldset
     :class="(props.controlData.isVertical) ? 'vertical-range control-column node-control': 'horizontal-range control-column node-control'"
-    :id="props.controlKey">
+    :id="props.controlKey"
+  >
     <legend>
       <input
         v-if="props.controlData.controlEnabledCheckId"
@@ -116,6 +117,7 @@ const emit = defineEmits([
     border-radius: 0.15rem;
     font-size: 1.5rem;
     height: 2.5rem;
+    padding-left: 0.3rem;
     padding-right: 0.5rem;
     text-align: left;
     width: 5rem;
@@ -139,6 +141,7 @@ const emit = defineEmits([
       height: 1.1rem;
       margin: 0;
       padding: 0;
+      position: relative;
       text-align: center;
       width: 12px;
     }

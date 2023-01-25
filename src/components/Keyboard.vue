@@ -85,6 +85,7 @@ const emitReleased = (e) => {
 #keyboard {
   background-color: transparent;
   height: 300px;
+  margin-left: 10px;
   overflow-x: scroll;
   position: absolute;
   white-space: nowrap;
@@ -133,11 +134,11 @@ const emitReleased = (e) => {
       z-index: 1;
     }
       #keyboard button.key-white:hover {
-        background-color: #89bcff;
+        background-color: #89ffa1;
         color: #282828;
       }
       #keyboard button.key-white.active {
-        background-color: #67a8ff;
+        background-color: #5fed85;
         color: #000000;
       }
         #keyboard button.key-white div {
@@ -163,11 +164,11 @@ const emitReleased = (e) => {
       z-index: 10;
     }
       #keyboard button.key-black:hover {
-        background-color: #3e6eb6;
+        background-color: #3eb67c;
         color: #ededed;
       }
       #keyboard button.key-black.active {
-        background-color: #2c599d;
+        background-color: #2c9d4e;
         color: #ffffff;
       }
         #keyboard button.key-black div.key-label {
