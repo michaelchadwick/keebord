@@ -128,22 +128,26 @@ input[type="button"] {
 
 button#theme-toggler {
   background-color: var(--color-background);
-  top: 3px;
   font-size: 1.5rem;
   font-weight: 600;
-  height: 40px;
+  height: 32px;
   margin-bottom: 0;
   opacity: 0.9;
-  padding: 0 10px;
+  padding: 0 5px;
   position: fixed;
-  right: 5px;
+  right: 12px;
   text-align: center;
-  width: 40px;
+  top: 7px;
+  width: 32px;
   z-index: 10000;
 }
-  button#theme-toggler span.theme-image::after {
-    display: none;
+  button#theme-toggler span.theme-image {
+    bottom: 3px;
+    position: relative;
   }
+    button#theme-toggler span.theme-image::after {
+      display: none;
+    }
 
 @media (min-width: 550px) {
   button#theme-toggler {
@@ -172,7 +176,7 @@ button.icon {
   color: #ffffff;
   cursor: pointer;
   font-size: 24px;
-  padding: 2px 4px;
+  padding: 1px;
 }
   button.icon:hover {
     color: #fffca3;
