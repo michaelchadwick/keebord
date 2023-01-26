@@ -146,6 +146,9 @@ const emitReleased = (e) => {
       width: 40px;
       z-index: 1;
     }
+      body.dark-theme #keyboard button.key-white {
+        border-top: 1px solid var(--color-border);
+      }
       #keyboard button.key-white:hover {
         background-color: #89ffa1;
         color: var(--color-text);
@@ -176,6 +179,9 @@ const emitReleased = (e) => {
       width: 36px;
       z-index: 10;
     }
+      body.dark-theme #keyboard button.key-black {
+        border-top: 1px solid var(--color-border);
+      }
       #keyboard button.key-black:hover {
         background-color: #3eb67c;
         color: #ededed;
