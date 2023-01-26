@@ -2,16 +2,82 @@
 import { onMounted } from 'vue';
 import Synth from './components/Synth.vue'
 
-onMounted(() => {
-  if ((typeof NebyooKeys) === 'undefined') var NebyooKeys = {}
+if ((typeof NebyooKeys) === 'undefined') var NebyooKeys = {}
 
+const NEBYOOKEYS_SETTINGS_KEY = 'nebyookeys-settings'
+const NEBYOOKEYS_DEFAULTS = {
+  "settings": {
+    "darkMode": false
+  }
+}
+
+NebyooKeys._loadSettings = function() {
+  // console.log('loading settings from LS...')
+
+  var lsSettings = JSON.parse(localStorage.getItem(NEBYOOKEYS_SETTINGS_KEY))
+
+  if (lsSettings) {
+    NebyooKeys.settings.darkMode = lsSettings.darkMode
+
+    if (NebyooKeys.settings.darkMode) {
+      document.body.classList.add('dark-mode')
+
+      var setting = document.getElementById('button-setting-dark-mode')
+
+      if (setting) {
+        setting.dataset.status = 'true'
+      }
+    }
+  } else {
+    NebyooKeys.settings = NEBYOOKEYS_DEFAULTS.settings
+  }
+}
+
+NebyooKeys._changeSetting = async function(setting, value, event) {
+  switch (setting) {
+    case 'darkMode':
+      var st = document.getElementById('button-setting-dark-mode').dataset.status
+
+      if (st == '' || st == 'false') {
+        document.getElementById('button-setting-dark-mode').dataset.status = 'true'
+        document.body.classList.add('dark-mode')
+
+        NebyooKeys._saveSetting('darkMode', true)
+      } else {
+        document.getElementById('button-setting-dark-mode').dataset.status = 'false'
+        document.body.classList.remove('dark-mode')
+
+        NebyooKeys._saveSetting('darkMode', false)
+      }
+
+      break
+  }
+}
+
+// save a setting (gear icon) to localStorage
+NebyooKeys._saveSetting = function(setting, value) {
+  // console.log('saving setting to LS...', setting, value)
+
+  var settings = JSON.parse(localStorage.getItem(NEBYOOKEYS_SETTINGS_KEY))
+
+  // set temp obj that will go to LS
+  settings[setting] = value
+  // set internal code model
+  NebyooKeys.settings[setting] = value
+
+  localStorage.setItem(NEBYOOKEYS_SETTINGS_KEY, JSON.stringify(settings))
+
+  // console.log('localStorage setting saved!', NebyooKeys.settings)
+}
+
+onMounted(() => {
   // DOM > main divs/elements
   NebyooKeys.dom = {
     "navOverlay": document.getElementById('nav-overlay'),
     "btnNav": document.getElementById('button-nav'),
     "btnNavClose": document.getElementById('button-nav-close'),
     // "btnHelp": document.getElementById('button-help'),
-    // "btnSettings": document.getElementById('button-settings'),
+    "btnSettings": document.getElementById('button-settings'),
   }
 
   const NEBKEYS_ENV_PROD_URL = [
@@ -30,6 +96,7 @@ onMounted(() => {
   NebyooKeys.dom.btnNavClose.addEventListener('click', () => {
     NebyooKeys.dom.navOverlay.classList.toggle('show')
   })
+  NebyooKeys.dom.btnSettings.addEventListener('click', () => modalOpen('settings'))
 })
 </script>
 
@@ -94,11 +161,9 @@ onMounted(() => {
     </div>
 
     <div class="menu-right">
-      <!--
       <button id="button-settings" class="icon" aria-label="Settings" tabindex="-1">
         <i class="fa-solid fa-gear"></i>
       </button>
-      -->
     </div>
   </header>
 
@@ -110,8 +175,8 @@ onMounted(() => {
 <style scoped>
 header {
   align-items: center;
-  background: #0a9361;
-  border-bottom: 5px solid rgb(0, 83, 17);
+  background: var(--green);
+  border-bottom: 5px solid var(--green-dark);
   color: #d1d1d1;
   display: flex;
   flex-direction: row;
@@ -261,4 +326,33 @@ header {
       justify-content: flex-end;
       margin-right: 0;
     }
+
+.switch {
+  background-color: #444;
+  border-radius: 999px;
+  cursor: pointer;
+  display: block;
+  height: 20px;
+  position: relative;
+  vertical-align: middle;
+  width: 32px;
+  }
+  .switch[data-status='true'] {
+    background-color: #529952;
+  }
+  .switch[data-status='true'] .knob {
+    transform: translateX(calc(100% - 4px));
+  }
+  .switch .knob {
+    background-color: #fff;
+    border-radius: 8px;
+    display: block;
+    height: calc(100% - 4px);
+    left: 2px;
+    position: absolute;
+    top: 2px;
+    transform: translateX(0);
+    transition: transform 0.3s;
+    width: 50%;
+  }
 </style>
