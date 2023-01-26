@@ -353,6 +353,19 @@ let selectOptionChanged = function(controlName, newValue) {
   options.rootNote = newValue
 }
 
+let toggleControls = function() {
+  let toggleControl = document.getElementById('controls-container');
+  if (toggleControl.style.display === 'none') {
+    document.getElementById('toggle-controls').src = '/src/assets/bi-caret-down-fill.svg';
+
+    toggleControl.style.display = 'flex'
+  } else {
+    document.getElementById('toggle-controls').src = '/src/assets/bi-caret-right-fill.svg';
+
+    toggleControl.style.display = 'none';
+  }
+}
+
 let makeNote = (noteNumber, velocity = 64) => {
   // console.log(`ON - note: ${noteNumber}, vel: ${velocity}`)
 
@@ -485,6 +498,10 @@ document.addEventListener('keyup', keyController)
   </template>
   -->
 
+  <h3 id="controls-header">
+    <span @click="toggleControls">Synth Controls</span>
+    <img id="toggle-controls" src="/src/assets/bi-caret-down-fill.svg" @click="toggleControls" />
+  </h3>
   <div id="controls-container">
     <NodeControl
       v-for="(control, key) in nodeControls"
@@ -505,3 +522,67 @@ document.addEventListener('keyup', keyController)
     @note-released="stopNote"
   />
 </template>
+
+<style scoped>
+#controls-header {
+  padding: 5px 10px 5px 15px;
+}
+  #controls-header:hover {
+    cursor: pointer;
+  }
+  #controls-header img {
+    left: 2px;
+    position: relative;
+    top: 3px;
+  }
+  body.dark-theme #controls-header img {
+    filter: invert(100%) sepia(100%) saturate(13%) hue-rotate(237deg) brightness(104%) contrast(104%);
+  }
+
+#controls-container {
+  align-items: normal;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  margin-bottom: 10px;
+  padding: 0 10px 0 15px;
+}
+  #controls-container fieldset.control-column {
+    align-items: center;
+    border: 1px solid var(--color-text);
+    border-radius: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    margin: 4px 0;
+    text-align: center;
+  }
+    #controls-container fieldset.control-column.dropdown-control {
+      padding-bottom: 8px;
+    }
+    #controls-container fieldset.control-column legend {
+      margin: 0 auto;
+      text-align: center;
+      white-space: nowrap;
+    }
+    #controls-container fieldset.control-column input[type=checkbox] {
+      margin: 0 4px;
+    }
+    #controls-container fieldset.control-column input[type=number] {
+      margin: 0 auto;
+    }
+    #controls-container fieldset.control-column input[type=range] {
+      display: block;
+      margin: 8px auto;
+    }
+
+@media (min-width: 1024px) {
+  #controls-container {
+    display: flex;
+    height: 160px;
+  }
+    #controls-container fieldset.control-column {
+      margin-left: 0;
+      margin-right: 8px;
+    }
+}
+</style>

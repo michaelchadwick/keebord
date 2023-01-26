@@ -77,7 +77,7 @@ onMounted(() => {
     "btnNav": document.getElementById('button-nav'),
     "btnNavClose": document.getElementById('button-nav-close'),
     // "btnHelp": document.getElementById('button-help'),
-    "btnSettings": document.getElementById('button-settings'),
+    // "btnSettings": document.getElementById('button-settings'),
   }
 
   const NEBKEYS_ENV_PROD_URL = [
@@ -96,7 +96,6 @@ onMounted(() => {
   NebyooKeys.dom.btnNavClose.addEventListener('click', () => {
     NebyooKeys.dom.navOverlay.classList.toggle('show')
   })
-  NebyooKeys.dom.btnSettings.addEventListener('click', () => modalOpen('settings'))
 })
 </script>
 
@@ -161,9 +160,7 @@ onMounted(() => {
     </div>
 
     <div class="menu-right">
-      <button id="button-settings" class="icon" aria-label="Settings" tabindex="-1">
-        <i class="fa-solid fa-gear"></i>
-      </button>
+      <button id="theme-toggler"><span class="theme-image">☀️</span></button>
     </div>
   </header>
 
@@ -326,33 +323,4 @@ header {
       justify-content: flex-end;
       margin-right: 0;
     }
-
-.switch {
-  background-color: #444;
-  border-radius: 999px;
-  cursor: pointer;
-  display: block;
-  height: 20px;
-  position: relative;
-  vertical-align: middle;
-  width: 32px;
-  }
-  .switch[data-status='true'] {
-    background-color: #529952;
-  }
-  .switch[data-status='true'] .knob {
-    transform: translateX(calc(100% - 4px));
-  }
-  .switch .knob {
-    background-color: #fff;
-    border-radius: 8px;
-    display: block;
-    height: calc(100% - 4px);
-    left: 2px;
-    position: absolute;
-    top: 2px;
-    transform: translateX(0);
-    transition: transform 0.3s;
-    width: 50%;
-  }
 </style>

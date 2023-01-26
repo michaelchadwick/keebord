@@ -12,7 +12,8 @@ const emit = defineEmits([
 
 <template>
   <fieldset
-    :class="(props.controlData.isVertical) ? 'vertical-range control-column node-control': 'horizontal-range control-column node-control'"
+    class="node-control control-column"
+    :class="(props.controlData.isVertical) ? 'vertical-range': 'horizontal-range'"
     :id="props.controlKey"
   >
     <legend>
@@ -109,11 +110,11 @@ const emit = defineEmits([
 
 <style scoped>
 .node-control .value-container {
-  display:flex;
-  flex-direction:row
+  display: flex;
+  flex-direction: row;
 }
   .node-control .value-container input[type=text] {
-    border: 1px solid black;
+    border: 1px solid var(--color-text);
     border-radius: 0.15rem;
     font-size: 1.5rem;
     height: 2.5rem;

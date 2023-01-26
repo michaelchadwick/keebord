@@ -67,40 +67,46 @@ const emitReleased = (e) => {
 </script>
 
 <template>
-  <div id="keyboard">
-    <button
-      v-for="(note, index) in props.musicalNotes"
-      :data-noteid="note.midi"
-      :class="(note.name[1] != 'b') ? 'key-white' : 'key-black'"
-      @mousedown="emitPressed($event, index)"
-      @mouseenter="emitPressed($event, index)"
-      @mouseup="emitReleased($event, index)"
-      @mouseleave="emitReleased($event, index)"
-      @touchstart="emitPressed($event, index)"
-      @touchend="emitReleased($event, index)"
-      @touchcancel="emitReleased($event, index)"
-    >
-      <div v-if="note.key && !hasTouch" class="key-label">{{ note.key }}</div>
-      <div class="note-name">{{ note.name }}</div>
-    </button>
+  <div id="keyboard-container">
+    <div id="keyboard">
+      <button
+        v-for="(note, index) in props.musicalNotes"
+        :data-noteid="note.midi"
+        :class="(note.name[1] != 'b') ? 'key-white' : 'key-black'"
+        @mousedown="emitPressed($event, index)"
+        @mouseenter="emitPressed($event, index)"
+        @mouseup="emitReleased($event, index)"
+        @mouseleave="emitReleased($event, index)"
+        @touchstart="emitPressed($event, index)"
+        @touchend="emitReleased($event, index)"
+        @touchcancel="emitReleased($event, index)"
+      >
+        <div v-if="note.key && !hasTouch" class="key-label">{{ note.key }}</div>
+        <div class="note-name">{{ note.name }}</div>
+      </button>
+    </div>
   </div>
 </template>
 
 <style scoped>
-#keyboard {
-  background-color: transparent;
+#keyboard-container {
+  display: flex;
   height: 300px;
-  margin-left: 10px;
-  overflow-x: scroll;
-  position: absolute;
+  margin: 0 20px;
   white-space: nowrap;
-  width: 100%;
   -moz-box-shadow:    0 2px 4px 2px #333333;
   -webkit-box-shadow: 0 2px 4px 2px #333333;
   box-shadow:         0 2px 4px 2px #333333;
 }
+#keyboard {
+  background-color: transparent;
+  height: 100%;
+  overflow-x: scroll;
+  position: relative;
+  width: 100%;
+}
   #keyboard button {
-    border: 2px solid #222222;
+    border: 2px solid var(--color-key-border);
     border-top-left-radius: 0;
     border-top-right-radius: 0;
     display: inline-block;
@@ -120,7 +126,7 @@ const emitReleased = (e) => {
       width: 100%;
     }
       #keyboard button div.key-label {
-        border: 1px solid #000000;
+        border: 1px solid var(--color-text);
         border-radius: 5px;
         bottom: 40px;
         height: 24px;
@@ -129,10 +135,12 @@ const emitReleased = (e) => {
       }
       #keyboard button div.note-name {
         bottom: 0;
+        color: var(--color-text);
         text-transform: none;
       }
 
     #keyboard button.key-white {
+      background-color: var(--color-button-white-background);
       border-top: 0;
       height: 100%;
       width: 40px;
@@ -140,14 +148,14 @@ const emitReleased = (e) => {
     }
       #keyboard button.key-white:hover {
         background-color: #89ffa1;
-        color: #282828;
+        color: var(--color-text);
       }
       #keyboard button.key-white.active {
         background-color: #5fed85;
-        color: #000000;
+        color: var(--color-text);
       }
         #keyboard button.key-white div {
-          color: #000000;
+          color: var(--color-text);
           padding: 0;
         }
           #keyboard button.key-white div.key-label {
@@ -156,8 +164,8 @@ const emitReleased = (e) => {
           }
 
     #keyboard button.key-black {
-      background-color: #111111;
-      color: #ffffff;
+      background-color: var(--color-button-black-background);
+      color: var(--color-sharp-text);
       font-size: 1.25rem;
       height: 40%;
       margin-left: -20px;
@@ -181,5 +189,8 @@ const emitReleased = (e) => {
           height: 24px;
           line-height: 1;
           margin: 0 3px;
+        }
+        #keyboard button.key-black div.note-name {
+          color: var(--color-sharp-text);
         }
 </style>
