@@ -110,9 +110,9 @@ const emitReleased = (e) => {
   height: 300px;
   margin: 0 20px;
   white-space: nowrap;
-  -moz-box-shadow:    0 2px 4px 2px #333333;
-  -webkit-box-shadow: 0 2px 4px 2px #333333;
-  box-shadow:         0 2px 4px 2px #333333;
+  -moz-box-shadow:    0 2px 4px 2px var(--color-shadow);
+  -webkit-box-shadow: 0 2px 4px 2px var(--color-shadow);
+  box-shadow:         0 2px 4px 2px var(--color-shadow);
 }
   #keyboard {
     background-color: transparent;

@@ -18,6 +18,9 @@
 
   --green-flat: #3eb67c;
   --green-flat-active: #2c9d4e;
+
+  --shadow-light: #333333;
+  --shadow-dark: #888888;
 }
 
 /* default theme: light */
@@ -33,6 +36,8 @@
 
   --color-flatnote-text: var(--white);
   --color-text: var(--black);
+
+  --color-shadow: var(--shadow-light);
 }
 
 body.dark-theme {
@@ -47,6 +52,8 @@ body.dark-theme {
 
   --color-flatnote-text: var(--white);
   --color-text: var(--white-mute);
+
+  --color-shadow: var(--shadow-dark);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -62,6 +69,8 @@ body.dark-theme {
 
     --color-flatnote-text: var(--white);
     --color-text: var(--white-mute);
+
+    --color-shadow: var(--shadow-dark);
   }
 
   body.light-theme {
@@ -76,6 +85,8 @@ body.dark-theme {
 
     --color-flatnote-text: var(--white);
     --color-text: var(--black-mute);
+
+    --color-shadow: var(--shadow-light);
   }
 }
 
