@@ -19,6 +19,17 @@ onMounted(() => {
   if ('ontouchstart' in window) {
     hasTouch = true
   }
+
+  document.querySelector('#btn-scroll-left').addEventListener('click', () => {
+    if (pianoDiv.scrollLeft > 0) {
+      pianoDiv.scrollLeft -= 40
+    }
+  })
+  document.querySelector('#btn-scroll-right').addEventListener('click', () => {
+    if (pianoDiv.scrollLeft < pianoDiv.scrollWidth) {
+      pianoDiv.scrollLeft += 40
+    }
+  })
 })
 
 const emitPressed = (e) => {
@@ -86,6 +97,11 @@ const emitReleased = (e) => {
       </button>
     </div>
   </div>
+
+  <div id="scroll-buttons">
+    <button id="btn-scroll-left"><i class="fa fa-arrow-left"></i></button>
+    <button id="btn-scroll-right"><i class="fa fa-arrow-right"></i></button>
+  </div>
 </template>
 
 <style scoped>
@@ -98,111 +114,127 @@ const emitReleased = (e) => {
   -webkit-box-shadow: 0 2px 4px 2px #333333;
   box-shadow:         0 2px 4px 2px #333333;
 }
-#keyboard {
-  background-color: transparent;
-  height: 100%;
-  overflow-x: scroll;
-  position: relative;
-  width: 100%;
-}
-  #keyboard button {
-    border: 2px solid var(--color-key-border);
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
-    display: inline-block;
-    font-size: 1.5rem;
-    font-weight: 700;
-    height: 300px;
-    margin: 0;
-    padding: 0;
+  #keyboard {
+    background-color: transparent;
+    height: 100%;
+    overflow-x: scroll;
     position: relative;
+    width: 100%;
   }
-    #keyboard button div {
-      font-weight: bold;
-      line-height: 2;
-      margin: 0 auto;
-      position: absolute;
-      text-align: center;
-      width: 100%;
+    #keyboard button {
+      border: 2px solid var(--color-key-border);
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      display: inline-block;
+      font-size: 1.5rem;
+      font-weight: 700;
+      height: 300px;
+      margin: 0;
+      padding: 0;
+      position: relative;
     }
-      #keyboard button div.key-label {
-        border: 1px solid var(--color-text);
-        border-radius: 5px;
-        bottom: 40px;
-        height: 24px;
-        padding: 5px;
-        width: 24px;
+      #keyboard button div {
+        font-weight: bold;
+        line-height: 2;
+        margin: 0 auto;
+        position: absolute;
+        text-align: center;
+        width: 100%;
       }
-      #keyboard button div.note-name {
-        bottom: 0;
-        color: var(--color-text);
-        text-transform: none;
-      }
-
-    #keyboard button.key-white {
-      background-color: var(--color-button-white-background);
-      border-top: 0;
-      height: 100%;
-      width: 40px;
-      z-index: 1;
-    }
-      body.dark-theme #keyboard button.key-white {
-        border-top: 1px solid var(--color-border);
-      }
-      #keyboard button.key-white:hover {
-        background-color: var(--green-bright);
-        color: var(--color-text);
-      }
-        body.dark-theme #keyboard button.key-white:hover {
-          background-color: var(--green-deep-active);
+        #keyboard button div.key-label {
+          border: 1px solid var(--color-text);
+          border-radius: 5px;
+          bottom: 40px;
+          height: 24px;
+          padding: 5px;
+          width: 24px;
         }
-      #keyboard button.key-white.active {
-        background-color: var(--green-bright-active);
-        color: var(--color-text);
-      }
-        body.dark-theme #keyboard button.key-white.active {
-          background-color: var(--green-deep);
-        }
-        #keyboard button.key-white div {
+        #keyboard button div.note-name {
+          bottom: 0;
           color: var(--color-text);
-          padding: 0;
+          text-transform: none;
         }
-          #keyboard button.key-white div.key-label {
-            height: 30px;
-            margin: 0 6px;
+
+      #keyboard button.key-white {
+        background-color: var(--color-button-white-background);
+        border-top: 0;
+        height: 100%;
+        width: 40px;
+        z-index: 1;
+      }
+        body.dark-theme #keyboard button.key-white {
+          border-top: 1px solid var(--color-border);
+        }
+        #keyboard button.key-white:hover {
+          background-color: var(--green-bright);
+          color: var(--color-text);
+        }
+          body.dark-theme #keyboard button.key-white:hover {
+            background-color: var(--green-deep-active);
+          }
+        #keyboard button.key-white.active {
+          background-color: var(--green-bright-active);
+          color: var(--color-text);
+        }
+          body.dark-theme #keyboard button.key-white.active {
+            background-color: var(--green-deep);
+          }
+          #keyboard button.key-white div {
+            color: var(--color-text);
+            padding: 0;
+          }
+            #keyboard button.key-white div.key-label {
+              height: 30px;
+              margin: 0 6px;
+            }
+
+      #keyboard button.key-black {
+        background-color: var(--color-button-black-background);
+        color: var(--color-flatnote-text);
+        font-size: 1.25rem;
+        height: 40%;
+        margin-left: -20px;
+        margin-right: -20px;
+        margin-top: 0;
+        position: absolute;
+        top: 0;
+        width: 36px;
+        z-index: 10;
+      }
+        body.dark-theme #keyboard button.key-black {
+          border-top: 1px solid var(--color-border);
+        }
+        #keyboard button.key-black:hover {
+          background-color: var(--green-flat);
+          color: #ededed;
+        }
+        #keyboard button.key-black.active {
+          background-color: var(--green-flat-active);
+          color: #ffffff;
+        }
+          #keyboard button.key-black div.key-label {
+            border: 1px solid var(--color-flatnote-text);
+            height: 24px;
+            line-height: 1;
+            margin: 0 3px;
+          }
+          #keyboard button.key-black div.note-name {
+            color: var(--color-flatnote-text);
           }
 
-    #keyboard button.key-black {
-      background-color: var(--color-button-black-background);
-      color: var(--color-flatnote-text);
-      font-size: 1.25rem;
-      height: 40%;
-      margin-left: -20px;
-      margin-right: -20px;
-      margin-top: 0;
-      position: absolute;
-      top: 0;
-      width: 36px;
-      z-index: 10;
+#scroll-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
+  padding: 0 20px;
+  width: 100%;
+}
+  #scroll-buttons button {
+    border: 1px solid var(--color-border);
+    color: var(--color-text);
+  }
+    #scroll-buttons button:hover {
+      background-color: var(--green-deep-active);
+      color: var(--green-bright-active);
     }
-      body.dark-theme #keyboard button.key-black {
-        border-top: 1px solid var(--color-border);
-      }
-      #keyboard button.key-black:hover {
-        background-color: var(--green-flat);
-        color: #ededed;
-      }
-      #keyboard button.key-black.active {
-        background-color: var(--green-flat-active);
-        color: #ffffff;
-      }
-        #keyboard button.key-black div.key-label {
-          border: 1px solid var(--color-flatnote-text);
-          height: 24px;
-          line-height: 1;
-          margin: 0 3px;
-        }
-        #keyboard button.key-black div.note-name {
-          color: var(--color-flatnote-text);
-        }
 </style>
