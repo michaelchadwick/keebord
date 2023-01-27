@@ -107,7 +107,7 @@ const emitReleased = (e) => {
 <style scoped>
 #keyboard-container {
   display: flex;
-  height: 300px;
+  height: 200px;
   margin: 0;
   white-space: nowrap;
   -moz-box-shadow:    0 2px 4px 2px var(--color-shadow);
@@ -116,6 +116,7 @@ const emitReleased = (e) => {
 }
   @media (min-width: 1024px) {
     #keyboard-container {
+      height: 300px;
       margin: 0 20px;
     }
   }
