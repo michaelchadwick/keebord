@@ -108,12 +108,17 @@ const emitReleased = (e) => {
 #keyboard-container {
   display: flex;
   height: 300px;
-  margin: 0 20px;
+  margin: 0;
   white-space: nowrap;
   -moz-box-shadow:    0 2px 4px 2px var(--color-shadow);
   -webkit-box-shadow: 0 2px 4px 2px var(--color-shadow);
   box-shadow:         0 2px 4px 2px var(--color-shadow);
 }
+  @media (min-width: 1024px) {
+    #keyboard-container {
+      margin: 0 20px;
+    }
+  }
   #keyboard {
     background-color: transparent;
     height: 100%;
