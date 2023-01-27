@@ -11,23 +11,6 @@ document.body.onmouseup = () => mousedown = false
 const props = defineProps(['musicalNotes', 'rootNote'])
 const emit = defineEmits(['notePressed', 'noteReleased'])
 
-onMounted(() => {
-  pianoDiv = document.getElementById('keyboard')
-  pianoDiv.scrollLeft = (pianoDiv.scrollWidth / 9) * 3
-  // pianoDiv.scrollLeft = (props.rootNote[1] * 40 * 7)
-
-  document.querySelector('#btn-scroll-left').addEventListener('click', () => {
-    if (pianoDiv.scrollLeft > 0) {
-      pianoDiv.scrollLeft -= 40
-    }
-  })
-  document.querySelector('#btn-scroll-right').addEventListener('click', () => {
-    if (pianoDiv.scrollLeft < pianoDiv.scrollWidth) {
-      pianoDiv.scrollLeft += 40
-    }
-  })
-})
-
 const emitPressed = (e) => {
   e.preventDefault()
 
@@ -71,6 +54,94 @@ const emitReleased = (e) => {
     target_parent.classList.remove('active')
   }
 }
+
+//
+// Start simulation of onTouchEnter
+// https://gist.github.com/zerobytes/677410f1e6ed33d133aa016422a8c706
+//
+let onTouchLeaveEvents = [];
+let onTouchEnterEvents = [];
+
+const onTouchEnter = function (selector, fn) {
+	onTouchEnterEvents.push([selector, fn]);
+
+	return function () {
+		onTouchEnterEvents.slice().map(function (e, i) {
+			if (e[0] === selector && e[1] === fn) {
+				onTouchEnterEvents.splice(1, i);
+			}
+		});
+	};
+};
+
+const onTouchLeave = function (selector, fn) {
+	onTouchLeaveEvents.push([selector, fn]);
+
+	return function () {
+		onTouchLeaveEvents.slice().map(function (e, i) {
+			if (e[0] === selector && e[1] === fn) {
+				onTouchLeaveEvents.splice(1, i);
+			}
+		});
+	};
+};
+
+let lastTouchLeave;
+let lastTouchEnter;
+
+document.addEventListener('touchmove', function (e) {
+	var el = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
+	if (!el) return;
+
+	onTouchLeaveEvents.map((event) => {
+		if (el != lastTouchEnter && lastTouchEnter && lastTouchEnter.matches(event[0])) {
+			if (lastTouchEnter !== lastTouchLeave) {
+				event[1](lastTouchEnter, e);
+				lastTouchLeave = lastTouchEnter;
+				lastTouchEnter = null;
+			}
+		}
+	});
+
+	onTouchEnterEvents.map((event) => {
+		if (el.matches(event[0]) && el !== lastTouchEnter) {
+			lastTouchEnter = el;
+			lastTouchLeave = null;
+			event[1](el, e);
+		}
+	});
+});
+//
+// End simulation of onTouchEnter
+//
+
+onMounted(() => {
+  pianoDiv = document.getElementById('keyboard')
+  pianoDiv.scrollLeft = (pianoDiv.scrollWidth / 9) * 3
+  // pianoDiv.scrollLeft = (props.rootNote[1] * 40 * 7)
+
+  document.querySelector('#btn-scroll-left').addEventListener('click', () => {
+    if (pianoDiv.scrollLeft > 0) {
+      pianoDiv.scrollLeft -= 40
+    }
+  })
+  document.querySelector('#btn-scroll-right').addEventListener('click', () => {
+    if (pianoDiv.scrollLeft < pianoDiv.scrollWidth) {
+      pianoDiv.scrollLeft += 40
+    }
+  })
+
+  // Simulation of onTouchEnter
+  onTouchEnter('#keyboard button', function (el) {
+    emit('notePressed', el.dataset.noteid)
+    el.classList.add('active')
+  });
+  // Simulation of onTouchLeave
+  onTouchLeave('#keyboard button', function (el) {
+    emit('noteReleased', el.dataset.noteid)
+    el.classList.remove('active')
+  });
+})
 </script>
 
 <template>
