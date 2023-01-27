@@ -568,8 +568,10 @@ document.addEventListener('keyup', keyController)
 #controls-header {
   padding: 5px 10px 5px 15px;
 }
-  #controls-header:hover {
-    cursor: pointer;
+  @media (hover: hover) {
+    #controls-header:hover {
+      cursor: pointer;
+    }
   }
   #controls-header img {
     left: 2px;

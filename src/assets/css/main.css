@@ -202,8 +202,10 @@ button.icon {
   font-size: 24px;
   padding: 1px;
 }
-  button.icon:hover {
-    color: #fffca3;
+  @media (hover: hover) {
+    button.icon:hover {
+      color: #fffca3;
+    }
   }
 
 input[type=number] {
@@ -230,8 +232,10 @@ select {
   min-width: 60px;
   padding: 0.5em 1rem 0.5em 0.4rem;
 }
-  select:hover {
-    cursor: pointer;
+  @media (hover: hover) {
+    select:hover {
+      cursor: pointer;
+    }
   }
   body.dark-theme select {
     background-color: var(--color-background);

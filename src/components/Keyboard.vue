@@ -3,7 +3,7 @@ import { ref, onMounted } from 'vue'
 
 let pianoDiv = null
 let mousedown = false
-let hasTouch = false
+let hasTouch = 'ontouchstart' in window
 
 document.body.onmousedown = () => mousedown = true
 document.body.onmouseup = () => mousedown = false
@@ -15,10 +15,6 @@ onMounted(() => {
   pianoDiv = document.getElementById('keyboard')
   pianoDiv.scrollLeft = (pianoDiv.scrollWidth / 9) * 3
   // pianoDiv.scrollLeft = (props.rootNote[1] * 40 * 7)
-
-  if ('ontouchstart' in window) {
-    hasTouch = true
-  }
 
   document.querySelector('#btn-scroll-left').addEventListener('click', () => {
     if (pianoDiv.scrollLeft > 0) {
@@ -171,13 +167,15 @@ const emitReleased = (e) => {
         body.dark-theme #keyboard button.key-white {
           border-top: 1px solid var(--color-border);
         }
-        #keyboard button.key-white:hover {
-          background-color: var(--green-bright);
-          color: var(--color-text);
-        }
-          body.dark-theme #keyboard button.key-white:hover {
-            background-color: var(--green-deep-active);
+        @media (hover: hover) {
+          #keyboard button.key-white:hover {
+            background-color: var(--green-bright);
+            color: var(--color-text);
           }
+            body.dark-theme #keyboard button.key-white:hover {
+              background-color: var(--green-deep-active);
+            }
+        }
         #keyboard button.key-white.active {
           background-color: var(--green-bright-active);
           color: var(--color-text);
@@ -210,9 +208,11 @@ const emitReleased = (e) => {
         body.dark-theme #keyboard button.key-black {
           border-top: 1px solid var(--color-border);
         }
-        #keyboard button.key-black:hover {
-          background-color: var(--green-flat);
-          color: var(--color-flatnote-text);
+        @media (hover: hover) {
+          #keyboard button.key-black:hover {
+            background-color: var(--green-flat);
+            color: var(--color-flatnote-text);
+          }
         }
         #keyboard button.key-black.active {
           background-color: var(--green-flat-active);
@@ -238,9 +238,14 @@ const emitReleased = (e) => {
   #scroll-buttons button {
     border: 1px solid var(--color-border);
     color: var(--color-text);
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
   }
-    #scroll-buttons button:hover {
-      background-color: var(--green-deep-active);
-      color: var(--green-bright-active);
+    @media (hover: hover) {
+      #scroll-buttons button:hover {
+        background-color: var(--green-deep-active);
+        color: var(--green-bright-active);
+      }
     }
 </style>

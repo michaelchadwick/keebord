@@ -251,8 +251,10 @@ header {
               justify-content: left;
               padding: 4px 0 4px 18px;
             }
-            header .menu-left #nav-overlay #nav-content .container .nav-list a:hover {
-              background-color: var(--color-link-highlight);
+            @media (hover: hover) {
+              header .menu-left #nav-overlay #nav-content .container .nav-list a:hover {
+                background-color: var(--color-link-highlight);
+              }
             }
           header .menu-left #nav-overlay #nav-content #button-nav-close {
             font-size: 20px;
@@ -282,8 +284,10 @@ header {
             text-align: left;
             z-index: 2
           }
-          header .menu-left #nav-overlay #nav-content #footer-neb-host a:hover {
-            text-decoration: underline;
+          @media (hover: hover) {
+            header .menu-left #nav-overlay #nav-content #footer-neb-host a:hover {
+              text-decoration: underline;
+            }
           }
 
   header .title {
