@@ -150,13 +150,19 @@ const emitReleased = (e) => {
         border-top: 1px solid var(--color-border);
       }
       #keyboard button.key-white:hover {
-        background-color: #89ffa1;
+        background-color: var(--green-bright);
         color: var(--color-text);
       }
+        body.dark-theme #keyboard button.key-white:hover {
+          background-color: var(--green-deep-active);
+        }
       #keyboard button.key-white.active {
-        background-color: #5fed85;
+        background-color: var(--green-bright-active);
         color: var(--color-text);
       }
+        body.dark-theme #keyboard button.key-white.active {
+          background-color: var(--green-deep);
+        }
         #keyboard button.key-white div {
           color: var(--color-text);
           padding: 0;
@@ -168,7 +174,7 @@ const emitReleased = (e) => {
 
     #keyboard button.key-black {
       background-color: var(--color-button-black-background);
-      color: var(--color-sharp-text);
+      color: var(--color-flatnote-text);
       font-size: 1.25rem;
       height: 40%;
       margin-left: -20px;
@@ -183,20 +189,20 @@ const emitReleased = (e) => {
         border-top: 1px solid var(--color-border);
       }
       #keyboard button.key-black:hover {
-        background-color: #3eb67c;
+        background-color: var(--green-flat);
         color: #ededed;
       }
       #keyboard button.key-black.active {
-        background-color: #2c9d4e;
+        background-color: var(--green-flat-active);
         color: #ffffff;
       }
         #keyboard button.key-black div.key-label {
-          border: 1px solid #ffffff;
+          border: 1px solid var(--color-flatnote-text);
           height: 24px;
           line-height: 1;
           margin: 0 3px;
         }
         #keyboard button.key-black div.note-name {
-          color: var(--color-sharp-text);
+          color: var(--color-flatnote-text);
         }
 </style>

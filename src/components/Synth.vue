@@ -300,6 +300,8 @@ const adsr = new ADSREnvelope({
 
 let Nebyookeys = {}
 let noteMap = {}
+let noteCurrent = null
+let detuneAmount = 64
 let options = reactive({
   rootNote: 'C4'
 })
@@ -356,11 +358,11 @@ let selectOptionChanged = function(controlName, newValue) {
 let toggleControls = function() {
   let toggleControl = document.getElementById('controls-container');
   if (toggleControl.style.display === 'none') {
-    document.getElementById('toggle-controls').src = '/src/assets/bi-caret-down-fill.svg';
+    document.getElementById('toggle-controls').src = '/src/assets/svg/bi-caret-down-fill.svg';
 
     toggleControl.style.display = 'flex'
   } else {
-    document.getElementById('toggle-controls').src = '/src/assets/bi-caret-right-fill.svg';
+    document.getElementById('toggle-controls').src = '/src/assets/svg/bi-caret-right-fill.svg';
 
     toggleControl.style.display = 'none';
   }
@@ -369,18 +371,28 @@ let toggleControls = function() {
 let makeNote = (noteNumber, velocity = 64) => {
   // console.log(`ON - note: ${noteNumber}, vel: ${velocity}`)
 
+  // save current note for further processing by pitch/mod
+  noteCurrent = noteNumber
+
   if (noteMap[noteNumber]) {
     noteMap[noteNumber].noteOff()
   }
 
+  // set note's volume envelope
   const envelope = adsr.clone()
   envelope.peakLevel = (velocity / 127) * parseFloat(nodeControls.masterGain.currentValue)
+
+  // set note's wave type
   const type = document.querySelector('#osc-type').value
+
+  // create new note
   noteMap[noteNumber] = new Note(audioContext, noteNumber, type, envelope)
   noteMap[noteNumber].noteOn()
 }
 let stopNote = (noteNumber) => {
   // console.log(`OFF - note: ${noteNumber}`)
+
+  noteCurrent = null
 
   if (noteMap[noteNumber]) {
     noteMap[noteNumber].noteOff()
@@ -402,7 +414,6 @@ let onMIDIFailure = (msg) => {
   console.error(`Failed to get MIDI access - ${msg}`)
 }
 
-// handle MIDI inputs
 let midiController = (e) => {
   let str = `MIDI message received at ${e.timeStamp}[${e.data.length} bytes]: `
   for (const character of e.data) {
@@ -416,19 +427,48 @@ let midiController = (e) => {
   switch (type) {
     // noteOn message
     case 144:
-      makeNote(noteNumber, velocity); break;
+      makeNote(noteNumber, velocity);
+      break;
     // noteOff message
     case 128:
-      stopNote(noteNumber); break;
-    // TODO: pitch change
+      stopNote(noteNumber);
+      break;
+    // TODO: pitch bend
     case 224:
+      // 0 (-1 octave) -> 64 (no bend) -> 127 (+1 octave)
+      const pitchBend = e.data[2];
+      // 0 (-1 octave) -> 1 (no bend) -> 2 (+1 octave)
+      // pitchBend = ((pitchBend / 127).toFixed(2)) * 2;
+
+      if (noteMap[noteCurrent]) {
+        console.log('midi', noteMap[noteCurrent].oscillator)
+
+        const curFreq = noteMap[noteCurrent].oscillator.frequency.value
+
+        console.log('curFreq', curFreq)
+
+        if (pitchBend == 64) {
+          noteMap[noteCurrent].oscillator.frequency.setTargetAtTime(curFreq, 0, 0.05)
+          detuneAmount = 0
+        } else {
+          const detuneFreq = Math.pow(2, 1 / 12) * (pitchBend - 64)
+
+          noteMap[noteCurrent].oscillator.frequency.setTargetAtTime(curFreq + detuneFreq, 0, 0.05)
+          detuneAmount = detuneFreq
+        }
+
+        console.log('midi', noteMap[noteCurrent].oscillator)
+        // console.log('freq + bend', noteMap[noteCurrent].oscillator.frequency.value)
+        // console.log('detune', noteMap[noteCurrent].oscillator)
+      }
+
       break;
     // TODO: mod change
     case 176:
       break;
     // all others
     default:
-      // console.log('type', type); break;
+      console.log('type', type); break;
   }
 }
 
@@ -500,7 +540,7 @@ document.addEventListener('keyup', keyController)
 
   <h3 id="controls-header">
     <span @click="toggleControls">Synth Controls</span>
-    <img id="toggle-controls" src="/src/assets/bi-caret-down-fill.svg" @click="toggleControls" />
+    <img id="toggle-controls" src="/src/assets/svg/bi-caret-down-fill.svg" @click="toggleControls" />
   </h3>
   <div id="controls-container">
     <NodeControl
@@ -521,6 +561,7 @@ document.addEventListener('keyup', keyController)
     @note-pressed="makeNote"
     @note-released="stopNote"
   />
+
 </template>
 
 <style scoped>

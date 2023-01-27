@@ -55,13 +55,13 @@ const emit = defineEmits([
             class="control-value-increase"
             @click="$emit('increaseValue', props.controlKey)"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 16 16"><path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/></svg>
+            <img src="/src/assets/svg/bi-caret-up-fill.svg" />
           </button>
           <button
             class="control-value-decrease"
             @click="$emit('decreaseValue', props.controlKey)"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16"><path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg>
+            <img src="/src/assets/svg/bi-caret-down-fill.svg" />
           </button>
         </div>
       </div>
@@ -83,13 +83,13 @@ const emit = defineEmits([
             class="control-value-increase"
             @click="$emit('increaseValue', props.controlKey)"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-up-fill" viewBox="0 0 16 16"><path d="m7.247 4.86-4.796 5.481c-.566.647-.106 1.659.753 1.659h9.592a1 1 0 0 0 .753-1.659l-4.796-5.48a1 1 0 0 0-1.506 0z"/></svg>
+            <img src="/src/assets/svg/bi-caret-up-fill.svg" />
           </button>
           <button
             class="control-value-decrease"
             @click="$emit('decreaseValue', props.controlKey)"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill" viewBox="0 0 16 16"><path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/></svg>
+            <img src="/src/assets/svg/bi-caret-down-fill.svg" />
           </button>
         </div>
       </div>
@@ -139,6 +139,7 @@ const emit = defineEmits([
       background: none;
       border: none;
       border-radius: 0.125rem;
+      bottom: 7px;
       height: 1.1rem;
       margin: 0;
       padding: 0;

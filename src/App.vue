@@ -173,7 +173,7 @@ onMounted(() => {
 header {
   align-items: center;
   background: var(--green);
-  border-bottom: 5px solid var(--green-dark);
+  border-bottom: 5px solid var(--green-deep);
   color: #d1d1d1;
   display: flex;
   flex-direction: row;

@@ -11,7 +11,9 @@ export default class Note {
     this.domKey = document.querySelectorAll(`button[data-noteid='${noteNumber}']`)[0]
 
     this.oscillator.frequency.value = this.midiToFreq(noteNumber)
+
     this.oscillator.type = this.oscTypes.includes(type) ? type : 'sine'
+
     this.oscillator.onended = () => {
       this.oscillator.disconnect()
       this.gain.disconnect()
@@ -24,9 +26,12 @@ export default class Note {
 
   noteOn(playbackTime = this.audioContext.currentTime) {
     if (this.domKey) this.domKey.classList.add('active')
+
     this.startTime = playbackTime
+
     this.envelope.gateTime = Infinity
     this.envelope.applyTo(this.gain.gain, playbackTime)
+
     this.oscillator.start(playbackTime)
   }
 
