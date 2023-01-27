@@ -231,13 +231,19 @@ const emitReleased = (e) => {
 #scroll-buttons {
   display: flex;
   justify-content: space-between;
-  margin-top: 15px;
-  padding: 0 20px;
+  margin-top: 10px;
+  padding: 0 10px;
   width: 100%;
 }
+  @media (min-width: 1024px) {
+    #scroll-buttons {
+      padding: 0 20px;
+    }
+  }
   #scroll-buttons button {
-    border: 1px solid var(--color-border);
+    border: 2px solid var(--color-border);
     color: var(--color-text);
+    font-size: 1.75rem;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
