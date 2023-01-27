@@ -619,7 +619,7 @@ document.addEventListener('keyup', keyController)
 @media (min-width: 1024px) {
   #controls-container {
     display: flex;
-    height: 160px;
+    height: 140px;
   }
     #controls-container fieldset.control-column {
       margin-left: 0;

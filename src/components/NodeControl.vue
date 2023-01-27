@@ -170,7 +170,7 @@ const emit = defineEmits([
       .node-control.vertical-range input[type=range] {
         -webkit-appearance: slider-vertical;
         appearance: slider-vertical;
-        height: 90px;
+        height: 70px;
         width: 32px;
         writing-mode: bt-lr;
       }
