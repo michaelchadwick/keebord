@@ -174,7 +174,7 @@ header {
   align-items: center;
   background: var(--green);
   border-bottom: 5px solid var(--green-deep);
-  color: #d1d1d1;
+  color: var(--color-text);
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -207,7 +207,7 @@ header {
       }
         header .menu-left #nav-overlay #nav-content {
           animation: SlideRight 200ms;
-          background-color: #098759;
+          background-color: var(--green);
           border-radius: 0;
           box-shadow: 3px 5px 5px rgb(0 0 0 / 15%);
           box-sizing: border-box;
@@ -225,7 +225,7 @@ header {
           }
         }
           header .menu-left #nav-overlay #nav-content a {
-            color: rgb(255, 255, 255);
+            color: var(--color-text);
             text-decoration: none;
           }
 
@@ -234,7 +234,7 @@ header {
             padding: 0;
           }
             header .menu-left #nav-overlay #nav-content .container .nav-header {
-              color: #002c12;
+              color: var(--color-text);
               font-size: 20px;
               font-weight: 700;
               padding-bottom: 18px;
@@ -252,7 +252,7 @@ header {
               padding: 4px 0 4px 18px;
             }
             header .menu-left #nav-overlay #nav-content .container .nav-list a:hover {
-              background-color: #004e30;
+              background-color: var(--color-link-highlight);
             }
           header .menu-left #nav-overlay #nav-content #button-nav-close {
             font-size: 20px;

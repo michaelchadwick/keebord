@@ -93,7 +93,7 @@ const emitReleased = (e) => {
         @touchcancel="emitReleased($event, index)"
       >
         <div v-if="note.key && !hasTouch" class="key-label">{{ note.key }}</div>
-        <div class="note-name">{{ note.name }}</div>
+        <div class="note-label">{{ note.name }}</div>
       </button>
     </div>
   </div>
@@ -149,7 +149,7 @@ const emitReleased = (e) => {
           padding: 5px;
           width: 24px;
         }
-        #keyboard button div.note-name {
+        #keyboard button div.note-label {
           bottom: 0;
           color: var(--color-text);
           text-transform: none;
@@ -206,11 +206,11 @@ const emitReleased = (e) => {
         }
         #keyboard button.key-black:hover {
           background-color: var(--green-flat);
-          color: #ededed;
+          color: var(--color-flatnote-text);
         }
         #keyboard button.key-black.active {
           background-color: var(--green-flat-active);
-          color: #ffffff;
+          color: var(--color-flatnote-text);
         }
           #keyboard button.key-black div.key-label {
             border: 1px solid var(--color-flatnote-text);
@@ -218,7 +218,7 @@ const emitReleased = (e) => {
             line-height: 1;
             margin: 0 3px;
           }
-          #keyboard button.key-black div.note-name {
+          #keyboard button.key-black div.note-label {
             color: var(--color-flatnote-text);
           }
 
