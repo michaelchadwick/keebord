@@ -55,13 +55,13 @@ const emit = defineEmits([
             class="control-value-increase"
             @click="$emit('increaseValue', props.controlKey)"
           >
-            <img src="/src/assets/svg/bi-caret-up-fill.svg" />
+            <img src="/assets/svg/bi-caret-up-fill.svg" />
           </button>
           <button
             class="control-value-decrease"
             @click="$emit('decreaseValue', props.controlKey)"
           >
-            <img src="/src/assets/svg/bi-caret-down-fill.svg" />
+            <img src="/assets/svg/bi-caret-down-fill.svg" />
           </button>
         </div>
       </div>
@@ -83,13 +83,13 @@ const emit = defineEmits([
             class="control-value-increase"
             @click="$emit('increaseValue', props.controlKey)"
           >
-            <img src="/src/assets/svg/bi-caret-up-fill.svg" />
+            <img src="/assets/svg/bi-caret-up-fill.svg" />
           </button>
           <button
             class="control-value-decrease"
             @click="$emit('decreaseValue', props.controlKey)"
           >
-            <img src="/src/assets/svg/bi-caret-down-fill.svg" />
+            <img src="/assets/svg/bi-caret-down-fill.svg" />
           </button>
         </div>
       </div>

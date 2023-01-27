@@ -358,11 +358,11 @@ let selectOptionChanged = function(controlName, newValue) {
 let toggleControls = function() {
   let toggleControl = document.getElementById('controls-container');
   if (toggleControl.style.display === 'none') {
-    document.getElementById('toggle-controls').src = '/assets/bi-caret-down-fill.svg';
+    document.getElementById('toggle-controls').src = '/assets/svg/bi-caret-down-fill.svg';
 
     toggleControl.style.display = 'flex'
   } else {
-    document.getElementById('toggle-controls').src = '/assets/bi-caret-right-fill.svg';
+    document.getElementById('toggle-controls').src = '/assets/svg/bi-caret-right-fill.svg';
 
     toggleControl.style.display = 'none';
   }
@@ -540,7 +540,7 @@ document.addEventListener('keyup', keyController)
 
   <h3 id="controls-header">
     <span @click="toggleControls">Synth Controls</span>
-    <img id="toggle-controls" src="/src/assets/svg/bi-caret-down-fill.svg" @click="toggleControls" />
+    <img id="toggle-controls" src="/assets/svg/bi-caret-down-fill.svg" @click="toggleControls" />
   </h3>
   <div id="controls-container">
     <NodeControl
