@@ -143,7 +143,7 @@ button#theme-toggler {
   margin-bottom: 0;
   opacity: 0.9;
   padding: 0 5px;
-  position: fixed;
+  position: absolute;
   right: 12px;
   text-align: center;
   top: 7px;
