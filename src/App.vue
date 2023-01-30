@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import Synth from './components/Synth.vue'
+import NebyooApps from './components/NebyooApps.vue'
 
 if ((typeof NebyooKeys) === 'undefined') var NebyooKeys = {}
 
@@ -113,13 +114,7 @@ onMounted(() => {
 
               <div class="nav-header">More Apps By Neb</div>
 
-              <div class="nav-list">
-                <a href="https://ah.neb.host">Audio Hash</a>
-                <a href="https://bogdle.fun">Bogdle</a>
-                <a href="https://gw.neb.host">Gem Warrior</a>
-                <a href="https://raffler.neb.host">Raffler</a>
-                <a href="https://sketchage.neb.host">Sketchage</a>
-              </div>
+              <NebyooApps />
 
               <div class="nav-footer">
                 <!-- vvv neb.host subsite footer -->
@@ -136,12 +131,6 @@ onMounted(() => {
           </div>
         </div>
       </div>
-
-      <!--
-      <button id="button-help" class="icon" aria-label="Help" tabindex="-1">
-        <i class="fa-solid fa-question"></i>
-      </button>
-      -->
     </div>
 
     <div class="title">
@@ -198,7 +187,7 @@ header {
       justify-content: left;
       left: 0;
       position: absolute;
-      top: 0;
+      top: 50px;
       width: 100%;
       z-index: 11;
     }
@@ -211,12 +200,12 @@ header {
           border-radius: 0;
           box-shadow: 3px 5px 5px rgb(0 0 0 / 15%);
           box-sizing: border-box;
-          margin-top: 50px;
           max-height: calc(100% - 41px);
           max-width: 500px;
           overflow-y: auto;
           padding: 0px;
           position: relative;
+          top: 0;
           width: 100%;
         }
         @media (min-width: 415px) {
@@ -264,13 +253,18 @@ header {
             top: 16px;
             width: 24px;
           }
+            @media (hover: hover) {
+              header .menu-left #nav-overlay #nav-content #button-nav-close a:hover {
+                color: var(--color-link-highlight);
+              }
+            }
           header .menu-left #nav-overlay #nav-content .nav-footer {
             display: flex;
           }
           header .menu-left #nav-overlay #nav-content #footer-neb-host {
             background: #004e30;
             border-top: 2px solid #002115;
-            bottom: 0;
+            bottom: 9px;
             color: #d1d1d1;
             font-family: 'Consolas', sans-serif;
             font-size: 12px;
