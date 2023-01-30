@@ -1,11 +1,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
+const NEBYOOAPPS_SOURCE_URL = 'https://dave.neb.host/?sites'
+
 const apps = ref([])
 
 async function getNebyooApps() {
-  console.log('getting apps from dave...')
-  const response = await fetch('https://dave.neb.host/?sites')
+  const response = await fetch(NEBYOOAPPS_SOURCE_URL)
   const json = await response.json()
   apps.value = json.body
 }
@@ -17,7 +18,7 @@ onMounted(() => {
 
 <template>
   <div class="nav-list">
-    <a v-for="app in apps" href="app.url">{{ app.title }}</a>
+    <a v-for="app in apps" href="app.url" target="_blank">{{ app.title }}</a>
   </div>
 </template>
 
