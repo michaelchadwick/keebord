@@ -120,14 +120,27 @@ onMounted(() => {
   pianoDiv.scrollLeft = (pianoDiv.scrollWidth / 9) * 3
   // pianoDiv.scrollLeft = (props.rootNote[1] * 40 * 7)
 
-  document.querySelector('#btn-scroll-left').addEventListener('click', () => {
+  const octaveDistance = document.body.scrollWidth > 767 ? 280 : 329
+  const noteDistance = document.body.scrollWidth > 767 ? 40 : 47
+
+  document.querySelector('#button-octave-left').addEventListener('click', () => {
     if (pianoDiv.scrollLeft > 0) {
-      pianoDiv.scrollLeft -= 40
+      pianoDiv.scrollLeft -= octaveDistance
     }
   })
-  document.querySelector('#btn-scroll-right').addEventListener('click', () => {
+  document.querySelector('#button-note-left').addEventListener('click', () => {
+    if (pianoDiv.scrollLeft > 0) {
+      pianoDiv.scrollLeft -= noteDistance
+    }
+  })
+  document.querySelector('#button-note-right').addEventListener('click', () => {
     if (pianoDiv.scrollLeft < pianoDiv.scrollWidth) {
-      pianoDiv.scrollLeft += 40
+      pianoDiv.scrollLeft += noteDistance
+    }
+  })
+  document.querySelector('#button-octave-right').addEventListener('click', () => {
+    if (pianoDiv.scrollLeft < pianoDiv.scrollWidth) {
+      pianoDiv.scrollLeft += octaveDistance
     }
   })
 
@@ -166,8 +179,14 @@ onMounted(() => {
   </div>
 
   <div id="scroll-buttons">
-    <button id="btn-scroll-left"><i class="fa fa-arrow-left"></i></button>
-    <button id="btn-scroll-right"><i class="fa fa-arrow-right"></i></button>
+    <button id="button-octave-left" title="scroll octave left">
+      <i class="fa fa-arrow-left"></i> OCT
+    </button>
+    <button id="button-note-left" title="scroll note left"><i class="fa fa-arrow-left"></i> NOTE</button>
+    <button id="button-note-right" title="scroll note right"><i class="fa fa-arrow-right"></i> NOTE</button>
+    <button id="button-octave-right" title="scroll octave right">
+      <i class="fa fa-arrow-right"></i> OCT
+    </button>
   </div>
 </template>
 
@@ -232,9 +251,14 @@ onMounted(() => {
         background-color: var(--color-button-white-background);
         border-top: 0;
         height: 100%;
-        width: 40px;
+        width: 47px;
         z-index: 1;
       }
+        @media (min-width: 768px) {
+          #keyboard button.key-white {
+            width: 40px;
+          }
+        }
         body.dark-theme #keyboard button.key-white {
           border-top: 1px solid var(--color-border);
         }
@@ -260,22 +284,32 @@ onMounted(() => {
           }
             #keyboard button.key-white div.key-label {
               height: 30px;
-              margin: 0 6px;
+              margin: 0 10px;
+            }
+            @media (min-width: 768px) {
+              #keyboard button.key-black div.key-label {
+                margin: 0 6px;
+              }
             }
 
       #keyboard button.key-black {
         background-color: var(--color-button-black-background);
         color: var(--color-flatnote-text);
         font-size: 1.25rem;
-        height: 40%;
+        height: 45%;
         margin-left: -20px;
         margin-right: -20px;
         margin-top: 0;
         position: absolute;
         top: 0;
-        width: 36px;
+        width: 43px;
         z-index: 10;
       }
+        @media (min-width: 768px) {
+          #keyboard button.key-black {
+            width: 36px;
+          }
+        }
         body.dark-theme #keyboard button.key-black {
           border-top: 1px solid var(--color-border);
         }
@@ -293,8 +327,13 @@ onMounted(() => {
             border: 1px solid var(--color-flatnote-text);
             height: 24px;
             line-height: 1;
-            margin: 0 3px;
+            margin: 0 7px;
           }
+            @media (min-width: 768px) {
+              #keyboard button.key-black div.key-label {
+                margin: 0 3px;
+              }
+            }
           #keyboard button.key-black div.note-label {
             color: var(--color-flatnote-text);
           }
