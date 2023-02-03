@@ -287,7 +287,7 @@ onMounted(() => {
               margin: 0 10px;
             }
             @media (min-width: 768px) {
-              #keyboard button.key-black div.key-label {
+              #keyboard button.key-white div.key-label {
                 margin: 0 6px;
               }
             }
@@ -331,7 +331,7 @@ onMounted(() => {
           }
             @media (min-width: 768px) {
               #keyboard button.key-black div.key-label {
-                margin: 0 3px;
+                margin: 0 4px;
               }
             }
           #keyboard button.key-black div.note-label {
