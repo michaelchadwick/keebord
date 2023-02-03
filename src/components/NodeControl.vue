@@ -25,6 +25,7 @@ const emit = defineEmits([
       />{{ props.controlData.title }}
     </legend>
 
+    <!-- <SELECT> -->
     <template v-if="props.controlData.type == 'select'">
       <div class="value-container">
         <select
@@ -39,6 +40,7 @@ const emit = defineEmits([
       </div>
     </template>
 
+    <!-- <INPUT TYPE="NUMBER"> -->
     <template v-if="props.controlData.type == 'number'">
       <div class="value-container">
         <input
@@ -67,6 +69,7 @@ const emit = defineEmits([
       </div>
     </template>
 
+    <!-- <INPUT TYPE="RANGE"> -->
     <template v-if="props.controlData.type == 'range'">
       <div class="value-container">
         <input

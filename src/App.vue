@@ -3,24 +3,28 @@ import { onMounted } from 'vue';
 import Synth from './components/Synth.vue'
 import NebyooApps from './components/NebyooApps.vue'
 
-if ((typeof NebyooKeys) === 'undefined') var NebyooKeys = {}
+if ((typeof Keebord) === 'undefined') var Keebord = {}
 
-const NEBYOOKEYS_SETTINGS_KEY = 'nebyookeys-settings'
-const NEBYOOKEYS_DEFAULTS = {
+const KEEBORD_SETTINGS_KEY = 'keebord-settings'
+const KEEBORD_DEFAULTS = {
   "settings": {
     "darkMode": false
   }
 }
+const KEEBORD_ENV_PROD_URL = [
+  'keebord.neb.host',
+  'piano.neb.host'
+]
 
-NebyooKeys._loadSettings = function() {
+Keebord._loadSettings = function() {
   // console.log('loading settings from LS...')
 
-  var lsSettings = JSON.parse(localStorage.getItem(NEBYOOKEYS_SETTINGS_KEY))
+  var lsSettings = JSON.parse(localStorage.getItem(KEEBORD_SETTINGS_KEY))
 
   if (lsSettings) {
-    NebyooKeys.settings.darkMode = lsSettings.darkMode
+    Keebord.settings.darkMode = lsSettings.darkMode
 
-    if (NebyooKeys.settings.darkMode) {
+    if (Keebord.settings.darkMode) {
       document.body.classList.add('dark-mode')
 
       var setting = document.getElementById('button-setting-dark-mode')
@@ -30,11 +34,11 @@ NebyooKeys._loadSettings = function() {
       }
     }
   } else {
-    NebyooKeys.settings = NEBYOOKEYS_DEFAULTS.settings
+    Keebord.settings = KEEBORD_DEFAULTS.settings
   }
 }
 
-NebyooKeys._changeSetting = async function(setting, value, event) {
+Keebord._changeSetting = async function(setting, value, event) {
   switch (setting) {
     case 'darkMode':
       var st = document.getElementById('button-setting-dark-mode').dataset.status
@@ -43,12 +47,12 @@ NebyooKeys._changeSetting = async function(setting, value, event) {
         document.getElementById('button-setting-dark-mode').dataset.status = 'true'
         document.body.classList.add('dark-mode')
 
-        NebyooKeys._saveSetting('darkMode', true)
+        Keebord._saveSetting('darkMode', true)
       } else {
         document.getElementById('button-setting-dark-mode').dataset.status = 'false'
         document.body.classList.remove('dark-mode')
 
-        NebyooKeys._saveSetting('darkMode', false)
+        Keebord._saveSetting('darkMode', false)
       }
 
       break
@@ -56,24 +60,24 @@ NebyooKeys._changeSetting = async function(setting, value, event) {
 }
 
 // save a setting (gear icon) to localStorage
-NebyooKeys._saveSetting = function(setting, value) {
+Keebord._saveSetting = function(setting, value) {
   // console.log('saving setting to LS...', setting, value)
 
-  var settings = JSON.parse(localStorage.getItem(NEBYOOKEYS_SETTINGS_KEY))
+  var settings = JSON.parse(localStorage.getItem(KEEBORD_SETTINGS_KEY))
 
   // set temp obj that will go to LS
   settings[setting] = value
   // set internal code model
-  NebyooKeys.settings[setting] = value
+  Keebord.settings[setting] = value
 
-  localStorage.setItem(NEBYOOKEYS_SETTINGS_KEY, JSON.stringify(settings))
+  localStorage.setItem(KEEBORD_SETTINGS_KEY, JSON.stringify(settings))
 
-  // console.log('localStorage setting saved!', NebyooKeys.settings)
+  // console.log('localStorage setting saved!', Keebord.settings)
 }
 
 onMounted(() => {
   // DOM > main divs/elements
-  NebyooKeys.dom = {
+  Keebord.dom = {
     "navOverlay": document.getElementById('nav-overlay'),
     "btnNav": document.getElementById('button-nav'),
     "btnNavClose": document.getElementById('button-nav-close'),
@@ -81,21 +85,17 @@ onMounted(() => {
     // "btnSettings": document.getElementById('button-settings'),
   }
 
-  const NEBKEYS_ENV_PROD_URL = [
-    'piano.neb.host'
-  ]
+  Keebord.env = KEEBORD_ENV_PROD_URL.includes(document.location.hostname) ? 'prod' : 'local'
 
-  NebyooKeys.env = NEBKEYS_ENV_PROD_URL.includes(document.location.hostname) ? 'prod' : 'local'
-
-  if (NebyooKeys.env == 'local') {
+  if (Keebord.env == 'local') {
     document.title = '(LH) ' + document.title
   }
 
-  NebyooKeys.dom.btnNav.addEventListener('click', () => {
-    NebyooKeys.dom.navOverlay.classList.toggle('show')
+  Keebord.dom.btnNav.addEventListener('click', () => {
+    Keebord.dom.navOverlay.classList.toggle('show')
   })
-  NebyooKeys.dom.btnNavClose.addEventListener('click', () => {
-    NebyooKeys.dom.navOverlay.classList.toggle('show')
+  Keebord.dom.btnNavClose.addEventListener('click', () => {
+    Keebord.dom.navOverlay.classList.toggle('show')
   })
 })
 </script>
@@ -135,16 +135,13 @@ onMounted(() => {
 
     <div class="title">
       <h1>
-        <span>N</span>
+        <span>K</span>
         <span class="flat">e</span>
-        <span>b</span>
-        <span class="flat">y</span>
-        <span>o</span>
-        <span>o</span>
-        <span class="flat">K</span>
         <span>e</span>
-        <span class="flat">y</span>
-        <span>s</span>
+        <span class="flat">b</span>
+        <span>o</span>
+        <span class="flat">r</span>
+        <span>d</span>
       </h1>
     </div>
 

@@ -1,4 +1,4 @@
-# NebyooKeys
+# Keebord
 
 Play piano using keyboard, mouse, touch or MIDI input. Built using VueJS.
 
@@ -7,8 +7,8 @@ Much thanks to [dabbmedia/web-audio-synth](https://github.com/dabbmedia/web-audi
 ## Contributions
 
 ```sh
-git clone git@github.com:michaelchadwick/nebyookeys.git
-cd nebyookeys
+git clone git@github.com:michaelchadwick/keebord.git
+cd keebord
 npm install
 npm run dev
 ```
@@ -17,8 +17,8 @@ npm run dev
 
 ```sh
 npm run build
-cd /path/to/nebyookeys/public
-scp . user@host:/var/www/nebyookeys
+cd /path/to/keebord/public
+scp . user@host:/var/www/keebord
 sudo systemctl restart [httpd|apache2|nginx]
 ```
 

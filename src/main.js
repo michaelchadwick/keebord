@@ -37,7 +37,7 @@ if (themeToggler) {
     // update text inside toggler
     imgThemeToggler.innerHTML = theme == 'light' ? '☀️' : '🌙'
 
-    localStorage.setItem('nebyookeys-theme', theme)
+    localStorage.setItem('keebord-theme', theme)
   })
 }
 

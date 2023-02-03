@@ -143,6 +143,19 @@ const nodeControls = reactive({
   //   enabled: false,
   //   isVertical: true
   // },
+  pan: {
+    title: 'Pan',
+    numberInputId: 'eq-pan-value',
+    rangeInputId: 'eq-pan-range',
+    currentValue: '0.0',
+    audioNode: '',
+    step: '0.1',
+    min: '-1.0',
+    max: '1.0',
+    parameter: 'pan',
+    enabled: true,
+    isVertical: false
+  },
   masterGain: {
     title: 'Volume',
     type: 'range',
@@ -286,6 +299,8 @@ gainMaster.gain.value = parseFloat(nodeControls.masterGain.currentValue)
 nodeControls.masterGain.audioNode = audioContext.createGain()
 nodeControls.masterGain.audioNode.gain.value = parseFloat(nodeControls.masterGain.currentValue)
 
+const destinationMaster = audioContext.destination
+
 const adsr = new ADSREnvelope({
   attackTime: 0.1,
   decayTime: 0.5,
@@ -306,7 +321,45 @@ let options = reactive({
   rootNote: 'C4'
 })
 
-let controlValueChanged = function(controlName, newValue) {
+let createMasterChain = function() {
+  // nodeControls.eqLow.audioNode = audioContext.createBiquadFilter();
+  // nodeControls.eqLow.audioNode.type = 'lowshelf';
+  // nodeControls.eqLow.audioNode.frequency.value = 300;
+  // nodeControls.eqLow.audioNode.gain.value = 0;
+
+  // nodeControls.eqMid.audioNode = audioContext.createBiquadFilter();
+  // nodeControls.eqMid.audioNode.type = 'peaking';
+  // nodeControls.eqMid.audioNode.frequency.value = 440;
+  // nodeControls.eqMid.audioNode.Q.value = 0; //larger value means smaller band
+  // nodeControls.eqMid.audioNode.gain.value = 0;
+
+  // nodeControls.eqHigh.audioNode = audioContext.createBiquadFilter();
+  // nodeControls.eqHigh.audioNode.type = 'highshelf';
+  // nodeControls.eqHigh.audioNode.frequency.value = 1000;
+  // nodeControls.eqHigh.audioNode.gain.value = 0;
+
+  // nodeControls.compressor.audioNode = audioContext.createDynamicsCompressor();
+  // nodeControls.compressor.audioNode.threshold.setValueAtTime(-50, audioContext.currentTime);
+  // nodeControls.compressor.audioNode.knee.setValueAtTime(40, audioContext.currentTime);
+  // nodeControls.compressor.audioNode.ratio.setValueAtTime(nodeControls.compressor.currentValue, audioContext.currentTime);
+  // nodeControls.compressor.audioNode.attack.setValueAtTime(0, audioContext.currentTime);
+  // nodeControls.compressor.audioNode.release.setValueAtTime(0.25, audioContext.currentTime);
+
+  // nodeControls.eqLow.audioNode.connect(nodeControls.eqMid.audioNode);
+  // nodeControls.eqMid.audioNode.connect(nodeControls.eqHigh.audioNode);
+  // nodeControls.eqHigh.audioNode.connect(nodeControls.compressor.audioNode);
+
+  if (audioContext.createStereoPanner) {
+    nodeControls.pan.audioNode = audioContext.createStereoPanner();
+    nodeControls.pan.audioNode.pan.setValueAtTime(0, audioContext.currentTime);
+    nodeControls.compressor.audioNode.connect(nodeControls.pan.audioNode);
+    nodeControls.pan.audioNode.connect(destinationMaster);
+  } else {
+    nodeControls.compressor.audioNode.connect(destinationMaster);
+  }
+}
+
+const controlValueChanged = function(controlName, newValue) {
   const control = nodeControls[controlName]
 
   console.log('controlName', controlName)
@@ -343,7 +396,7 @@ let controlValueChanged = function(controlName, newValue) {
   }
 }
 
-let selectOptionChanged = function(controlName, newValue) {
+const selectOptionChanged = function(controlName, newValue) {
   const control = nodeControls[controlName]
 
   console.log('controlName', controlName)
@@ -355,7 +408,7 @@ let selectOptionChanged = function(controlName, newValue) {
   options.rootNote = newValue
 }
 
-let toggleControls = function() {
+const toggleControls = function() {
   let toggleControl = document.getElementById('controls-container');
   if (toggleControl.style.display === 'none') {
     document.getElementById('toggle-controls').src = '/assets/svg/bi-caret-down-fill.svg';
@@ -368,7 +421,7 @@ let toggleControls = function() {
   }
 }
 
-let makeNote = (noteNumber, velocity = 64) => {
+const makeNote = (noteNumber, velocity = 64) => {
   // console.log(`ON - note: ${noteNumber}, vel: ${velocity}`)
 
   // save current note for further processing by pitch/mod
@@ -389,7 +442,7 @@ let makeNote = (noteNumber, velocity = 64) => {
   noteMap[noteNumber] = new Note(audioContext, noteNumber, type, envelope)
   noteMap[noteNumber].noteOn()
 }
-let stopNote = (noteNumber) => {
+const stopNote = (noteNumber) => {
   // console.log(`OFF - note: ${noteNumber}`)
 
   noteCurrent = null
@@ -401,7 +454,7 @@ let stopNote = (noteNumber) => {
   noteMap[noteNumber] = null
 }
 
-let onMIDISuccess = (midi) => {
+const onMIDISuccess = (midi) => {
   Nebyookeys.midi = midi
 
   Array.from(Nebyookeys.midi.inputs).forEach((input) => {
@@ -410,11 +463,11 @@ let onMIDISuccess = (midi) => {
 
   console.log('MIDI ready and listening', Nebyookeys.midi)
 }
-let onMIDIFailure = (msg) => {
+const onMIDIFailure = (msg) => {
   console.error(`Failed to get MIDI access - ${msg}`)
 }
 
-let midiController = (e) => {
+const midiController = (e) => {
   let str = `MIDI message received at ${e.timeStamp}[${e.data.length} bytes]: `
   for (const character of e.data) {
     str += `0x${character.toString(16)} `
@@ -468,21 +521,12 @@ let midiController = (e) => {
       break;
     // all others
     default:
-      console.log('type', type); break;
+      console.log('str', str); break;
   }
 }
 
-// add midi support
-if ('requestMIDIAccess' in navigator) {
-  // console.log('navigator.requestMIDIAccess() supported!')
-
-  navigator.requestMIDIAccess({ sysex: false }).then(onMIDISuccess, onMIDIFailure)
-} else {
-  console.error('navigator.requestMIDIAccess() not supported')
-}
-
 // handle computer keyboard inputs
-let keyController = (e) => {
+const keyController = (e) => {
   // computer keyboard controls
   // [z,     x, c, v, b, n,   m ]
   // musical note
@@ -514,6 +558,13 @@ let keyController = (e) => {
 // add computer keyboard support
 document.addEventListener('keydown', keyController)
 document.addEventListener('keyup', keyController)
+
+// add midi support
+if ('requestMIDIAccess' in navigator) {
+  navigator.requestMIDIAccess({ sysex: false }).then(onMIDISuccess, onMIDIFailure)
+} else {
+  console.error('navigator.requestMIDIAccess() not supported')
+}
 </script>
 
 <template>
