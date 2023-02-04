@@ -78,6 +78,7 @@ const emit = defineEmits([
           :min="props.controlData.min"
           :max="props.controlData.max"
           :value="props.controlData.currentValue"
+          :disabled="!props.controlData.enabled"
           @change="$emit('controlValueChanged', props.controlKey, $event.target.value)"
         />
 
@@ -105,6 +106,7 @@ const emit = defineEmits([
         :step="props.controlData.step"
         :orient="(props.controlData.isVertical) ? 'vertical': 'horizontal'"
         :value="props.controlData.currentValue"
+        :disabled="!props.controlData.enabled"
         @input="$emit('controlValueChanged', props.controlKey, $event.target.value)"
       />
     </template>
@@ -112,69 +114,92 @@ const emit = defineEmits([
 </template>
 
 <style scoped>
-.node-control .value-container {
-  display: flex;
-  flex-direction: row;
+.node-control {
+  background-color: var(--white-mute);
 }
-  .node-control .value-container input[type=text] {
-    border: 1px solid var(--color-text);
-    border-radius: 0.15rem;
-    font-size: 1.5rem;
-    height: 2.5rem;
-    padding-left: 0.3rem;
-    padding-right: 0.5rem;
-    text-align: left;
-    width: 5rem;
-    z-index: 1;
+  body.dark-theme .node-control {
+    background-color: var(--black-soft);
   }
-  .node-control .value-container .increase-decrease-container {
-    display: flex;
-    flex-direction: column;
-    margin-left: -1.86rem;
-    margin-top: 0rem;
-    z-index: 2;
+  .node-control legend {
+    color: var(--green-deep);
+    font-weight: bold;
+    line-height: 1.5
   }
-    .node-control .value-container .increase-decrease-container .control-value-increase,
-    .node-control .value-container .increase-decrease-container .control-value-decrease {
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      background: none;
-      border: none;
-      border-radius: 0.125rem;
-      bottom: 7px;
-      height: 1.1rem;
-      margin: 0;
-      padding: 0;
-      position: relative;
-      text-align: center;
-      width: 12px;
+    body.dark-theme .node-control legend {
+      color: var(--green-bright-active);
     }
-      .node-control .value-container .increase-decrease-container .control-value-increase svg,
-      .node-control .value-container .increase-decrease-container .control-value-decrease svg {
-        height: 16px;
-        left: 0.09rem;
+    .node-control legend input {
+      position: relative;
+      right: 2px;
+      top: 1px;
+    }
+  .node-control .value-container {
+    display: flex;
+    flex-direction: row;
+  }
+    .node-control .value-container input[type=text] {
+      border: 1px solid var(--color-text);
+      border-radius: 0.15rem;
+      font-size: 1.5rem;
+      height: 2.5rem;
+      padding: 0.3rem;
+      text-align: left;
+      width: 5rem;
+      z-index: 1;
+    }
+    .node-control .value-container .increase-decrease-container {
+      display: flex;
+      flex-direction: column;
+      margin-left: -1.86rem;
+      margin-top: 0rem;
+      z-index: 2;
+    }
+      .node-control .value-container .increase-decrease-container .control-value-increase,
+      .node-control .value-container .increase-decrease-container .control-value-decrease {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background: none;
+        border: none;
+        border-radius: 0.125rem;
+        bottom: 1px;
+        height: 1.1rem;
         margin: 0;
         padding: 0;
-        position: absolute;
-        top: 0.015rem;
-        width: 16px;
+        position: relative;
+        text-align: center;
+        width: 12px;
       }
-    .node-control.horizontal-range {
-      padding-bottom: 0;
-    }
-      .node-control.horizontal-range input[type=range] {
-        height: 32px;
-        width: 90px;
+        .node-control .value-container .increase-decrease-container .control-value-increase img,
+        .node-control .value-container .increase-decrease-container .control-value-decrease img {
+          height: 16px;
+          left: 0.09rem;
+          margin: 0;
+          padding: 0;
+          position: absolute;
+          top: 0.015rem;
+          width: 16px;
+        }
+        @media (hover: hover) {
+          .node-control .value-container img:hover {
+            filter: invert(63%) sepia(38%) saturate(649%) hue-rotate(99deg) brightness(89%) contrast(86%);
+          }
+        }
+      .node-control.horizontal-range {
+        padding-bottom: 0;
       }
-    .node-control.vertical-range {
-      padding-bottom: 8px;
-    }
-      .node-control.vertical-range input[type=range] {
-        -webkit-appearance: slider-vertical;
-        appearance: slider-vertical;
-        height: 70px;
-        width: 32px;
-        writing-mode: bt-lr;
+        .node-control.horizontal-range input[type=range] {
+          height: 32px;
+          width: 90px;
+        }
+      .node-control.vertical-range {
+        padding-bottom: 8px;
       }
+        .node-control.vertical-range input[type=range] {
+          -webkit-appearance: slider-vertical;
+          appearance: slider-vertical;
+          height: 70px;
+          width: 32px;
+          writing-mode: bt-lr;
+        }
 </style>

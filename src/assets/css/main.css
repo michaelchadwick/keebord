@@ -4,6 +4,7 @@
   --white-mute: #f2f2f2;
 
   --gray: #888888;
+  --gray-light: #d8d8d8;
   --gray-dark: #333333;
 
   --black: #181818;
@@ -131,23 +132,21 @@ button,
 input[type="submit"],
 input[type="reset"],
 input[type="button"] {
-  display: inline-block;
-  height: 38px;
-  padding: 0 30px;
+  background-color: transparent;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+  box-sizing: border-box;
   color: #555;
-  text-align: center;
+  cursor: pointer;
+  display: inline-block;
   font-size: 11px;
   font-weight: 600;
-  line-height: 38px;
-  letter-spacing: .1rem;
-  text-transform: uppercase;
+  letter-spacing: 0.1rem;
+  padding: 1rem;
+  text-align: center;
   text-decoration: none;
+  text-transform: uppercase;
   white-space: nowrap;
-  background-color: transparent;
-  border-radius: 4px;
-  border: 1px solid #bbb;
-  cursor: pointer;
-  box-sizing: border-box;
 }
 
 button#theme-toggler {

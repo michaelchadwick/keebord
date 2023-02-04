@@ -25,6 +25,8 @@ export default class Note {
   }
 
   noteOn(playbackTime = this.audioContext.currentTime) {
+    // console.log('note.js noteOn gain.volume', this.gain.gain.value)
+
     if (this.domKey) this.domKey.classList.add('active')
 
     this.startTime = playbackTime
@@ -36,6 +38,8 @@ export default class Note {
   }
 
   noteOff(playbackTime = this.audioContext.currentTime) {
+    // console.log('note.js noteOff gain.volume', this.gain.gain.value)
+
     if (this.domKey) this.domKey.classList.remove('active')
 
     this.gain.gain.cancelScheduledValues(this.startTime)
