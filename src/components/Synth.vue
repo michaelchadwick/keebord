@@ -661,6 +661,7 @@ const keyController = (e) => {
   }
 }
 
+/* TODO: analyser
 let canvas = ref(null)
 let canvasCtx = ref(null)
 
@@ -695,6 +696,7 @@ const drawToCanvas = function() {
   canvasCtx.lineTo(canvas.width, canvas.height / 2)
   canvasCtx.stroke()
 }
+*/
 
 // add computer keyboard support
 document.addEventListener('keydown', keyController)
