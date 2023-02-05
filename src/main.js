@@ -13,12 +13,11 @@ let theme = 'light'
 const bodyClasses = document.body.classList
 const themeToggler = document.querySelector('#theme-toggler')
 const imgThemeToggler = document.querySelector('#theme-toggler span.theme-image')
-const lblThemeToggler = document.querySelector('#theme-toggler span.theme-label')
 const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)')
-const currentTheme = localStorage.getItem('mcinfo-theme')
+const savedTheme = localStorage.getItem('keebord-theme')
 
 if (themeToggler) {
-  if (currentTheme == 'dark') {
+  if (savedTheme == 'dark') {
     bodyClasses.toggle('dark-theme')
 
     imgThemeToggler.innerHTML = '🌙'
@@ -29,6 +28,8 @@ if (themeToggler) {
   }
 
   themeToggler.addEventListener('click', function() {
+    console.log('clicked themeToggler')
+
     bodyClasses.toggle('dark-theme')
     bodyClasses.toggle('light-theme')
 
@@ -41,7 +42,7 @@ if (themeToggler) {
   })
 }
 
-if (prefersDarkScheme.matches) {
+if (prefersDarkScheme.matches && savedTheme != 'light') {
   bodyClasses.add('dark-theme')
   bodyClasses.remove('light-theme')
 

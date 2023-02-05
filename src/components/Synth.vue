@@ -345,21 +345,21 @@ const createMasterChain = function() {
   // eqLow
   nodeControls.eqLow.audioNode = audioContext.createBiquadFilter()
   nodeControls.eqLow.audioNode.type = 'lowshelf'
-  nodeControls.eqLow.audioNode.frequency.value = 300
-  nodeControls.eqLow.audioNode.gain.value = 0
+  nodeControls.eqLow.audioNode.frequency.value = 35
+  nodeControls.eqLow.audioNode.gain.value = 50
 
   // eqMid
   nodeControls.eqMid.audioNode = audioContext.createBiquadFilter()
   nodeControls.eqMid.audioNode.type = 'peaking'
   nodeControls.eqMid.audioNode.frequency.value = 440
-  nodeControls.eqMid.audioNode.Q.value = 0 //larger value means smaller band
+  nodeControls.eqMid.audioNode.Q.value = 0 // larger value means smaller band
   nodeControls.eqMid.audioNode.gain.value = 0
 
   // eqHigh
   nodeControls.eqHigh.audioNode = audioContext.createBiquadFilter()
   nodeControls.eqHigh.audioNode.type = 'highshelf'
-  nodeControls.eqHigh.audioNode.frequency.value = 1000
-  nodeControls.eqHigh.audioNode.gain.value = 0
+  nodeControls.eqHigh.audioNode.frequency.value = 4700
+  nodeControls.eqHigh.audioNode.gain.value = 50
 
   // compressor
   nodeControls.compressor.audioNode = audioContext.createDynamicsCompressor()

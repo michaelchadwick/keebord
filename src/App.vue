@@ -5,75 +5,10 @@ import NebyooApps from './components/NebyooApps.vue'
 
 if ((typeof Keebord) === 'undefined') var Keebord = {}
 
-const KEEBORD_SETTINGS_KEY = 'keebord-settings'
-const KEEBORD_DEFAULTS = {
-  "settings": {
-    "darkMode": false
-  }
-}
 const KEEBORD_ENV_PROD_URL = [
   'keebord.neb.host',
   'piano.neb.host'
 ]
-
-Keebord._loadSettings = function() {
-  // console.log('loading settings from LS...')
-
-  var lsSettings = JSON.parse(localStorage.getItem(KEEBORD_SETTINGS_KEY))
-
-  if (lsSettings) {
-    Keebord.settings.darkMode = lsSettings.darkMode
-
-    if (Keebord.settings.darkMode) {
-      document.body.classList.add('dark-mode')
-
-      var setting = document.getElementById('button-setting-dark-mode')
-
-      if (setting) {
-        setting.dataset.status = 'true'
-      }
-    }
-  } else {
-    Keebord.settings = KEEBORD_DEFAULTS.settings
-  }
-}
-
-Keebord._changeSetting = async function(setting, value, event) {
-  switch (setting) {
-    case 'darkMode':
-      var st = document.getElementById('button-setting-dark-mode').dataset.status
-
-      if (st == '' || st == 'false') {
-        document.getElementById('button-setting-dark-mode').dataset.status = 'true'
-        document.body.classList.add('dark-mode')
-
-        Keebord._saveSetting('darkMode', true)
-      } else {
-        document.getElementById('button-setting-dark-mode').dataset.status = 'false'
-        document.body.classList.remove('dark-mode')
-
-        Keebord._saveSetting('darkMode', false)
-      }
-
-      break
-  }
-}
-
-// save a setting (gear icon) to localStorage
-Keebord._saveSetting = function(setting, value) {
-  // console.log('saving setting to LS...', setting, value)
-
-  var settings = JSON.parse(localStorage.getItem(KEEBORD_SETTINGS_KEY))
-
-  // set temp obj that will go to LS
-  settings[setting] = value
-  // set internal code model
-  Keebord.settings[setting] = value
-
-  localStorage.setItem(KEEBORD_SETTINGS_KEY, JSON.stringify(settings))
-
-  // console.log('localStorage setting saved!', Keebord.settings)
-}
 
 onMounted(() => {
   // DOM > main divs/elements
