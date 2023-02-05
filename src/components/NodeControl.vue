@@ -136,6 +136,7 @@ const emit = defineEmits([
   .node-control .value-container {
     display: flex;
     flex-direction: row;
+    margin-bottom: 5px;
   }
     .node-control .value-container input[type=text] {
       border: 1px solid var(--color-text);

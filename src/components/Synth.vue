@@ -2,7 +2,6 @@
 import { ref, reactive } from 'vue'
 import NodeControl from './NodeControl.vue'
 import Keyboard from './Keyboard.vue'
-import Note from '../libraries/note.js'
 import ADSREnvelope from 'adsr-envelope'
 
 let Keybord = {}
@@ -19,12 +18,12 @@ let oscillatorType = 0
 const adsr = new ADSREnvelope({
   attackTime: 0.1,
   decayTime: 0.5,
-  sustainLevel: 0.01,
+  sustainLevel: 0.1,
   releaseTime: 0.5,
   gateTime: 1,
   peakLevel: 0.5,
-  attackCurve: 'line',
-  decayCurve: 'line',
+  attackCurve: 'exp',
+  decayCurve: 'exp',
   releaseCurve: 'exp',
 })
 
@@ -45,40 +44,20 @@ const nodeControls = reactive({
     enabled: true,
     isVertical: true
   },
-  // pan: {
-  //   title: 'Pan',
-  //   type: 'range',
-  //   numberInputId: 'eq-pan-value',
-  //   rangeInputId: 'eq-pan-range',
-  //   currentValue: '0.0',
-  //   audioNode: '',
-  //   step: '0.1',
-  //   min: '-1.0',
-  //   max: '1.0',
-  //   parameter: 'pan',
-  //   enabled: true,
-  //   isVertical: false
-  // },
-  // TODO:
-  // rootNote: {
-  //   title: 'Root Note',
-  //   type: 'select',
-  //   selectId: 'root-note',
-  //   options: [
-  //     { text: 'C0', value: 'C0' },
-  //     { text: 'C1', value: 'C1' },
-  //     { text: 'C2', value: 'C2' },
-  //     { text: 'C3', value: 'C3' },
-  //     { text: 'C4', value: 'C4' },
-  //     { text: 'C5', value: 'C5' },
-  //     { text: 'C6', value: 'C6' },
-  //     { text: 'C7', value: 'C7' },
-  //   ],
-  //   currentValue: 'C4',
-  //   parameter: 'root',
-  //   enabled: true,
-  //   isVertical: true
-  // },
+  pan: {
+    title: 'Pan',
+    type: 'range',
+    numberInputId: 'eq-pan-value',
+    rangeInputId: 'eq-pan-range',
+    currentValue: '0.0',
+    audioNode: '',
+    step: '0.1',
+    min: '-1.0',
+    max: '1.0',
+    parameter: 'pan',
+    enabled: true,
+    isVertical: false
+  },
   // distortion: {
   //   title: 'Distortion',
   //   type: 'range',
@@ -91,21 +70,6 @@ const nodeControls = reactive({
   //   min: '0.0',
   //   max: '1.0',
   //   parameter: 'gain',
-  //   enabled: false,
-  //   isVertical: true
-  // },
-  // delay: {
-  //   title: 'Delay',
-  //   type: 'range',
-  //   controlEnabledCheckId: 'send-effect-delay-check',
-  //   numberInputId: 'delay-value',
-  //   rangeInputId: 'delay-range',
-  //   currentValue: '1.0',
-  //   audioNode: '',
-  //   step: '0.1',
-  //   min: '0.0',
-  //   max: '6.0',
-  //   parameter: 'delayTime',
   //   enabled: false,
   //   isVertical: true
   // },
@@ -124,6 +88,21 @@ const nodeControls = reactive({
   //   enabled: false,
   //   isVertical: true
   // },
+  delay: {
+    title: 'Delay',
+    type: 'range',
+    controlEnabledCheckId: 'send-effect-delay-check',
+    numberInputId: 'delay-value',
+    rangeInputId: 'delay-range',
+    currentValue: '1.0',
+    audioNode: '',
+    step: '0.1',
+    min: '0.0',
+    max: '6.0',
+    parameter: 'delayTime',
+    enabled: false,
+    isVertical: true
+  },
   eqLow: {
     title: 'EQ Low',
     type: 'range',
@@ -336,28 +315,27 @@ const createSendChain = function() {
   // TODO: reverb
   // oscSend = audioContext.createConvolver()
 
-  // console.log(nodeControls)
-
   // delay
-  if (nodeControls.delay) {
-    if (nodeControls.delay.enabled !== false && !nodeControls.delay.audioNode) {
-      nodeControls.delay.audioNode = audioContext.createDelay(nodeControls.delay.max)
-      nodeControls.delay.audioNode.delayTime.setValueAtTime(nodeControls.delay.currentValue, audioContext.currentTime)
+  // masterGain->delay->eqLow
+  if (nodeControls.delay.enabled !== false && !nodeControls.delay.audioNode) {
+    nodeControls.delay.audioNode = audioContext.createDelay(nodeControls.delay.max)
+    nodeControls.delay.audioNode.delayTime.setValueAtTime(nodeControls.delay.currentValue, audioContext.currentTime)
 
-      const delayGainNode = audioContext.createGain()
-      delayGainNode.gain.value = (parseFloat(nodeControls.masterGain.currentValue) * 0.75).toFixed(1)
+    const delayGainNode = audioContext.createGain()
+    delayGainNode.gain.value = (parseFloat(nodeControls.masterGain.currentValue) * 0.75).toFixed(1)
 
-      nodeControls.masterGain.audioNode.connect(delayGainNode)
-      delayGainNode.connect(nodeControls.delay.audioNode)
+    nodeControls.masterGain.audioNode.connect(delayGainNode)
+    delayGainNode.connect(nodeControls.delay.audioNode)
 
-      nodeControls.delay.audioNode.connect(nodeControls.eqLow.audioNode)
-    } else if (nodeControls.delay.audioNode && !nodeControls.delay.enabled) {
-      nodeControls.delay.audioNode.disconnect()
-      nodeControls.masterGain.audioNode.connect(nodeControls.eqLow.audioNode)
-    } else {
-      nodeControls.masterGain.audioNode.connect(nodeControls.eqLow.audioNode)
-    }
-  } else {
+    nodeControls.delay.audioNode.connect(nodeControls.eqLow.audioNode)
+  }
+  // masterGain->eqLow
+  else if (nodeControls.delay.audioNode && !nodeControls.delay.enabled) {
+    nodeControls.delay.audioNode.disconnect()
+    nodeControls.masterGain.audioNode.connect(nodeControls.eqLow.audioNode)
+  }
+  // masterGain->eqLow
+  else {
     nodeControls.masterGain.audioNode.connect(nodeControls.eqLow.audioNode)
   }
 }
@@ -392,6 +370,7 @@ const createMasterChain = function() {
   nodeControls.compressor.audioNode.release.setValueAtTime(0.25, audioContext.currentTime)
 
   // eqLow->eqMid->eqHigh->compressor
+
   nodeControls.eqLow.audioNode.connect(nodeControls.eqMid.audioNode)
   nodeControls.eqMid.audioNode.connect(nodeControls.eqHigh.audioNode)
   nodeControls.eqHigh.audioNode.connect(nodeControls.compressor.audioNode)
@@ -475,125 +454,93 @@ const toggleControls = function() {
   }
 }
 
-/* my implementation with libraries/note.js */
-const noteStart = (noteNum, velocity = 64) => {
-  noteCurrent = noteNum
+const noteStart = function(noteNum, velocity = 64) {
+  const domKey = document.querySelectorAll(`button[data-noteid='${noteNum}']`)[0]
 
-  if (noteMap[noteNum]) {
-    noteMap[noteNum].noteOff()
+  if (domKey) {
+    domKey.classList.add('active')
   }
+
+  startTime = audioContext.currentTime
 
   // set note's volume envelope
   const envelope = adsr.clone()
   envelope.peakLevel = (velocity / 127) * parseFloat(nodeControls.masterGain.currentValue)
 
-  // set note's wave type
-  const type = document.querySelector('#osc-type').value
+  createFrequencyOscillator(noteNum, startTime, envelope)
 
-  // create new note
-  noteMap[noteNum] = new Note(audioContext, noteNum, type, envelope)
+  oscillators[noteNum][0].start(startTime)
 
-  // start note
-  noteMap[noteNum].noteOn()
+  oscillators[noteNum][0].onended = function() {
+    if (oscillators[noteNum]) {
+      oscillators[noteNum][1].disconnect()
+      if (oscillators[noteNum][1].gain) {
+        oscillators[noteNum][1].gain.disconnect()
+      }
+
+      delete oscillators[noteNum]
+    }
+  }
 }
-const noteStop = (noteNum) => {
+const noteStop = function(noteNum, velocity = 64) {
   noteCurrent = null
 
-  if (noteMap[noteNum]) {
-    noteMap[noteNum].noteOff()
+  if (oscillators[noteNum]) {
+    const domKey = document.querySelectorAll(`button[data-noteid='${noteNum}']`)[0]
+
+    if (domKey) {
+      domKey.classList.remove('active')
+    }
+
+    const playbackTime = audioContext.currentTime
+    // const stopTime = playbackTime + 0.5
+
+    oscillators[noteNum][1].gain.cancelScheduledValues(startTime)
+
+    // set note's volume envelope
+    const envelope = adsr.clone()
+    envelope.peakLevel = (velocity / 127) * parseFloat(nodeControls.masterGain.currentValue)
+
+    // oscillators[noteNum][1].gain.setValueAtTime(nodeControls.masterGain.currentValue, playbackTime)
+
+    // oscillators[noteNum][1].gain.exponentialRampToValueAtTime(0.0001, stopTime)
+
+    // oscillators[noteNum][0].stop(stopTime + 0.6)
+
+    envelope.gateTime = playbackTime - startTime
+    envelope.applyTo(oscillators[noteNum][1].gain, startTime)
+
+    oscillators[noteNum][0].stop(startTime + envelope.duration)
+
+    oscillators[noteNum] = null
   }
-
-  noteMap[noteNum] = null
 }
+const createFrequencyOscillator = function(noteNum, startTime, envelope) {
+  // create Web Audio oscillator
+  const oscillator = audioContext.createOscillator()
+  const note = musicalNotes[noteNum]
 
-/* web-audio-synth implementation */
-// const noteStart = function(noteNum, velocity = 64) {
-//   const domKey = document.querySelectorAll(`button[data-noteid='${noteNum}']`)[0]
+  // set oscillator wave type
+  oscillatorType = document.getElementById('osc-type').options[document.getElementById('osc-type').selectedIndex].value
+  oscillator.type = oscillatorType
 
-//   if (domKey) {
-//     domKey.classList.add('active')
-//   }
+  // set oscillator frequency
+  oscillator.frequency.value = parseFloat(note.frequency)
 
-//   startTime = audioContext.currentTime
+  // create oscillator gain
+  var gainNode = audioContext.createGain()
+  gainNode.gain.value = nodeControls.masterGain.currentValue
 
-//   // set note's volume envelope
-//   const envelope = adsr.clone()
-//   envelope.peakLevel = (velocity / 127) * parseFloat(nodeControls.masterGain.currentValue)
+  // apply ADSR to gain
+  envelope.gateTime = Infinity
+  envelope.applyTo(gainNode.gain, audioContext.currentTime)
 
-//   createFrequencyOscillator(noteNum, startTime, envelope)
+  // connect oscillator to master gain node
+  oscillator.connect(gainNode).connect(nodeControls.masterGain.audioNode)
 
-//   oscillators[noteNum][0].start(startTime)
-
-//   oscillators[noteNum][0].onended = function() {
-//     if (oscillators[noteNum]) {
-//       oscillators[noteNum][1].disconnect()
-//       if (oscillators[noteNum][1].gain) {
-//         oscillators[noteNum][1].gain.disconnect()
-//       }
-
-//       delete oscillators[noteNum]
-//     }
-//   }
-// }
-// const noteStop = function(noteNum, velocity = 64) {
-//   noteCurrent = null
-
-//   if (oscillators[noteNum]) {
-//     const domKey = document.querySelectorAll(`button[data-noteid='${noteNum}']`)[0]
-
-//     if (domKey) {
-//       domKey.classList.remove('active')
-//     }
-
-//     const playbackTime = audioContext.currentTime
-//     // const stopTime = playbackTime + 0.5
-
-//     oscillators[noteNum][1].gain.cancelScheduledValues(startTime)
-
-//     // set note's volume envelope
-//     const envelope = adsr.clone()
-//     envelope.peakLevel = (velocity / 127) * parseFloat(nodeControls.masterGain.currentValue)
-
-//     // oscillators[noteNum][1].gain.setValueAtTime(nodeControls.masterGain.currentValue, playbackTime)
-
-//     // oscillators[noteNum][1].gain.exponentialRampToValueAtTime(0.0001, stopTime)
-
-//     // oscillators[noteNum][0].stop(stopTime + 0.6)
-
-//     envelope.gateTime = playbackTime - startTime
-//     envelope.applyTo(oscillators[noteNum][1].gain, startTime)
-
-//     oscillators[noteNum][0].stop(startTime + envelope.duration)
-
-//     oscillators[noteNum] = null
-//   }
-// }
-// const createFrequencyOscillator = function(noteNum, startTime, envelope) {
-//   // create Web Audio oscillator
-//   const oscillator = audioContext.createOscillator()
-//   const note = musicalNotes[noteNum]
-
-//   // set oscillator wave type
-//   oscillatorType = document.getElementById('osc-type').options[document.getElementById('osc-type').selectedIndex].value
-//   oscillator.type = oscillatorType
-
-//   // set oscillator frequency
-//   oscillator.frequency.value = parseFloat(note.frequency)
-
-//   // create oscillator gain
-//   var gainNode = audioContext.createGain()
-//   gainNode.gain.value = nodeControls.masterGain.currentValue
-
-//   // apply ADSR to gain
-//   envelope.gateTime = Infinity
-//   envelope.applyTo(gainNode.gain, audioContext.currentTime)
-
-//   // connect oscillator to master gain node
-//   oscillator.connect(gainNode).connect(nodeControls.masterGain.audioNode)
-
-//   // add oscillator to list of oscillators
-//   oscillators[noteNum] = [oscillator, gainNode]
-// }
+  // add oscillator to list of oscillators
+  oscillators[noteNum] = [oscillator, gainNode]
+}
 
 const onMIDISuccess = (midi) => {
   Keybord.midi = midi
@@ -704,8 +651,6 @@ document.addEventListener('keyup', keyController)
 createMasterChain()
 createSendChain()
 
-// console.log('audioContext', audioContext)
-
 // add midi support
 if ('requestMIDIAccess' in navigator) {
   navigator.requestMIDIAccess({ sysex: false }).then(onMIDISuccess, onMIDIFailure)
@@ -815,7 +760,7 @@ if ('requestMIDIAccess' in navigator) {
 @media (min-width: 1024px) {
   #controls-container {
     display: flex;
-    height: 140px;
+    height: 150px;
   }
     #controls-container fieldset.control-column {
       margin-left: 0;
