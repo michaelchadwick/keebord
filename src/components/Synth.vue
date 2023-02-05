@@ -717,13 +717,11 @@ if ('requestMIDIAccess' in navigator) {
   }
 
 #controls-container {
-  align-items: normal;
   background-color: var(--white-soft);
   border: 2px solid var(--gray-light);
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: column;
+  height: 150px;
   margin: 0 10px 10px 15px;
+  overflow-y: auto;
   padding: 5px;
 }
   body.dark-theme #controls-container {
@@ -736,6 +734,7 @@ if ('requestMIDIAccess' in navigator) {
     display: flex;
     flex-direction: column;
     margin: 0;
+    padding: 5px;
     text-align: center;
   }
     #controls-container fieldset.control-column.dropdown-control {
@@ -757,10 +756,12 @@ if ('requestMIDIAccess' in navigator) {
       margin: 8px auto;
     }
 
-@media (min-width: 1024px) {
+@media (min-width: 425px) {
   #controls-container {
+    align-items: normal;
     display: flex;
-    height: 150px;
+    flex-wrap: wrap;
+    flex-direction: column;
   }
     #controls-container fieldset.control-column {
       margin-left: 0;
