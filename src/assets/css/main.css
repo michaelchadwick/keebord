@@ -254,6 +254,13 @@ select {
   color: rgb(189, 0, 0);
 }
 
+#visualizer {
+  border: 1px solid #000000;
+  display: block;
+  margin: 0 auto 10px;
+  position: relative;
+}
+
 /* animation */
 @keyFrames SlideRight {
   0% {

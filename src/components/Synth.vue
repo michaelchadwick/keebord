@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import NodeControl from './NodeControl.vue'
 import Keyboard from './Keyboard.vue'
 import ADSREnvelope from 'adsr-envelope'
@@ -296,6 +296,15 @@ const musicalNotes = [
 ]
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+
+// TODO: analyser
+// const analyser = audioContext.createAnalyser()
+// analyser.fftSize = 2048
+// // const bufferLength = analyser.frequencyBinCount
+// const bufferLength = analyser.fftSize
+// const dataArray = new Uint8Array(bufferLength)
+let drawVisual;
+
 const gainMaster = audioContext.createGain()
 gainMaster.gain.value = parseFloat(nodeControls.masterGain.currentValue)
 
@@ -346,7 +355,7 @@ const createMasterChain = function() {
   nodeControls.eqLow.audioNode = audioContext.createBiquadFilter()
   nodeControls.eqLow.audioNode.type = 'lowshelf'
   nodeControls.eqLow.audioNode.frequency.value = 35
-  nodeControls.eqLow.audioNode.gain.value = 50
+  nodeControls.eqLow.audioNode.gain.value = 0.5
 
   // eqMid
   nodeControls.eqMid.audioNode = audioContext.createBiquadFilter()
@@ -359,7 +368,7 @@ const createMasterChain = function() {
   nodeControls.eqHigh.audioNode = audioContext.createBiquadFilter()
   nodeControls.eqHigh.audioNode.type = 'highshelf'
   nodeControls.eqHigh.audioNode.frequency.value = 4700
-  nodeControls.eqHigh.audioNode.gain.value = 50
+  nodeControls.eqHigh.audioNode.gain.value = 0.5
 
   // compressor
   nodeControls.compressor.audioNode = audioContext.createDynamicsCompressor()
@@ -370,16 +379,21 @@ const createMasterChain = function() {
   nodeControls.compressor.audioNode.release.setValueAtTime(0.25, audioContext.currentTime)
 
   // eqLow->eqMid->eqHigh->compressor
-
   nodeControls.eqLow.audioNode.connect(nodeControls.eqMid.audioNode)
   nodeControls.eqMid.audioNode.connect(nodeControls.eqHigh.audioNode)
   nodeControls.eqHigh.audioNode.connect(nodeControls.compressor.audioNode)
+
+  // TODO: analyser
+  // nodeControls.compressor.audioNode.connect(analyser)
+  // analyser.connect(destinationMaster)
 
   // if panning, then compressor->pan->destination
   if (audioContext.createStereoPanner && nodeControls.pan) {
     nodeControls.pan.audioNode = audioContext.createStereoPanner()
     nodeControls.pan.audioNode.pan.setValueAtTime(0, audioContext.currentTime)
+
     nodeControls.compressor.audioNode.connect(nodeControls.pan.audioNode)
+
     nodeControls.pan.audioNode.connect(destinationMaster)
   }
   // if no panning, compressor->destination
@@ -470,6 +484,9 @@ const noteStart = function(noteNum, velocity = 64) {
   createFrequencyOscillator(noteNum, startTime, envelope)
 
   oscillators[noteNum][0].start(startTime)
+
+  // TODO: analyser
+  // drawToCanvas()
 
   oscillators[noteNum][0].onended = function() {
     if (oscillators[noteNum]) {
@@ -644,6 +661,41 @@ const keyController = (e) => {
   }
 }
 
+let canvas = ref(null)
+let canvasCtx = ref(null)
+
+const drawToCanvas = function() {
+  drawVisual = requestAnimationFrame(drawToCanvas)
+  analyser.getByteTimeDomainData(dataArray)
+
+  canvasCtx.fillStyle = "rgb(200, 200, 200)"
+  canvasCtx.fillRect(0, 0, canvas.width, canvas.height)
+
+  canvasCtx.lineWidth = 2
+  canvasCtx.strokeStyle = "rgb(0, 0, 0)"
+
+  canvasCtx.beginPath()
+
+  const sliceWidth = (canvas.width * 1.0) / bufferLength
+  let x = 0
+
+  for (let i = 0; i < bufferLength; i++) {
+    const v = dataArray[i] / 128.0
+    const y = (v * canvas.height) / 2
+
+    if (i === 0) {
+      canvasCtx.moveTo(x, y)
+    } else {
+      canvasCtx.lineTo(x, y)
+    }
+
+    x += sliceWidth
+  }
+
+  canvasCtx.lineTo(canvas.width, canvas.height / 2)
+  canvasCtx.stroke()
+}
+
 // add computer keyboard support
 document.addEventListener('keydown', keyController)
 document.addEventListener('keyup', keyController)
@@ -657,6 +709,14 @@ if ('requestMIDIAccess' in navigator) {
 } else {
   console.error('navigator.requestMIDIAccess() not supported')
 }
+
+onMounted(() => {
+  // TODO: analyser
+  // canvas = document.getElementById('visualizer')
+  // canvasCtx = canvas.value.getContext('2d')
+
+  // canvasCtx.clearRect(0, 0, canvas.width, canvas.height)
+})
 </script>
 
 <template>
@@ -678,17 +738,9 @@ if ('requestMIDIAccess' in navigator) {
     />
   </div>
 
-  <!-- my implementation -->
-  <!--
-  <Keyboard
-    :root-note="options.rootNote"
-    :musical-notes="musicalNotes"
-    @note-pressed="noteStart"
-    @note-released="noteStop"
-  />
-  -->
+  <!-- TODO: analyser -->
+  <!--<canvas ref="canvas" id="visualizer" width="640" height="100"></canvas>-->
 
-  <!-- web-audio-synth implementation -->
   <Keyboard
     :root-note="options.rootNote"
     :musical-notes="musicalNotes"
