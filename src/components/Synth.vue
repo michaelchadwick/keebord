@@ -9,10 +9,7 @@ let noteMap = {}
 let noteCurrent = null
 let startTime = 0
 let detuneAmount = 64
-let options = reactive({
-  rootNote: 'C4'
-})
-const oscillators = []
+const oscillators = reactive([])
 let oscillatorType = 0
 
 const adsr = new ADSREnvelope({
@@ -450,8 +447,6 @@ const selectOptionChanged = function(controlName, newValue) {
   // console.log('newValue', newValue)
   // console.log('control', control)
   // console.log('control.parameter', control.parameter)
-
-  options.rootNote = newValue
 }
 
 const toggleControls = function() {
@@ -485,19 +480,30 @@ const noteStart = function(noteNum, velocity = 64) {
 
   oscillators[noteNum][0].start(startTime)
 
+  // TODO: note/chord recognition
+  // console.log('noteStart osc values', Object.values(oscillators))
+  // console.log('noteStart osc values length', Object.values(oscillators).length)
+  // console.log('noteStart oscillators[noteNum]', oscillators[noteNum][0].frequency.value)
+  // console.log('noteStart osc values == null?', Object.values(oscillators).every(osc => osc == null))
+
   // TODO: analyser
   // drawToCanvas()
 
-  oscillators[noteNum][0].onended = function() {
-    if (oscillators[noteNum]) {
-      oscillators[noteNum][1].disconnect()
-      if (oscillators[noteNum][1].gain) {
-        oscillators[noteNum][1].gain.disconnect()
-      }
+  // oscillators[noteNum][0].onended = function() {
+  //   if (oscillators[noteNum]) {
+  //     if (oscillators[noteNum][1]) {
+  //       if (oscillators[noteNum][1].gain) {
+  //         if ('disconnect' in oscillators[noteNum][1].gain) {
+  //           oscillators[noteNum][1].gain.disconnect()
+  //         }
+  //       }
 
-      delete oscillators[noteNum]
-    }
-  }
+  //       oscillators[noteNum][1].disconnect()
+
+  //       delete oscillators[noteNum]
+  //     }
+  //   }
+  // }
 }
 const noteStop = function(noteNum, velocity = 64) {
   noteCurrent = null
@@ -518,10 +524,9 @@ const noteStop = function(noteNum, velocity = 64) {
     const envelope = adsr.clone()
     envelope.peakLevel = (velocity / 127) * parseFloat(nodeControls.masterGain.currentValue)
 
+    // FIXME: potential popping fix?
     // oscillators[noteNum][1].gain.setValueAtTime(nodeControls.masterGain.currentValue, playbackTime)
-
     // oscillators[noteNum][1].gain.exponentialRampToValueAtTime(0.0001, stopTime)
-
     // oscillators[noteNum][0].stop(stopTime + 0.6)
 
     envelope.gateTime = playbackTime - startTime
@@ -530,6 +535,12 @@ const noteStop = function(noteNum, velocity = 64) {
     oscillators[noteNum][0].stop(startTime + envelope.duration)
 
     oscillators[noteNum] = null
+    delete oscillators[noteNum]
+
+    // TODO: note/chord recognition
+    // console.log('noteStop osc values', Object.values(oscillators))
+    // console.log('noteStop osc values length', Object.values(oscillators).length)
+    // console.log('noteStop osc values == null', Object.values(oscillators).every(osc => osc == null))
   }
 }
 const createFrequencyOscillator = function(noteNum, startTime, envelope) {
@@ -743,8 +754,21 @@ onMounted(() => {
   <!-- TODO: analyser -->
   <!--<canvas ref="canvas" id="visualizer" width="640" height="100"></canvas>-->
 
+  <!-- TODO: note/chord recognition -->
+
+  <!-- TODO: note/chord recognition
+  <div id="note-recognition">
+    <template v-if="Object.values(oscillators).length">
+      {{ Object.values(oscillators).map(osc => musicalNotes[noteNum - 12].name).join(',') }}
+      {{ Object.entries(oscillators) }}
+    </template>
+    <template v-else>
+      No notes.
+    </template>
+  </div>
+  -->
+
   <Keyboard
-    :root-note="options.rootNote"
     :musical-notes="musicalNotes"
     @note-pressed="noteStart"
     @note-released="noteStop"
@@ -824,5 +848,16 @@ onMounted(() => {
       #controls-container fieldset.control-column:last-child {
         margin-right: 0;
       }
+}
+
+#note-recognition {
+  background-color: var(--white-soft);
+  border: 1px solid var(--black);
+  box-shadow: 1px 1px 1px 1px;
+  color: var(--black);
+  height: 50px;
+  margin: 1rem auto;
+  padding: 1rem;
+  width: 50%;
 }
 </style>

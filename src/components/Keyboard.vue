@@ -118,7 +118,6 @@ document.addEventListener('touchmove', function (e) {
 onMounted(() => {
   pianoDiv = document.getElementById('keyboard')
   pianoDiv.scrollLeft = (pianoDiv.scrollWidth / 9) * 3
-  // pianoDiv.scrollLeft = (props.rootNote[1] * 40 * 7)
 
   const octaveDistance = document.body.scrollWidth > 767 ? 280 : 329
   const noteDistance = document.body.scrollWidth > 767 ? 40 : 47
