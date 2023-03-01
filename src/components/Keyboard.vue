@@ -353,7 +353,7 @@ onMounted(() => {
   #scroll-buttons button {
     border: 2px solid var(--color-border);
     color: var(--color-text);
-    font-size: 1.75rem;
+    font-size: 1.5rem;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -362,6 +362,11 @@ onMounted(() => {
       #scroll-buttons button:hover {
         background-color: var(--green-deep-active);
         color: var(--green-bright-active);
+      }
+    }
+    @media (min-width: 768px) {
+      #scroll-buttons button {
+        font-size: 1.75rem;
       }
     }
 </style>
