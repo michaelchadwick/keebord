@@ -26,6 +26,7 @@ onMounted(() => {
   .nav-list a {
     align-items: center;
     background-color: transparent;
+    color: var(--green-bright);
     display: flex;
     font-size: 16px;
     font-weight: bold;
@@ -36,7 +37,8 @@ onMounted(() => {
   }
   @media (hover: hover) {
     .nav-list a:hover {
-      background-color: var(--color-link-highlight);
+      background-color: var(--green-bright);
+      color: var(--color-text);
     }
   }
 </style>

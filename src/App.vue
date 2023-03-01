@@ -155,7 +155,7 @@ header {
             padding: 0;
           }
             header .menu-left #nav-overlay #nav-content .container .nav-header {
-              color: var(--color-text);
+              color: var(--color-flatnote-text);
               font-size: 20px;
               font-weight: 700;
               padding-bottom: 18px;
@@ -178,6 +178,7 @@ header {
               }
             }
           header .menu-left #nav-overlay #nav-content #button-nav-close {
+            color: var(--color-flatnote-text);
             font-size: 20px;
             height: 24px;
             position: absolute;
