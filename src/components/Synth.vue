@@ -4,13 +4,14 @@ import NodeControl from './NodeControl.vue'
 import Keyboard from './Keyboard.vue'
 import ADSREnvelope from 'adsr-envelope'
 
+const oscillators = reactive([])
+
 let Keybord = {}
+let oscillatorType = 0
 let noteMap = {}
 let noteCurrent = null
 let startTime = 0
 let detuneAmount = 64
-const oscillators = reactive([])
-let oscillatorType = 0
 
 const adsr = new ADSREnvelope({
   attackTime: 0.1,
@@ -300,7 +301,7 @@ const audioContext = new (window.AudioContext || window.webkitAudioContext)()
 // // const bufferLength = analyser.frequencyBinCount
 // const bufferLength = analyser.fftSize
 // const dataArray = new Uint8Array(bufferLength)
-let drawVisual;
+// let drawVisual;
 
 const gainMaster = audioContext.createGain()
 gainMaster.gain.value = parseFloat(nodeControls.masterGain.currentValue)
@@ -449,6 +450,7 @@ const selectOptionChanged = function(controlName, newValue) {
   // console.log('control.parameter', control.parameter)
 }
 
+// expand/collapse synth controls
 const toggleControls = function() {
   let toggleControl = document.getElementById('controls-container')
 
@@ -463,6 +465,7 @@ const toggleControls = function() {
   }
 }
 
+// midi, keyboard, mouse inputs all come here to create actual sound
 const noteStart = function(noteNum, velocity = 64) {
   const domKey = document.querySelectorAll(`button[data-noteid='${noteNum}']`)[0]
 
@@ -583,6 +586,7 @@ const onMIDIFailure = (msg) => {
   console.error(`Failed to get MIDI access - ${msg}`)
 }
 
+// handle midi input messages
 const midiController = (e) => {
   let str = `MIDI message received at ${e.timeStamp}[${e.data.length} bytes]: `
   for (const character of e.data) {

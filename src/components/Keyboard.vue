@@ -59,6 +59,7 @@ const emitReleased = (e) => {
 // Start simulation of onTouchEnter
 // https://gist.github.com/zerobytes/677410f1e6ed33d133aa016422a8c706
 //
+
 let onTouchLeaveEvents = [];
 let onTouchEnterEvents = [];
 
@@ -111,17 +112,20 @@ document.addEventListener('touchmove', function (e) {
 		}
 	});
 });
+
 //
 // End simulation of onTouchEnter
 //
 
 onMounted(() => {
+  // grab reference to on-screen keyboard
   pianoDiv = document.getElementById('keyboard')
   pianoDiv.scrollLeft = (pianoDiv.scrollWidth / 9) * 3
 
   const octaveDistance = document.body.scrollWidth > 767 ? 280 : 329
   const noteDistance = document.body.scrollWidth > 767 ? 40 : 47
 
+  // add event listeners to all octave and note scroll buttons
   document.querySelector('#button-octave-left').addEventListener('click', () => {
     if (pianoDiv.scrollLeft > 0) {
       pianoDiv.scrollLeft -= octaveDistance

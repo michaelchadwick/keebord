@@ -16,6 +16,7 @@ onMounted(() => {
     "navOverlay": document.getElementById('nav-overlay'),
     "btnNav": document.getElementById('button-nav'),
     "btnNavClose": document.getElementById('button-nav-close'),
+    // "btnMidiReset": document.getElementById('button-midi-reset')
     // "btnHelp": document.getElementById('button-help'),
     // "btnSettings": document.getElementById('button-settings'),
   }
@@ -32,13 +33,17 @@ onMounted(() => {
   Keebord.dom.btnNavClose.addEventListener('click', () => {
     Keebord.dom.navOverlay.classList.toggle('show')
   })
+  if (Keebord.dom.btnMidiReset) {
+    Keebord.dom.btnMidiReset.addEventListener('click', () => {
+      //
+    })
+  }
 })
 </script>
 
 <template>
   <header>
     <div class="menu-left">
-
       <div id="nav-links">
         <button id="button-nav" class="icon" aria-label="Click for links to more apps by neb.host" tabindex="-1">
           <i class="fa-solid fa-bars"></i>
@@ -66,6 +71,12 @@ onMounted(() => {
           </div>
         </div>
       </div>
+
+      <!--
+      <button id="button-midi-reset" class="icon" aria-label="MIDI Reset" tabindex="-1">
+        <i class="fa-solid fa-circle-exclamation"></i>
+      </button>
+      -->
     </div>
 
     <div class="title">
