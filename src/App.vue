@@ -81,13 +81,13 @@ onMounted(() => {
 
     <div class="title">
       <h1>
-        <span>K</span>
-        <span class="flat">e</span>
+        <span class="flat">K</span>
         <span>e</span>
-        <span class="flat">b</span>
-        <span>o</span>
-        <span class="flat">r</span>
-        <span>d</span>
+        <span class="flat">e</span>
+        <span>b</span>
+        <span class="flat">o</span>
+        <span>r</span>
+        <span class="flat">d</span>
       </h1>
     </div>
 
@@ -112,7 +112,7 @@ header {
   flex-wrap: nowrap;
   height: 50px;
   justify-content: space-between;
-  padding: 0 16px;
+  padding: 2px 16px;
 }
   header .menu-left {
     align-items: center;
@@ -244,7 +244,7 @@ header {
     }
       header .title h1 span.flat {
         bottom: 3px;
-        color: #000000;
+        color: var(--black);
         position: relative;
       }
   @media (min-width: 768px) {

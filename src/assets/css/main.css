@@ -150,13 +150,16 @@ input[type="button"] {
 }
 
 button#theme-toggler {
+  align-items: center;
   background-color: var(--color-background);
+  display: flex;
   font-size: 1.5rem;
   font-weight: 600;
   height: 32px;
+  justify-content: center;
   margin-bottom: 0;
   opacity: 0.9;
-  padding: 0 5px;
+  padding: 5px;
   position: absolute;
   right: 12px;
   text-align: center;
@@ -165,7 +168,7 @@ button#theme-toggler {
   z-index: 10000;
 }
   button#theme-toggler span.theme-image {
-    bottom: 3px;
+    bottom: 0;
     position: relative;
   }
     button#theme-toggler span.theme-image::after {
