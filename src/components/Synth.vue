@@ -12,6 +12,7 @@ let noteMap = {}
 let noteCurrent = null
 let startTime = 0
 let detuneAmount = 64
+let drawVisual;
 
 const adsr = new ADSREnvelope({
   attackTime: 0.1,
@@ -295,14 +296,6 @@ const musicalNotes = [
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)()
 
-// TODO: analyser
-// const analyser = audioContext.createAnalyser()
-// analyser.fftSize = 2048
-// // const bufferLength = analyser.frequencyBinCount
-// const bufferLength = analyser.fftSize
-// const dataArray = new Uint8Array(bufferLength)
-// let drawVisual;
-
 const gainMaster = audioContext.createGain()
 gainMaster.gain.value = parseFloat(nodeControls.masterGain.currentValue)
 
@@ -489,9 +482,6 @@ const noteStart = function(noteNum, velocity = 64) {
   // console.log('noteStart oscillators[noteNum]', oscillators[noteNum][0].frequency.value)
   // console.log('noteStart osc values == null?', Object.values(oscillators).every(osc => osc == null))
 
-  // TODO: analyser
-  // drawToCanvas()
-
   // oscillators[noteNum][0].onended = function() {
   //   if (oscillators[noteNum]) {
   //     if (oscillators[noteNum][1]) {
@@ -676,43 +666,6 @@ const keyController = (e) => {
   }
 }
 
-/* TODO: analyser
-let canvas = ref(null)
-let canvasCtx = ref(null)
-
-const drawToCanvas = function() {
-  drawVisual = requestAnimationFrame(drawToCanvas)
-  analyser.getByteTimeDomainData(dataArray)
-
-  canvasCtx.fillStyle = "rgb(200, 200, 200)"
-  canvasCtx.fillRect(0, 0, canvas.width, canvas.height)
-
-  canvasCtx.lineWidth = 2
-  canvasCtx.strokeStyle = "rgb(0, 0, 0)"
-
-  canvasCtx.beginPath()
-
-  const sliceWidth = (canvas.width * 1.0) / bufferLength
-  let x = 0
-
-  for (let i = 0; i < bufferLength; i++) {
-    const v = dataArray[i] / 128.0
-    const y = (v * canvas.height) / 2
-
-    if (i === 0) {
-      canvasCtx.moveTo(x, y)
-    } else {
-      canvasCtx.lineTo(x, y)
-    }
-
-    x += sliceWidth
-  }
-
-  canvasCtx.lineTo(canvas.width, canvas.height / 2)
-  canvasCtx.stroke()
-}
-*/
-
 // add computer keyboard support
 document.addEventListener('keydown', keyController)
 document.addEventListener('keyup', keyController)
@@ -727,12 +680,75 @@ if ('requestMIDIAccess' in navigator) {
   console.error('navigator.requestMIDIAccess() not supported')
 }
 
+// TODO: analyser/oscilloscope
+// const bufferLength = analyser.fftSize
+
+let isPlaying, pixelRatio, sizeOnScreen, segmentWidth
+
+// const canvas = ref(null)
+// const canvasCtx = ref(null)
+
+const analyser = audioContext.createAnalyser()
+analyser.fftSize = 2048
+analyser.smoothingTimeConstant = 1
+const bufferLength = analyser.frequencyBinCount
+const dataArray = new Uint8Array(bufferLength)
+
+// drawToCanvas()
+
 onMounted(() => {
   // TODO: analyser
-  // canvas = document.getElementById('visualizer')
-  // canvasCtx = canvas.value.getContext('2d')
+  const canvas = document.getElementById('visualizer')
+  const c = canvas.getContext('2d')
 
-  // canvasCtx.clearRect(0, 0, canvas.width, canvas.height)
+  // make canvas take up entire content
+  // canvas.style.position = 'relative'
+  // canvas.style.top = '10%'
+  // canvas.width = window.innerWidth;
+  // canvas.height = window.innerHeight;
+  // pixelRatio = window.devicePixelRatio;
+  // sizeOnScreen = canvas.getBoundingClientRect();
+  // canvas.width = sizeOnScreen.width * pixelRatio;
+  // canvas.height = sizeOnScreen.height * pixelRatio;
+  // canvas.style.width = canvas.width / pixelRatio + "px";
+  // canvas.style.height = canvas.height / pixelRatio + "px";
+
+  // make canvas take up limited box size
+  canvas.width = 640
+  canvas.height = 100
+
+  // make initial line
+  c.fillStyle = "#f8f8f8"
+  c.fillRect(0, 0, canvas.width, canvas.height)
+  c.strokeStyle = "#09714b"
+  c.beginPath()
+  c.moveTo(0, canvas.height / 2)
+  c.lineTo(canvas.width, canvas.height / 2)
+  c.stroke()
+
+  // define function to update canvas
+  const drawToCanvas = function() {
+    // drawVisual = requestAnimationFrame(drawToCanvas)
+    analyser.getByteTimeDomainData(dataArray)
+    segmentWidth = canvas.width / analyser.frequencyBinCount
+
+    c.fillRect(0, 0, canvas.width, canvas.height)
+    c.beginPath()
+    c.moveTo(-100, canvas.height / 2)
+
+    if (isPlaying) {
+      for (let i = 1; i < analyser.frequencyBinCount; i += 1) {
+        let x = i * segmentWidth
+        let v = dataArray[i] / 128.0
+        let y = (v * canvas.height) / 2
+        c.lineTo(x, y)
+      }
+    }
+
+    c.lineTo(canvas.width + 100, canvas.height / 2)
+    c.stroke()
+    requestAnimationFrame(draw)
+  }
 })
 </script>
 
@@ -756,7 +772,7 @@ onMounted(() => {
   </div>
 
   <!-- TODO: analyser -->
-  <!--<canvas ref="canvas" id="visualizer" width="640" height="100"></canvas>-->
+  <canvas ref="canvas" id="visualizer"></canvas>
 
   <!-- TODO: note/chord recognition -->
 
@@ -863,5 +879,12 @@ onMounted(() => {
   margin: 1rem auto;
   padding: 1rem;
   width: 50%;
+}
+
+#visualizer {
+  border: 1px solid #000000;
+  display: none;
+  margin: 0 auto 10px;
+  position: relative;
 }
 </style>
