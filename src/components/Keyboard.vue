@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
 
 let pianoDiv = null
 let mousedown = false
@@ -8,8 +8,14 @@ let hasTouch = 'ontouchstart' in window
 document.body.onmousedown = () => mousedown = true
 document.body.onmouseup = () => mousedown = false
 
-const props = defineProps(['musicalNotes', 'rootNote'])
-const emit = defineEmits(['notePressed', 'noteReleased'])
+const props = defineProps(['musicalNotes', 'rootNote', 'useKeyboard', 'useMouse', 'useMidi'])
+const emit = defineEmits([
+  'checkedChangedKeyboard',
+  'checkedChangedMouse',
+  'checkedChangedMidi',
+  'notePressed',
+  'noteReleased'
+])
 
 const emitPressed = (e) => {
   e.preventDefault()
@@ -161,6 +167,39 @@ onMounted(() => {
 </script>
 
 <template>
+  <div id="control-checkboxes">
+    <span>Input Types: </span>
+
+    <input
+      type="checkbox"
+      id="use-keyboard"
+      name="use-keyboard"
+      :checked="props.useKeyboard"
+      @change="$emit('checkedChangedKeyboard', $event.target.checked)"
+    />
+    <label for="use-keyboard">⌨️</label>
+
+    <!-- TODO
+    <input
+      type="checkbox"
+      id="use-mouse"
+      name="use-mouse"
+      :checked="props.useMouse"
+      @change="$emit('checkedChangedMouse', props.useMouse)"
+    />
+    <label for="use-mouse">🐭</label>
+    -->
+
+    <input
+      type="checkbox"
+      id="use-midi"
+      name="use-midi"
+      :checked="props.useMidi"
+      @change="$emit('checkedChangedMidi', $event.target.checked)"
+    />
+    <label for="use-midi">🎹</label>
+  </div>
+
   <div id="keyboard-container">
     <div id="keyboard">
       <button
@@ -194,6 +233,18 @@ onMounted(() => {
 </template>
 
 <style scoped>
+#control-checkboxes {
+  display: flex;
+  margin: 0 20px;
+}
+  #control-checkboxes input {
+    margin: 0 0.35em 0 0.5em;
+  }
+  #control-checkboxes label {
+    margin-right: 0.5em;
+    width: 20px;
+  }
+
 #keyboard-container {
   border-top: 1px solid var(--black);
   display: flex;

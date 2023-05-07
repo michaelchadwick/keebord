@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { reactive, onMounted } from 'vue'
 import NodeControl from './NodeControl.vue'
 import Keyboard from './Keyboard.vue'
 import ADSREnvelope from 'adsr-envelope'
@@ -576,9 +576,40 @@ const onMIDIFailure = (msg) => {
   console.error(`Failed to get MIDI access - ${msg}`)
 }
 
-// handle midi input messages
+// handle computer keyboard inputs
+const keyController = (e) => {
+  // computer keyboard controls
+  // [z,     x, c, v, b, n,   m ]
+  // musical note
+  // [C4,    D4,E4,F4,G4,A4,  B4]
+  // frequency
+  // [261.63,            440,   ]
+  // midi number
+  // [60,    62,64,65,67,69,  71]
+
+  const key2midi = {
+    'z': 60, 's': 61, 'x': 62, 'd': 63, 'c': 64, 'v': 65,
+    'g': 66, 'b': 67, 'h': 68, 'n': 69, 'j': 70, 'm': 71,
+    'q': 72, '2': 73, 'w': 74, '3': 75, 'e': 76, 'r': 77,
+    '5': 78, 't': 79, '6': 80, 'y': 81, '7': 82, 'u': 83,
+    'i': 84
+  }
+
+  const note = key2midi[e.key]
+
+  if (e.type == 'keydown') {
+    if (note >= 60 && note <= 84) {
+      noteStart(note, 64)
+    }
+  } else if (e.type == 'keyup') {
+    noteStop(note)
+  }
+}
+
+// handle midi inputs
 const midiController = (e) => {
   let str = `MIDI message received at ${e.timeStamp}[${e.data.length} bytes]: `
+
   for (const character of e.data) {
     str += `0x${character.toString(16)} `
   }
@@ -636,49 +667,43 @@ const midiController = (e) => {
   }
 }
 
-// handle computer keyboard inputs
-const keyController = (e) => {
-  // computer keyboard controls
-  // [z,     x, c, v, b, n,   m ]
-  // musical note
-  // [C4,    D4,E4,F4,G4,A4,  B4]
-  // frequency
-  // [261.63,            440,   ]
-  // midi number
-  // [60,    62,64,65,67,69,  71]
-
-  const key2midi = {
-    'z': 60, 's': 61, 'x': 62, 'd': 63, 'c': 64, 'v': 65,
-    'g': 66, 'b': 67, 'h': 68, 'n': 69, 'j': 70, 'm': 71,
-    'q': 72, '2': 73, 'w': 74, '3': 75, 'e': 76, 'r': 77,
-    '5': 78, 't': 79, '6': 80, 'y': 81, '7': 82, 'u': 83,
-    'i': 84
-  }
-
-  const note = key2midi[e.key]
-
-  if (e.type == 'keydown') {
-    if (note >= 60 && note <= 84) {
-      noteStart(note, 64)
-    }
-  } else if (e.type == 'keyup') {
-    noteStop(note)
+// update computer keyboard support
+let updateKeyboardEventHandler = () => {
+  if (Keyboard.useKeyboard) {
+    document.addEventListener('keydown', keyController)
+    document.addEventListener('keyup', keyController)
+  } else {
+    document.removeEventListener('keydown', keyController)
+    document.removeEventListener('keyup', keyController)
   }
 }
+let useKeyboardCheckboxChanged = (isChecked) => {
+  Keyboard.useKeyboard = isChecked
+  updateKeyboardEventHandler()
+}
 
-// add computer keyboard support
-document.addEventListener('keydown', keyController)
-document.addEventListener('keyup', keyController)
+// update midi input support
+let updateMidiEventHandler = () => {
+  if (Keyboard.useMidi) {
+    if ('requestMIDIAccess' in navigator) {
+      navigator.requestMIDIAccess({ sysex: false }).then(onMIDISuccess, onMIDIFailure)
+    } else {
+      console.error('navigator.requestMIDIAccess() not supported')
+    }
+  } else {
+    Array.from(Keybord.midi.inputs).forEach((input) => {
+      input[1].onmidimessage = null
+    })
+    Keybord.midi = null
+  }
+}
+let useMidiCheckboxChanged = (isChecked) => {
+  Keyboard.useMidi = isChecked
+  updateMidiEventHandler()
+}
 
 createMasterChain()
 createSendChain()
-
-// add midi support
-if ('requestMIDIAccess' in navigator) {
-  navigator.requestMIDIAccess({ sysex: false }).then(onMIDISuccess, onMIDIFailure)
-} else {
-  console.error('navigator.requestMIDIAccess() not supported')
-}
 
 // TODO: analyser/oscilloscope
 // const bufferLength = analyser.fftSize
@@ -790,6 +815,12 @@ onMounted(() => {
 
   <Keyboard
     :musical-notes="musicalNotes"
+    :use-keyboard="Keyboard.useKeyboard"
+
+    :use-midi="Keyboard.useMidi"
+    @checked-changed-keyboard="useKeyboardCheckboxChanged"
+
+    @checked-changed-midi="useMidiCheckboxChanged"
     @note-pressed="noteStart"
     @note-released="noteStop"
   />
