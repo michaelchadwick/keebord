@@ -2,13 +2,26 @@
 import { onMounted } from 'vue'
 
 let pianoDiv = null
-let mousedown = false
-let hasTouch = 'ontouchstart' in window
 
-document.body.onmousedown = () => mousedown = true
-document.body.onmouseup = () => mousedown = false
-
-const props = defineProps(['musicalNotes', 'rootNote', 'useKeyboard', 'useMouse', 'useMidi'])
+const props = defineProps({
+  musicalNotes: Array,
+  rootNote: {
+    type: String,
+    default: () => 'C'
+  },
+  useKeyboard: {
+    type: Boolean,
+    default: () => false
+  },
+  useMouse: {
+    type: Boolean,
+    default: () => true
+  },
+  useMidi: {
+    type: Boolean,
+    default: () => false
+  }
+})
 const emit = defineEmits([
   'checkedChangedKeyboard',
   'checkedChangedMouse',
@@ -42,7 +55,6 @@ const emitPressed = (e) => {
     target_parent.classList.add('active')
   }
 }
-
 const emitReleased = (e) => {
   e.preventDefault()
 
@@ -60,6 +72,29 @@ const emitReleased = (e) => {
     target_parent.classList.remove('active')
   }
 }
+
+// show/hide computer keyboard key labels depending on checkbox
+const updateKeyFlag = (isChecked) => {
+  emit('checkedChangedKeyboard', isChecked)
+
+  const keyLabels = document.querySelectorAll('.key-label')
+
+  if (isChecked) {
+    keyLabels.forEach(key => {
+      if (key.getAttribute('data-key')) key.classList.add('show')
+    })
+  } else {
+    keyLabels.forEach(key => {
+      if (key.getAttribute('data-key')) key.classList.remove('show')
+    })
+  }
+}
+
+let mousedown = false
+let hasTouch = 'ontouchstart' in window
+
+document.body.addEventListener('mousedown', () => mousedown = true)
+document.body.addEventListener('mouseup', () => mousedown = false)
 
 //
 // Start simulation of onTouchEnter
@@ -96,7 +131,7 @@ const onTouchLeave = function (selector, fn) {
 let lastTouchLeave;
 let lastTouchEnter;
 
-document.addEventListener('touchmove', function (e) {
+document.addEventListener('touchmove', (e) => {
 	var el = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
 	if (!el) return;
 
@@ -122,6 +157,10 @@ document.addEventListener('touchmove', function (e) {
 //
 // End simulation of onTouchEnter
 //
+
+const keyLabel = function(note) {
+  return note.key && !hasTouch && props.useKeyboard
+}
 
 onMounted(() => {
   // grab reference to on-screen keyboard
@@ -175,20 +214,18 @@ onMounted(() => {
       id="use-keyboard"
       name="use-keyboard"
       :checked="props.useKeyboard"
-      @change="$emit('checkedChangedKeyboard', $event.target.checked)"
+      @change="updateKeyFlag($event.target.checked)"
     />
-    <label for="use-keyboard">⌨️</label>
+    <label for="use-keyboard" title="Enable keyboard support?">⌨️</label>
 
-    <!-- TODO
     <input
       type="checkbox"
       id="use-mouse"
       name="use-mouse"
       :checked="props.useMouse"
-      @change="$emit('checkedChangedMouse', props.useMouse)"
+      @change="$emit('checkedChangedMouse', $event.target.checked)"
     />
-    <label for="use-mouse">🐭</label>
-    -->
+    <label for="use-mouse" title="Enable mouse/touch support?">🐭/🖐️</label>
 
     <input
       type="checkbox"
@@ -197,7 +234,7 @@ onMounted(() => {
       :checked="props.useMidi"
       @change="$emit('checkedChangedMidi', $event.target.checked)"
     />
-    <label for="use-midi">🎹</label>
+    <label for="use-midi" title="Enable MIDI keyboard support?">🎹</label>
   </div>
 
   <div id="keyboard-container">
@@ -214,7 +251,7 @@ onMounted(() => {
         @touchend="emitReleased($event, index)"
         @touchcancel="emitReleased($event, index)"
       >
-        <div v-if="note.key && !hasTouch" class="key-label">{{ note.key }}</div>
+        <div class="key-label" v-bind:data-key="note.key">{{ note.key }}</div>
         <div class="note-label">{{ note.name }}</div>
       </button>
     </div>
@@ -235,14 +272,14 @@ onMounted(() => {
 <style scoped>
 #control-checkboxes {
   display: flex;
-  margin: 0 20px;
+  margin: 0 20px 3px;
 }
   #control-checkboxes input {
     margin: 0 0.35em 0 0.5em;
   }
   #control-checkboxes label {
     margin-right: 0.5em;
-    width: 20px;
+    min-width: 20px;
   }
 
 #keyboard-container {
@@ -292,10 +329,14 @@ onMounted(() => {
           border: 1px solid var(--color-text);
           border-radius: 5px;
           bottom: 40px;
+          display: none;
           height: 24px;
           padding: 5px;
           width: 24px;
         }
+          #keyboard button div.key-label.show {
+            display: block;
+          }
         #keyboard button div.note-label {
           bottom: 0;
           color: var(--color-text);

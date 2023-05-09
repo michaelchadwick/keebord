@@ -14,6 +14,10 @@ let startTime = 0
 let detuneAmount = 64
 let drawVisual;
 
+let useKeyboard
+let useMouse
+let useMidi
+
 const adsr = new ADSREnvelope({
   attackTime: 0.1,
   decayTime: 0.5,
@@ -563,19 +567,24 @@ const createFrequencyOscillator = function(noteNum, startTime, envelope) {
   oscillators[noteNum] = [oscillator, gainNode]
 }
 
-const onMIDISuccess = (midi) => {
-  Keybord.midi = midi
-
-  Array.from(Keybord.midi.inputs).forEach((input) => {
-    input[1].onmidimessage = midiController
-  })
-
-  console.log('MIDI ready and listening', Keybord.midi)
+const useKeyboardCheckboxChanged = (isChecked) => {
+  useKeyboard = isChecked
+  updateKeyboardEventHandler()
 }
-const onMIDIFailure = (msg) => {
-  console.error(`Failed to get MIDI access - ${msg}`)
-}
+// update computer keyboard support
+const updateKeyboardEventHandler = () => {
+  if (useKeyboard) {
+    document.addEventListener('keydown', keyController)
+    document.addEventListener('keyup', keyController)
 
+    console.log('keyboard support enabled')
+  } else {
+    document.removeEventListener('keydown', keyController)
+    document.removeEventListener('keyup', keyController)
+
+    console.log('keyboard support disabled')
+  }
+}
 // handle computer keyboard inputs
 const keyController = (e) => {
   // computer keyboard controls
@@ -606,6 +615,51 @@ const keyController = (e) => {
   }
 }
 
+const useMouseCheckboxChanged = (isChecked) => {
+  Keyboard.useMouse = isChecked
+  updateMouseEventHandler()
+}
+// update computer mouse support
+const updateMouseEventHandler = () => {
+  if (Keyboard.useMouse) {
+    console.log('TODO: mouse/touch support enabled')
+  } else {
+    console.log('TODO: mouse/touch support disabled')
+  }
+}
+
+const useMidiCheckboxChanged = (isChecked) => {
+  Keyboard.useMidi = isChecked
+  updateMidiEventHandler()
+}
+// update midi input support
+const updateMidiEventHandler = () => {
+  if (Keyboard.useMidi) {
+    if ('requestMIDIAccess' in navigator) {
+      navigator.requestMIDIAccess({ sysex: false }).then(onMIDISuccess, onMIDIFailure)
+    } else {
+      console.error('navigator.requestMIDIAccess() not supported')
+    }
+  } else {
+    Array.from(Keybord.midi.inputs).forEach((input) => {
+      input[1].onmidimessage = null
+    })
+    Keybord.midi = null
+    console.log('midi support disabled', Keybord.midi)
+  }
+}
+const onMIDISuccess = (midi) => {
+  Keybord.midi = midi
+
+  Array.from(Keybord.midi.inputs).forEach((input) => {
+    input[1].onmidimessage = midiController
+  })
+
+  console.log('midi support enabled', Keybord.midi)
+}
+const onMIDIFailure = (msg) => {
+  console.error(`Failed to get MIDI access - ${msg}`)
+}
 // handle midi inputs
 const midiController = (e) => {
   let str = `MIDI message received at ${e.timeStamp}[${e.data.length} bytes]: `
@@ -665,41 +719,6 @@ const midiController = (e) => {
       console.log('str', str)
       break
   }
-}
-
-// update computer keyboard support
-let updateKeyboardEventHandler = () => {
-  if (Keyboard.useKeyboard) {
-    document.addEventListener('keydown', keyController)
-    document.addEventListener('keyup', keyController)
-  } else {
-    document.removeEventListener('keydown', keyController)
-    document.removeEventListener('keyup', keyController)
-  }
-}
-let useKeyboardCheckboxChanged = (isChecked) => {
-  Keyboard.useKeyboard = isChecked
-  updateKeyboardEventHandler()
-}
-
-// update midi input support
-let updateMidiEventHandler = () => {
-  if (Keyboard.useMidi) {
-    if ('requestMIDIAccess' in navigator) {
-      navigator.requestMIDIAccess({ sysex: false }).then(onMIDISuccess, onMIDIFailure)
-    } else {
-      console.error('navigator.requestMIDIAccess() not supported')
-    }
-  } else {
-    Array.from(Keybord.midi.inputs).forEach((input) => {
-      input[1].onmidimessage = null
-    })
-    Keybord.midi = null
-  }
-}
-let useMidiCheckboxChanged = (isChecked) => {
-  Keyboard.useMidi = isChecked
-  updateMidiEventHandler()
 }
 
 createMasterChain()
@@ -796,10 +815,7 @@ onMounted(() => {
     />
   </div>
 
-  <!-- TODO: analyser -->
   <canvas ref="canvas" id="visualizer"></canvas>
-
-  <!-- TODO: note/chord recognition -->
 
   <!-- TODO: note/chord recognition
   <div id="note-recognition">
@@ -815,11 +831,12 @@ onMounted(() => {
 
   <Keyboard
     :musical-notes="musicalNotes"
-    :use-keyboard="Keyboard.useKeyboard"
-
-    :use-midi="Keyboard.useMidi"
+    :root-note="rootNote"
+    :use-keyboard="useKeyboard"
+    :use-mouse="useMouse"
+    :use-midi="useMidi"
     @checked-changed-keyboard="useKeyboardCheckboxChanged"
-
+    @checked-changed-mouse="useMouseCheckboxChanged"
     @checked-changed-midi="useMidiCheckboxChanged"
     @note-pressed="noteStart"
     @note-released="noteStop"
