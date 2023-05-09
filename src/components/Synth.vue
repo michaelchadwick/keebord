@@ -616,25 +616,25 @@ const keyController = (e) => {
 }
 
 const useMouseCheckboxChanged = (isChecked) => {
-  Keyboard.useMouse = isChecked
+  useMouse = isChecked
   updateMouseEventHandler()
 }
 // update computer mouse support
 const updateMouseEventHandler = () => {
-  if (Keyboard.useMouse) {
-    console.log('TODO: mouse/touch support enabled')
+  if (useMouse) {
+    // console.log('mouse/touch support enabled')
   } else {
-    console.log('TODO: mouse/touch support disabled')
+    // console.log('mouse/touch support disabled')
   }
 }
 
 const useMidiCheckboxChanged = (isChecked) => {
-  Keyboard.useMidi = isChecked
+  useMidi = isChecked
   updateMidiEventHandler()
 }
 // update midi input support
 const updateMidiEventHandler = () => {
-  if (Keyboard.useMidi) {
+  if (useMidi) {
     if ('requestMIDIAccess' in navigator) {
       navigator.requestMIDIAccess({ sysex: false }).then(onMIDISuccess, onMIDIFailure)
     } else {

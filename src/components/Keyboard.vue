@@ -1,8 +1,6 @@
 <script setup>
 import { onMounted } from 'vue'
 
-let pianoDiv = null
-
 const props = defineProps({
   musicalNotes: Array,
   rootNote: {
@@ -24,153 +22,72 @@ const props = defineProps({
 })
 const emit = defineEmits([
   'checkedChangedKeyboard',
-  'checkedChangedMouse',
   'checkedChangedMidi',
   'notePressed',
   'noteReleased'
 ])
 
+let pianoDiv = null
+let useMouse = props.useMouse
+let mousedown = false
+let hasTouch = 'ontouchstart' in window
+let lastTouchLeave
+let lastTouchEnter
+let onTouchLeaveEvents = []
+let onTouchEnterEvents = []
+
 const emitPressed = (e) => {
   e.preventDefault()
 
-  let noteid = null
-  let target = e.target
-  let target_parent = e.target.parentElement
+  if (useMouse) {
+    let noteid = null
+    let target = e.target
+    let target_parent = e.target.parentElement
 
-  if (target.dataset.noteid) {
-    if (e.type == 'mouseenter') {
-      if (mousedown) {
+    if (target.dataset.noteid) {
+      if (e.type == 'mouseenter') {
+        if (mousedown) {
+          noteid = parseInt(target.dataset.noteid)
+          emit('notePressed', noteid)
+          target.classList.add('active')
+        }
+      } else {
         noteid = parseInt(target.dataset.noteid)
         emit('notePressed', noteid)
         target.classList.add('active')
       }
-    } else {
-      noteid = parseInt(target.dataset.noteid)
+    } else if (target_parent.dataset.noteid) {
+      noteid = parseInt(target_parent.dataset.noteid)
       emit('notePressed', noteid)
-      target.classList.add('active')
+      target_parent.classList.add('active')
     }
-  } else if (target_parent.dataset.noteid) {
-    noteid = parseInt(target_parent.dataset.noteid)
-    emit('notePressed', noteid)
-    target_parent.classList.add('active')
   }
 }
 const emitReleased = (e) => {
   e.preventDefault()
 
-  let noteid = null
-  let target = e.target
-  let target_parent = e.target.parentElement
+  if (useMouse) {
+    let noteid = null
+    let target = e.target
+    let target_parent = e.target.parentElement
 
-  if (target.dataset.noteid) {
-    noteid = target.dataset.noteid
-    emit('noteReleased', noteid)
-    target.classList.remove('active')
-  } else if (target_parent.dataset.noteid) {
-    noteid = target_parent.dataset.noteid
-    emit('noteReleased', noteid)
-    target_parent.classList.remove('active')
+    if (target.dataset.noteid) {
+      noteid = target.dataset.noteid
+      emit('noteReleased', noteid)
+      target.classList.remove('active')
+    } else if (target_parent.dataset.noteid) {
+      noteid = target_parent.dataset.noteid
+      emit('noteReleased', noteid)
+      target_parent.classList.remove('active')
+    }
   }
 }
 
-// show/hide computer keyboard key labels depending on checkbox
-const updateKeyFlag = (isChecked) => {
-  emit('checkedChangedKeyboard', isChecked)
-
-  const keyLabels = document.querySelectorAll('.key-label')
-
-  if (isChecked) {
-    keyLabels.forEach(key => {
-      if (key.getAttribute('data-key')) key.classList.add('show')
-    })
-  } else {
-    keyLabels.forEach(key => {
-      if (key.getAttribute('data-key')) key.classList.remove('show')
-    })
-  }
-}
-
-let mousedown = false
-let hasTouch = 'ontouchstart' in window
-
-document.body.addEventListener('mousedown', () => mousedown = true)
-document.body.addEventListener('mouseup', () => mousedown = false)
-
-//
-// Start simulation of onTouchEnter
-// https://gist.github.com/zerobytes/677410f1e6ed33d133aa016422a8c706
-//
-
-let onTouchLeaveEvents = [];
-let onTouchEnterEvents = [];
-
-const onTouchEnter = function (selector, fn) {
-	onTouchEnterEvents.push([selector, fn]);
-
-	return function () {
-		onTouchEnterEvents.slice().map(function (e, i) {
-			if (e[0] === selector && e[1] === fn) {
-				onTouchEnterEvents.splice(1, i);
-			}
-		});
-	};
-};
-
-const onTouchLeave = function (selector, fn) {
-	onTouchLeaveEvents.push([selector, fn]);
-
-	return function () {
-		onTouchLeaveEvents.slice().map(function (e, i) {
-			if (e[0] === selector && e[1] === fn) {
-				onTouchLeaveEvents.splice(1, i);
-			}
-		});
-	};
-};
-
-let lastTouchLeave;
-let lastTouchEnter;
-
-document.addEventListener('touchmove', (e) => {
-	var el = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY);
-	if (!el) return;
-
-	onTouchLeaveEvents.map((event) => {
-		if (el != lastTouchEnter && lastTouchEnter && lastTouchEnter.matches(event[0])) {
-			if (lastTouchEnter !== lastTouchLeave) {
-				event[1](lastTouchEnter, e);
-				lastTouchLeave = lastTouchEnter;
-				lastTouchEnter = null;
-			}
-		}
-	});
-
-	onTouchEnterEvents.map((event) => {
-		if (el.matches(event[0]) && el !== lastTouchEnter) {
-			lastTouchEnter = el;
-			lastTouchLeave = null;
-			event[1](el, e);
-		}
-	});
-});
-
-//
-// End simulation of onTouchEnter
-//
-
-const keyLabel = function(note) {
-  return note.key && !hasTouch && props.useKeyboard
-}
-
-onMounted(() => {
-  // grab reference to on-screen keyboard
-  pianoDiv = document.getElementById('keyboard')
-  pianoDiv.scrollLeft = (pianoDiv.scrollWidth / 9) * 3
-
+// add event listeners to all octave and note scroll buttons
+const addScrollHandlers = () => {
   const octaveDistance = document.body.scrollWidth > 767 ? 280 : 329
   const noteDistance = document.body.scrollWidth > 767 ? 40 : 47
 
-  // add event listeners to all octave and note scroll buttons
   document.querySelector('#button-octave-left').addEventListener('click', () => {
     if (pianoDiv.scrollLeft > 0) {
       pianoDiv.scrollLeft -= octaveDistance
@@ -191,17 +108,145 @@ onMounted(() => {
       pianoDiv.scrollLeft += octaveDistance
     }
   })
+}
+
+// show/hide computer keyboard key labels depending on checkbox
+const updateKeyFlag = (isChecked) => {
+  emit('checkedChangedKeyboard', isChecked)
+
+  const keyLabels = document.querySelectorAll('.key-label')
+
+  if (isChecked) {
+    keyLabels.forEach(key => {
+      if (key.getAttribute('data-key')) key.classList.add('show')
+    })
+  } else {
+    keyLabels.forEach(key => {
+      if (key.getAttribute('data-key')) key.classList.remove('show')
+    })
+  }
+}
+const updateMouseFlag = (isChecked) => {
+  emit('checkedChangedMouse', isChecked)
+
+  useMouse = isChecked
+
+  const buttons = document.querySelectorAll('#keyboard button')
+
+  buttons.forEach(button => {
+    if (useMouse) {
+      button.classList.add('enabled-mouse')
+    } else {
+      button.classList.remove('enabled-mouse')
+    }
+  })
+
+  updateMouseEventHandler()
+}
+const updateMidiFlag = (isChecked) => {
+  emit('checkedChangedMidi', isChecked)
+}
+
+// update computer mouse support
+const updateMouseEventHandler = () => {
+  if (useMouse) {
+    document.body.addEventListener('mousedown', mouseController)
+    document.body.addEventListener('mouseup', mouseController)
+
+    document.addEventListener('touchmove', touchMoveController)
+
+    console.log('mouse/touch support enabled')
+  } else {
+    document.body.removeEventListener('mousedown', mouseController)
+    document.body.removeEventListener('mouseup', mouseController)
+
+    document.removeEventListener('touchmove', touchMoveController)
+
+    console.log('mouse/touch support disabled')
+  }
+}
+const mouseController = (e) => {
+  if (e.type == 'mousedown') {
+    mousedown = true
+  } else if (e.type == 'mouseup') {
+    mousedown = false
+  }
+}
+const touchMoveController = (e) => {
+  var el = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY)
+
+  if (!el) return
+
+  onTouchLeaveEvents.map((event) => {
+    if (el != lastTouchEnter && lastTouchEnter && lastTouchEnter.matches(event[0])) {
+      if (lastTouchEnter !== lastTouchLeave) {
+        event[1](lastTouchEnter, e)
+        lastTouchLeave = lastTouchEnter
+        lastTouchEnter = null
+      }
+    }
+  });
+
+  onTouchEnterEvents.map((event) => {
+    if (el.matches(event[0]) && el !== lastTouchEnter) {
+      lastTouchEnter = el
+      lastTouchLeave = null
+      event[1](el, e)
+    }
+  })
+}
+
+const onTouchEnter = (selector, fn) => {
+	onTouchEnterEvents.push([selector, fn]);
+
+	return function () {
+		onTouchEnterEvents.slice().map(function (e, i) {
+			if (e[0] === selector && e[1] === fn) {
+				onTouchEnterEvents.splice(1, i);
+			}
+		});
+	};
+}
+const onTouchLeave = (selector, fn) => {
+	onTouchLeaveEvents.push([selector, fn]);
+
+	return function () {
+		onTouchLeaveEvents.slice().map(function (e, i) {
+			if (e[0] === selector && e[1] === fn) {
+				onTouchLeaveEvents.splice(1, i);
+			}
+		});
+	};
+}
+
+if (useMouse) {
+  // document.addEventListener('touchmove', touchMoveController)
+  updateMouseEventHandler()
+} else {
+  // console.log('useMouse false, so did not add touchmove handler')
+}
+
+onMounted(() => {
+  // grab reference to on-screen keyboard
+  pianoDiv = document.getElementById('keyboard')
+  pianoDiv.scrollLeft = (pianoDiv.scrollWidth / 9) * 3
+
+  addScrollHandlers()
 
   // Simulation of onTouchEnter
-  onTouchEnter('#keyboard button', function (el) {
-    emit('notePressed', el.dataset.noteid)
-    el.classList.add('active')
-  });
+  onTouchEnter('#keyboard button', (el) => {
+    if (useMouse) {
+      emit('notePressed', el.dataset.noteid)
+      el.classList.add('active')
+    }
+  })
   // Simulation of onTouchLeave
-  onTouchLeave('#keyboard button', function (el) {
-    emit('noteReleased', el.dataset.noteid)
-    el.classList.remove('active')
-  });
+  onTouchLeave('#keyboard button', (el) => {
+    if (useMouse) {
+      emit('noteReleased', el.dataset.noteid)
+      el.classList.remove('active')
+    }
+  })
 })
 </script>
 
@@ -223,7 +268,7 @@ onMounted(() => {
       id="use-mouse"
       name="use-mouse"
       :checked="props.useMouse"
-      @change="$emit('checkedChangedMouse', $event.target.checked)"
+      @change="updateMouseFlag($event.target.checked)"
     />
     <label for="use-mouse" title="Enable mouse/touch support?">🐭/🖐️</label>
 
@@ -232,7 +277,7 @@ onMounted(() => {
       id="use-midi"
       name="use-midi"
       :checked="props.useMidi"
-      @change="$emit('checkedChangedMidi', $event.target.checked)"
+      @change="updateMidiFlag($event.target.checked)"
     />
     <label for="use-midi" title="Enable MIDI keyboard support?">🎹</label>
   </div>
@@ -240,6 +285,7 @@ onMounted(() => {
   <div id="keyboard-container">
     <div id="keyboard">
       <button
+        class="enabled-mouse"
         v-for="(note, index) in props.musicalNotes"
         :data-noteid="note.midi"
         :class="(note.name[1] != 'b') ? 'key-white' : 'key-black'"
@@ -317,6 +363,11 @@ onMounted(() => {
       padding: 0;
       position: relative;
     }
+      @media (hover: hover) {
+        #keyboard button:not(.enabled-mouse):hover {
+          cursor: default;
+        }
+      }
       #keyboard button div {
         font-weight: bold;
         line-height: 2;
@@ -359,11 +410,11 @@ onMounted(() => {
           border-top: 1px solid var(--color-border);
         }
         @media (hover: hover) {
-          #keyboard button.key-white:hover {
+          #keyboard button.key-white.enabled-mouse:hover {
             background-color: var(--green-bright);
             color: var(--color-text);
           }
-            body.dark-theme #keyboard button.key-white:hover {
+            body.dark-theme #keyboard button.key-white.enabled-mouse:hover {
               background-color: var(--green-deep-active);
             }
         }
@@ -410,7 +461,7 @@ onMounted(() => {
           border-top: 1px solid var(--color-border);
         }
         @media (hover: hover) {
-          #keyboard button.key-black:hover {
+          #keyboard button.key-black.enabled-mouse:hover {
             background-color: var(--green-flat);
             color: var(--color-flatnote-text);
           }
