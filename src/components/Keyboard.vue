@@ -7,13 +7,17 @@ const props = defineProps({
     type: String,
     default: () => 'C'
   },
+  scaleType: {
+    type: String,
+    default: () => 'chromatic'
+  },
   useKeyboard: {
     type: Boolean,
     default: () => false
   },
   useMouse: {
     type: Boolean,
-    default: () => true
+    default: () => false
   },
   useMidi: {
     type: Boolean,
@@ -24,11 +28,17 @@ const emit = defineEmits([
   'checkedChangedKeyboard',
   'checkedChangedMidi',
   'notePressed',
-  'noteReleased'
+  'noteReleased',
+  'selectChangeRootNote',
+  'selectChangeScale'
 ])
 
 let pianoDiv = null
 let useMouse = props.useMouse
+
+let rootNoteSelected = props.rootNote
+let scaleTypeSelected = props.scaleType
+
 let mousedown = false
 let hasTouch = 'ontouchstart' in window
 let lastTouchLeave
@@ -146,6 +156,16 @@ const updateMouseFlag = (isChecked) => {
 const updateMidiFlag = (isChecked) => {
   emit('checkedChangedMidi', isChecked)
 }
+const updateRootNoteValue = (value) => {
+  emit('selectChangeRootNote', value)
+
+  console.log('updateRootNoteValue', value)
+}
+const updateScaleTypeValue = (value) => {
+  emit('selectChangeScaleType', value)
+
+  console.log('scaleTypeSelected', scaleTypeSelected)
+}
 
 // update computer mouse support
 const updateMouseEventHandler = () => {
@@ -226,6 +246,20 @@ if (useMouse) {
   // console.log('useMouse false, so did not add touchmove handler')
 }
 
+const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+const scales = {
+  'chromatic':          ['1,1,1,1,1,1,1,1,1,1,1,1,1'],
+  'whole-tone':         ['2,2,2,2,2,2,2'],
+  'major':              ['2,2,2,1,2,2,2,1'],
+  'minor-harm':         ['2,1,2,2,1,3,3'],
+  'minor-melodic':      ['2,1,2,2,2,2,3'],
+  'major-pentatonic':   ['2,2,3,2,3,2'],
+  'minor-pentatonic':   ['3,2,2,3,2,3'],
+  'blues':              ['3,2,1,1,3,2,3'],
+  'phyrgian':           ['1,2,2,2,1,2,2,2'],
+  'dorian':             ['2,1,2,2,2,1,2,2']
+}
+
 onMounted(() => {
   // grab reference to on-screen keyboard
   pianoDiv = document.getElementById('keyboard')
@@ -247,46 +281,17 @@ onMounted(() => {
       el.classList.remove('active')
     }
   })
+
+  console.log('props', props)
 })
 </script>
 
 <template>
-  <div id="control-checkboxes">
-    <span>Input Types: </span>
-
-    <input
-      type="checkbox"
-      id="use-keyboard"
-      name="use-keyboard"
-      :checked="props.useKeyboard"
-      @change="updateKeyFlag($event.target.checked)"
-    />
-    <label for="use-keyboard" title="Enable keyboard support?">⌨️</label>
-
-    <input
-      type="checkbox"
-      id="use-mouse"
-      name="use-mouse"
-      :checked="props.useMouse"
-      @change="updateMouseFlag($event.target.checked)"
-    />
-    <label for="use-mouse" title="Enable mouse/touch support?">🐭/🖐️</label>
-
-    <input
-      type="checkbox"
-      id="use-midi"
-      name="use-midi"
-      :checked="props.useMidi"
-      @change="updateMidiFlag($event.target.checked)"
-    />
-    <label for="use-midi" title="Enable MIDI keyboard support?">🎹</label>
-  </div>
-
   <div id="keyboard-container">
     <div id="keyboard">
       <button
         class="enabled-mouse"
-        v-for="(note, index) in props.musicalNotes"
+        v-for="(note, index) in props.musicalNotes()"
         :data-noteid="note.midi"
         :class="(note.name[1] != 'b') ? 'key-white' : 'key-black'"
         @mousedown="emitPressed($event, index)"
@@ -303,30 +308,131 @@ onMounted(() => {
     </div>
   </div>
 
+  <div id="other-controls-container">
+    <label for="input-types" class="fieldset-label">Input</label>
+    <fieldset id="input-types">
+      <input
+        type="checkbox"
+        id="use-keyboard"
+        name="use-keyboard"
+        :checked="props.useKeyboard"
+        @change="updateKeyFlag($event.target.checked)"
+      />
+      <label for="use-keyboard" title="Enable keyboard support?">⌨️</label>
+
+      <input
+        type="checkbox"
+        id="use-mouse"
+        name="use-mouse"
+        :checked="props.useMouse"
+        @change="updateMouseFlag($event.target.checked)"
+      />
+      <label for="use-mouse" title="Enable mouse/touch support?">🐭/🖐️</label>
+
+      <input
+        type="checkbox"
+        id="use-midi"
+        name="use-midi"
+        :checked="props.useMidi"
+        @change="updateMidiFlag($event.target.checked)"
+      />
+      <label for="use-midi" title="Enable MIDI keyboard support?">🎹</label>
+    </fieldset>
+
+    <label for="root-scale" class="fieldset-label">Root/Scale</label>
+    <fieldset id="root-scale">
+      <select
+        class="small"
+        id="root-note"
+        name="root-note"
+        v-model="rootNoteSelected"
+        @change="updateRootNoteValue($event.target.value)"
+      >
+        <option disabled value="">- Root -</option>
+        <option
+          v-for="val in notes"
+          :value="val"
+        >{{ val }}</option>
+      </select>
+
+      <select
+        class="small"
+        id="scale-type"
+        name="scale-type"
+        v-model="scaleTypeSelected"
+        @change="updateScaleTypeValue($event.target.value)"
+      >
+        <option disabled value="">- Scale -</option>
+        <option
+          v-for="key in Object.keys(scales)"
+          :value="key"
+        >{{ key }}</option>
+      </select>
+    </fieldset>
+  </div>
+
   <div id="scroll-buttons">
     <button id="button-octave-left" title="scroll octave left">
-      <i class="fa fa-arrow-left"></i> OCT
+      <i class="fa fa-arrow-left"></i><span> OCT</span>
     </button>
-    <button id="button-note-left" title="scroll note left"><i class="fa fa-arrow-left"></i> NOTE</button>
-    <button id="button-note-right" title="scroll note right"><i class="fa fa-arrow-right"></i> NOTE</button>
+    <button id="button-note-left" title="scroll note left">
+      <i class="fa fa-arrow-left"></i><span> NOTE</span>
+    </button>
+    <button id="button-note-right" title="scroll note right">
+      <i class="fa fa-arrow-right"></i><span> NOTE</span>
+    </button>
     <button id="button-octave-right" title="scroll octave right">
-      <i class="fa fa-arrow-right"></i> OCT
+      <i class="fa fa-arrow-right"></i><span> OCT</span>
     </button>
   </div>
 </template>
 
 <style scoped>
-#control-checkboxes {
+#other-controls-container {
+  align-items: center;
   display: flex;
-  margin: 0 20px 3px;
+  flex-direction: column;
+  height: 60px;
+  margin: 5px 0;
+  overflow-y: auto;
 }
-  #control-checkboxes input {
-    margin: 0 0.35em 0 0.5em;
+  #other-controls-container fieldset {
+    align-items: center;
+    background-color: #fafafa;
+    border: 1px solid #aaaaaa;
+    border-radius: 4px;
+    display: flex;
+    margin-right: 10px;
+    padding: 2px;
   }
-  #control-checkboxes label {
+  #other-controls-container input {
+    margin: 0 0.35em;
+  }
+  #other-controls-container label {
     margin-right: 0.5em;
     min-width: 20px;
   }
+    #other-controls-container label.fieldset-label {
+      display: none;
+    }
+    #other-controls-container label + select.small {
+      margin-right: 5px;
+    }
+  #other-controls-container select.small {
+    height: 24px;
+    padding: 0;
+  }
+
+@media (min-width: 600px) {
+  #other-controls-container {
+    flex-direction: row;
+    height: 40px;
+    margin: 0 16px 3px;
+  }
+    #other-controls-container label.fieldset-label {
+      display: block;
+    }
+}
 
 #keyboard-container {
   border-top: 1px solid var(--black);
@@ -336,6 +442,10 @@ onMounted(() => {
   white-space: nowrap;
 }
   @media (min-width: 1024px) {
+    #other-controls-container {
+      margin-top: 10px;
+    }
+
     #keyboard-container {
       height: 300px;
       margin: 0 20px;
@@ -505,6 +615,15 @@ onMounted(() => {
     -webkit-user-select: none;
     -moz-user-select: none;
   }
+    #scroll-buttons button > span {
+      display: none;
+      font-weight: bold;
+    }
+      @media (min-width: 375px) {
+        #scroll-buttons button > span {
+          display: inline;
+        }
+      }
     @media (hover: hover) {
       #scroll-buttons button:hover {
         background-color: var(--green-deep-active);
