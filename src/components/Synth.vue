@@ -729,10 +729,10 @@ const midiController = (e) => {
 }
 
 const rootNoteChanged = (val) => {
-  console.log('rootNoteChanged', val)
+  console.log('Synth rootNoteChanged', val)
 }
 const scaleTypeChanged = (val) => {
-  console.log('scaleTypeChanged', val)
+  console.log('Synth scaleTypeChanged', val)
 }
 
 createMasterChain()

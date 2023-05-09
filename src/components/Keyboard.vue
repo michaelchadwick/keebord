@@ -29,8 +29,8 @@ const emit = defineEmits([
   'checkedChangedMidi',
   'notePressed',
   'noteReleased',
-  'selectChangeRootNote',
-  'selectChangeScale'
+  'selectChangedRootNote',
+  'selectChangedScaleType'
 ])
 
 let pianoDiv = null
@@ -157,14 +157,14 @@ const updateMidiFlag = (isChecked) => {
   emit('checkedChangedMidi', isChecked)
 }
 const updateRootNoteValue = (value) => {
-  emit('selectChangeRootNote', value)
+  emit('selectChangedRootNote', value)
 
-  console.log('updateRootNoteValue', value)
+  console.log('Keyboard updateRootNoteValue', value)
 }
 const updateScaleTypeValue = (value) => {
-  emit('selectChangeScaleType', value)
+  emit('selectChangedScaleType', value)
 
-  console.log('scaleTypeSelected', scaleTypeSelected)
+  console.log('Keyboard updateScaleTypeValue', value)
 }
 
 // update computer mouse support
