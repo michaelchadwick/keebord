@@ -27,3 +27,7 @@ sudo systemctl restart [httpd|apache2|nginx]
 ```sh
 npm run lint
 ```
+
+## Credits
+
+* [simulation of onTouchEnter](https://gist.github.com/zerobytes/677410f1e6ed33d133aa016422a8c706)
