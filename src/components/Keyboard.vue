@@ -141,16 +141,6 @@ const updateMouseFlag = (isChecked) => {
 
   useMouse = isChecked
 
-  const buttons = document.querySelectorAll('#keyboard button')
-
-  buttons.forEach(button => {
-    if (useMouse) {
-      button.classList.add('enabled-mouse')
-    } else {
-      button.classList.remove('enabled-mouse')
-    }
-  })
-
   updateMouseEventHandler()
 }
 const updateMidiFlag = (isChecked) => {
@@ -169,11 +159,15 @@ const updateScaleTypeValue = (value) => {
 
 // update computer mouse support
 const updateMouseEventHandler = () => {
+  const buttons = document.querySelectorAll('#keyboard button')
+
   if (useMouse) {
     document.body.addEventListener('mousedown', mouseController)
     document.body.addEventListener('mouseup', mouseController)
 
     document.addEventListener('touchmove', touchMoveController)
+
+    buttons.forEach(button => button.classList.add('enabled-mouse'))
 
     console.log('mouse/touch support enabled')
   } else {
@@ -181,6 +175,8 @@ const updateMouseEventHandler = () => {
     document.body.removeEventListener('mouseup', mouseController)
 
     document.removeEventListener('touchmove', touchMoveController)
+
+    buttons.forEach(button => button.classList.remove('enabled-mouse'))
 
     console.log('mouse/touch support disabled')
   }
@@ -239,13 +235,6 @@ const onTouchLeave = (selector, fn) => {
 	};
 }
 
-if (useMouse) {
-  // document.addEventListener('touchmove', touchMoveController)
-  updateMouseEventHandler()
-} else {
-  // console.log('useMouse false, so did not add touchmove handler')
-}
-
 const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
 const scales = {
   'chromatic':          ['1,1,1,1,1,1,1,1,1,1,1,1,1'],
@@ -266,6 +255,7 @@ onMounted(() => {
   pianoDiv.scrollLeft = (pianoDiv.scrollWidth / 9) * 3
 
   addScrollHandlers()
+  updateMouseEventHandler()
 
   // Simulation of onTouchEnter
   onTouchEnter('#keyboard button', (el) => {

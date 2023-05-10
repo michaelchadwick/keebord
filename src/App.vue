@@ -1,5 +1,6 @@
 <script setup>
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
+import Modal from './components/Modal.vue'
 import Synth from './components/Synth.vue'
 import NebyooApps from './components/NebyooApps.vue'
 
@@ -10,6 +11,23 @@ const KEEBORD_ENV_PROD_URL = [
   'piano.neb.host'
 ]
 
+const showHelpModal = ref(false)
+
+// handle both clicks and touches outside of modals
+Keebord._handleClickTouch = function(event) {
+  const dialog = document.getElementsByClassName('modal-wrapper')[0]
+
+  if (dialog) {
+    const isConfirm = dialog.classList.contains('modal-confirm')
+    const isTempApi = dialog.classList.contains('temp-api')
+
+    // only close if not a confirmation (and not a special temp-api)!
+    if (event.target == dialog && !isConfirm && !isTempApi) {
+      showHelpModal.value = false
+    }
+  }
+}
+
 onMounted(() => {
   // DOM > main divs/elements
   Keebord.dom = {
@@ -17,7 +35,7 @@ onMounted(() => {
     "btnNav": document.getElementById('button-nav'),
     "btnNavClose": document.getElementById('button-nav-close'),
     // "btnMidiReset": document.getElementById('button-midi-reset')
-    // "btnHelp": document.getElementById('button-help'),
+    "btnHelp": document.getElementById('button-help'),
     // "btnSettings": document.getElementById('button-settings'),
   }
 
@@ -33,11 +51,16 @@ onMounted(() => {
   Keebord.dom.btnNavClose.addEventListener('click', () => {
     Keebord.dom.navOverlay.classList.toggle('show')
   })
+
   if (Keebord.dom.btnMidiReset) {
     Keebord.dom.btnMidiReset.addEventListener('click', () => {
       //
     })
   }
+
+  // When the user clicks or touches anywhere outside of the modal, close it
+  window.addEventListener('click', Keebord._handleClickTouch)
+  window.addEventListener('touchend', Keebord._handleClickTouch)
 })
 </script>
 
@@ -72,11 +95,23 @@ onMounted(() => {
         </div>
       </div>
 
-      <!--
-      <button id="button-midi-reset" class="icon" aria-label="MIDI Reset" tabindex="-1">
-        <i class="fa-solid fa-circle-exclamation"></i>
+      <button id="button-help" class="icon" aria-label="Help" tabindex="-1" @click="showHelpModal = true">
+        <i class="fa-solid fa-question"></i>
       </button>
-      -->
+      <Transition name="modal">
+        <modal v-if="showHelpModal" @close="showHelpModal = false">
+          <template v-slot:header>
+            <h3>How to Use Keebord</h3>
+          </template>
+          <template v-slot:body>
+            <p>Welcome to Keebord, where you can play the piano. Use your mouse or finger (or enable computer keyboard or MIDI keyboard in the "Input" settings) to play the keys and revel in the sound of oscillators spinning for your pleasure. Various things about the synth used can be tweaked in the Synth Controls dropdown.</p>
+
+            <hr />
+
+            <strong>Dev</strong>: <a href="https://michaelchadwick.info" target="_blank">Michael Chadwick</a>.
+          </template>
+        </modal>
+      </Transition>
     </div>
 
     <div class="title">

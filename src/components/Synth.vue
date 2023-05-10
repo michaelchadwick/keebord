@@ -553,7 +553,9 @@ const createFrequencyOscillator = function(noteNum, startTime, envelope) {
   const note = musicalNotes[noteNum]
 
   // set oscillator wave type
-  oscillatorType = document.getElementById('osc-type').options[document.getElementById('osc-type').selectedIndex].value
+  oscillatorType = document.getElementById('osc-type')
+    .options[document.getElementById('osc-type').selectedIndex]
+    .value
   oscillator.type = oscillatorType
 
   // set oscillator frequency

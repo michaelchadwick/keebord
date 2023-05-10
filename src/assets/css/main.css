@@ -202,6 +202,7 @@ button.icon {
   color: #ffffff;
   cursor: pointer;
   font-size: 24px;
+  margin: 0 6px;
   padding: 1px;
 }
   @media (hover: hover) {
@@ -243,6 +244,10 @@ select {
     background-color: var(--color-background);
     color: var(--color-text);
   }
+
+hr {
+  margin: 0.5em 0;
+}
 
 #app {
   font-weight: normal;
