@@ -9,7 +9,7 @@ const props = defineProps({
   },
   useMouse: {
     type: Boolean,
-    default: () => false
+    default: () => true
   },
   useMidi: {
     type: Boolean,
@@ -249,7 +249,7 @@ const scales = {
 }
 
 const scaleFilter = () => {
-  console.log(`scaleFilter updated: ${rootNoteSelected} ${scaleTypeSelected}`)
+  // console.log(`scaleFilter updated: ${rootNoteSelected} ${scaleTypeSelected}`)
 
   let filteredNotes = []
 
@@ -291,7 +291,7 @@ const scaleFilter = () => {
     }
   }
 
-  console.log('filteredNotes', filteredNotes)
+  // console.log('filteredNotes', filteredNotes)
 
   return filteredNotes
 }
