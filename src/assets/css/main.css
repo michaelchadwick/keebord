@@ -30,7 +30,9 @@
   --color-background-soft: var(--white-soft);
   --color-background-mute: var(--white-mute);
   --color-button-black-background: var(--black);
+  --color-button-black-root-background: var(--gray-dark);
   --color-button-white-background: var(--white-mute);
+  --color-button-white-root-background: var(--gray-light);
 
   --color-border: var(--black);
   --color-key-border: var(--black-soft);

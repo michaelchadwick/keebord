@@ -11,7 +11,6 @@ let oscillatorType = 0
 let noteMap = {}
 let noteCurrent = null
 let startTime = 0
-let scaleFilter = null
 let detuneAmount = 64
 let drawVisual
 
@@ -179,131 +178,125 @@ const nodeControls = reactive({
   }
 })
 
-const musicalNotes = () => {
-  if (!scaleFilter) {
-    return [
-      // index 0
-      {name: 'C0',  frequency: 16.350,   midi: 12},
-      {name: 'Db0', frequency: 17.320,   midi: 13},
-      {name: 'D0',  frequency: 18.350,   midi: 14},
-      {name: 'Eb0', frequency: 19.450,   midi: 15},
-      {name: 'E0',  frequency: 20.600,   midi: 16},
-      {name: 'F0',  frequency: 21.830,   midi: 17},
-      {name: 'Gb0', frequency: 23.120,   midi: 18},
-      {name: 'G0',  frequency: 24.500,   midi: 19},
-      {name: 'Ab0', frequency: 25.960,   midi: 20},
-      {name: 'A0',  frequency: 27.500,   midi: 21},
-      {name: 'Bb0', frequency: 29.140,   midi: 22},
-      {name: 'B0',  frequency: 30.870,   midi: 23},
-      // index 12
-      {name: 'C1',  frequency: 32.700,   midi: 24},
-      {name: 'Db1', frequency: 34.650,   midi: 25},
-      {name: 'D1',  frequency: 36.710,   midi: 26},
-      {name: 'Eb1', frequency: 38.890,   midi: 27},
-      {name: 'E1',  frequency: 41.200,   midi: 28},
-      {name: 'F1',  frequency: 43.650,   midi: 29},
-      {name: 'Gb1', frequency: 46.250,   midi: 30},
-      {name: 'G1',  frequency: 49.000,   midi: 31},
-      {name: 'Ab1', frequency: 51.910,   midi: 32},
-      {name: 'A1',  frequency: 55.000,   midi: 33},
-      {name: 'Bb1', frequency: 58.270,   midi: 34},
-      {name: 'B1',  frequency: 61.740,   midi: 35},
-      // index 24
-      {name: 'C2',  frequency: 65.410,   midi: 36},
-      {name: 'Db2', frequency: 69.300,   midi: 37},
-      {name: 'D2',  frequency: 73.420,   midi: 38},
-      {name: 'Eb2', frequency: 77.780,   midi: 39},
-      {name: 'E2',  frequency: 82.410,   midi: 40},
-      {name: 'F2',  frequency: 87.310,   midi: 41},
-      {name: 'Gb2', frequency: 92.500,   midi: 42},
-      {name: 'G2',  frequency: 98.000,   midi: 43},
-      {name: 'Ab2', frequency: 103.830,  midi: 44},
-      {name: 'A2',  frequency: 110.000,  midi: 45},
-      {name: 'Bb2', frequency: 116.540,  midi: 46},
-      {name: 'B2',  frequency: 123.470,  midi: 47},
-      // index 36
-      {name: 'C3',  frequency: 130.810,  midi: 48},
-      {name: 'Db3', frequency: 138.590,  midi: 49},
-      {name: 'D3',  frequency: 146.830,  midi: 50},
-      {name: 'Eb3', frequency: 155.560,  midi: 51},
-      {name: 'E3',  frequency: 164.810,  midi: 52},
-      {name: 'F3',  frequency: 174.610,  midi: 53},
-      {name: 'Gb3', frequency: 185.000,  midi: 54},
-      {name: 'G3',  frequency: 196.000,  midi: 55},
-      {name: 'Ab3', frequency: 207.650,  midi: 56},
-      {name: 'A3',  frequency: 220.000,  midi: 57},
-      {name: 'Bb3', frequency: 233.080,  midi: 58},
-      {name: 'B3',  frequency: 246.940,  midi: 59},
-      // index 48
-      {name: 'C4',  frequency: 261.630,  midi: 60, key: 'z'},
-      {name: 'Db4', frequency: 277.180,  midi: 61, key: 's'},
-      {name: 'D4',  frequency: 293.660,  midi: 62, key: 'x'},
-      {name: 'Eb4', frequency: 311.130,  midi: 63, key: 'd'},
-      {name: 'E4',  frequency: 329.630,  midi: 64, key: 'c'},
-      {name: 'F4',  frequency: 349.230,  midi: 65, key: 'v'},
-      {name: 'Gb4', frequency: 369.990,  midi: 66, key: 'g'},
-      {name: 'G4',  frequency: 392.000,  midi: 67, key: 'b'},
-      {name: 'Ab4', frequency: 415.300,  midi: 68, key: 'h'},
-      {name: 'A4',  frequency: 440.000,  midi: 69, key: 'n'},
-      {name: 'Bb4', frequency: 466.160,  midi: 70, key: 'j'},
-      {name: 'B4',  frequency: 493.880,  midi: 71, key: 'm'},
-      // index 60
-      {name: 'C5',  frequency: 523.250,  midi: 72, key: 'q'},
-      {name: 'Db5', frequency: 554.370,  midi: 73, key: '2'},
-      {name: 'D5',  frequency: 587.330,  midi: 74, key: 'w'},
-      {name: 'Eb5', frequency: 622.250,  midi: 75, key: '3'},
-      {name: 'E5',  frequency: 659.250,  midi: 76, key: 'e'},
-      {name: 'F5',  frequency: 698.460,  midi: 77, key: 'r'},
-      {name: 'Gb5', frequency: 739.990,  midi: 78, key: '5'},
-      {name: 'G5',  frequency: 783.990,  midi: 79, key: 't'},
-      {name: 'Ab5', frequency: 830.610,  midi: 80, key: '6'},
-      {name: 'A5',  frequency: 880.000,  midi: 81, key: 'y'},
-      {name: 'Bb5', frequency: 932.330,  midi: 82, key: 'u',},
-      {name: 'B5',  frequency: 987.770,  midi: 83, key: 'i'},
-      // index 72
-      {name: 'C6',  frequency: 1046.500, midi: 84, key: 'o'},
-      {name: 'Db6', frequency: 1108.730, midi: 85},
-      {name: 'D6',  frequency: 1174.660, midi: 86},
-      {name: 'Eb6', frequency: 1244.510, midi: 87},
-      {name: 'E6',  frequency: 1318.510, midi: 88},
-      {name: 'F6',  frequency: 1396.910, midi: 89},
-      {name: 'Gb6', frequency: 1479.980, midi: 90},
-      {name: 'G6',  frequency: 1567.980, midi: 91},
-      {name: 'Ab6', frequency: 1661.220, midi: 92},
-      {name: 'A6',  frequency: 1760.000, midi: 93},
-      {name: 'Bb6', frequency: 1864.660, midi: 94},
-      {name: 'B6',  frequency: 1975.530, midi: 95},
-      // index 84
-      {name: 'C7',  frequency: 2093.000, midi: 96},
-      {name: 'Db7', frequency: 2217.460, midi: 97},
-      {name: 'D7',  frequency: 2349.320, midi: 98},
-      {name: 'Eb7', frequency: 2489.020, midi: 99},
-      {name: 'E7',  frequency: 2637.020, midi: 100},
-      {name: 'F7',  frequency: 2793.830, midi: 101},
-      {name: 'Gb7', frequency: 2959.960, midi: 102},
-      {name: 'G7',  frequency: 3135.960, midi: 103},
-      {name: 'Ab7', frequency: 3322.440, midi: 104},
-      {name: 'A7',  frequency: 3520.000, midi: 105},
-      {name: 'Bb7', frequency: 3729.310, midi: 106},
-      {name: 'B7',  frequency: 3951.070, midi: 107},
-      // index 96
-      {name: 'C8',  frequency: 4186.010, midi: 108},
-      {name: 'Db8', frequency: 4434.920, midi: 109},
-      {name: 'D8',  frequency: 4698.630, midi: 110},
-      {name: 'Eb8', frequency: 4978.030, midi: 111},
-      {name: 'E8',  frequency: 5274.040, midi: 112},
-      {name: 'F8',  frequency: 5587.650, midi: 113},
-      {name: 'Gb8', frequency: 5919.910, midi: 114},
-      {name: 'G8',  frequency: 6271.930, midi: 115},
-      {name: 'Ab8', frequency: 6644.880, midi: 116},
-      {name: 'A8',  frequency: 7040.000, midi: 117},
-      {name: 'Bb8', frequency: 7458.620, midi: 118},
-      {name: 'B8',  frequency: 7902.130, midi: 119},
-    ]
-  } else {
-    console.log('TODO: scaleFilter')
-  }
-}
+const musicalNotes = [
+  // index 0
+  {name: 'C0',  frequency: 16.350,   midi: 12},
+  {name: 'Db0', frequency: 17.320,   midi: 13},
+  {name: 'D0',  frequency: 18.350,   midi: 14},
+  {name: 'Eb0', frequency: 19.450,   midi: 15},
+  {name: 'E0',  frequency: 20.600,   midi: 16},
+  {name: 'F0',  frequency: 21.830,   midi: 17},
+  {name: 'Gb0', frequency: 23.120,   midi: 18},
+  {name: 'G0',  frequency: 24.500,   midi: 19},
+  {name: 'Ab0', frequency: 25.960,   midi: 20},
+  {name: 'A0',  frequency: 27.500,   midi: 21},
+  {name: 'Bb0', frequency: 29.140,   midi: 22},
+  {name: 'B0',  frequency: 30.870,   midi: 23},
+  // index 12
+  {name: 'C1',  frequency: 32.700,   midi: 24},
+  {name: 'Db1', frequency: 34.650,   midi: 25},
+  {name: 'D1',  frequency: 36.710,   midi: 26},
+  {name: 'Eb1', frequency: 38.890,   midi: 27},
+  {name: 'E1',  frequency: 41.200,   midi: 28},
+  {name: 'F1',  frequency: 43.650,   midi: 29},
+  {name: 'Gb1', frequency: 46.250,   midi: 30},
+  {name: 'G1',  frequency: 49.000,   midi: 31},
+  {name: 'Ab1', frequency: 51.910,   midi: 32},
+  {name: 'A1',  frequency: 55.000,   midi: 33},
+  {name: 'Bb1', frequency: 58.270,   midi: 34},
+  {name: 'B1',  frequency: 61.740,   midi: 35},
+  // index 24
+  {name: 'C2',  frequency: 65.410,   midi: 36},
+  {name: 'Db2', frequency: 69.300,   midi: 37},
+  {name: 'D2',  frequency: 73.420,   midi: 38},
+  {name: 'Eb2', frequency: 77.780,   midi: 39},
+  {name: 'E2',  frequency: 82.410,   midi: 40},
+  {name: 'F2',  frequency: 87.310,   midi: 41},
+  {name: 'Gb2', frequency: 92.500,   midi: 42},
+  {name: 'G2',  frequency: 98.000,   midi: 43},
+  {name: 'Ab2', frequency: 103.830,  midi: 44},
+  {name: 'A2',  frequency: 110.000,  midi: 45},
+  {name: 'Bb2', frequency: 116.540,  midi: 46},
+  {name: 'B2',  frequency: 123.470,  midi: 47},
+  // index 36
+  {name: 'C3',  frequency: 130.810,  midi: 48},
+  {name: 'Db3', frequency: 138.590,  midi: 49},
+  {name: 'D3',  frequency: 146.830,  midi: 50},
+  {name: 'Eb3', frequency: 155.560,  midi: 51},
+  {name: 'E3',  frequency: 164.810,  midi: 52},
+  {name: 'F3',  frequency: 174.610,  midi: 53},
+  {name: 'Gb3', frequency: 185.000,  midi: 54},
+  {name: 'G3',  frequency: 196.000,  midi: 55},
+  {name: 'Ab3', frequency: 207.650,  midi: 56},
+  {name: 'A3',  frequency: 220.000,  midi: 57},
+  {name: 'Bb3', frequency: 233.080,  midi: 58},
+  {name: 'B3',  frequency: 246.940,  midi: 59},
+  // index 48
+  {name: 'C4',  frequency: 261.630,  midi: 60, key: 'z'},
+  {name: 'Db4', frequency: 277.180,  midi: 61, key: 's'},
+  {name: 'D4',  frequency: 293.660,  midi: 62, key: 'x'},
+  {name: 'Eb4', frequency: 311.130,  midi: 63, key: 'd'},
+  {name: 'E4',  frequency: 329.630,  midi: 64, key: 'c'},
+  {name: 'F4',  frequency: 349.230,  midi: 65, key: 'v'},
+  {name: 'Gb4', frequency: 369.990,  midi: 66, key: 'g'},
+  {name: 'G4',  frequency: 392.000,  midi: 67, key: 'b'},
+  {name: 'Ab4', frequency: 415.300,  midi: 68, key: 'h'},
+  {name: 'A4',  frequency: 440.000,  midi: 69, key: 'n'},
+  {name: 'Bb4', frequency: 466.160,  midi: 70, key: 'j'},
+  {name: 'B4',  frequency: 493.880,  midi: 71, key: 'm'},
+  // index 60
+  {name: 'C5',  frequency: 523.250,  midi: 72, key: 'q'},
+  {name: 'Db5', frequency: 554.370,  midi: 73, key: '2'},
+  {name: 'D5',  frequency: 587.330,  midi: 74, key: 'w'},
+  {name: 'Eb5', frequency: 622.250,  midi: 75, key: '3'},
+  {name: 'E5',  frequency: 659.250,  midi: 76, key: 'e'},
+  {name: 'F5',  frequency: 698.460,  midi: 77, key: 'r'},
+  {name: 'Gb5', frequency: 739.990,  midi: 78, key: '5'},
+  {name: 'G5',  frequency: 783.990,  midi: 79, key: 't'},
+  {name: 'Ab5', frequency: 830.610,  midi: 80, key: '6'},
+  {name: 'A5',  frequency: 880.000,  midi: 81, key: 'y'},
+  {name: 'Bb5', frequency: 932.330,  midi: 82, key: 'u',},
+  {name: 'B5',  frequency: 987.770,  midi: 83, key: 'i'},
+  // index 72
+  {name: 'C6',  frequency: 1046.500, midi: 84, key: 'o'},
+  {name: 'Db6', frequency: 1108.730, midi: 85},
+  {name: 'D6',  frequency: 1174.660, midi: 86},
+  {name: 'Eb6', frequency: 1244.510, midi: 87},
+  {name: 'E6',  frequency: 1318.510, midi: 88},
+  {name: 'F6',  frequency: 1396.910, midi: 89},
+  {name: 'Gb6', frequency: 1479.980, midi: 90},
+  {name: 'G6',  frequency: 1567.980, midi: 91},
+  {name: 'Ab6', frequency: 1661.220, midi: 92},
+  {name: 'A6',  frequency: 1760.000, midi: 93},
+  {name: 'Bb6', frequency: 1864.660, midi: 94},
+  {name: 'B6',  frequency: 1975.530, midi: 95},
+  // index 84
+  {name: 'C7',  frequency: 2093.000, midi: 96},
+  {name: 'Db7', frequency: 2217.460, midi: 97},
+  {name: 'D7',  frequency: 2349.320, midi: 98},
+  {name: 'Eb7', frequency: 2489.020, midi: 99},
+  {name: 'E7',  frequency: 2637.020, midi: 100},
+  {name: 'F7',  frequency: 2793.830, midi: 101},
+  {name: 'Gb7', frequency: 2959.960, midi: 102},
+  {name: 'G7',  frequency: 3135.960, midi: 103},
+  {name: 'Ab7', frequency: 3322.440, midi: 104},
+  {name: 'A7',  frequency: 3520.000, midi: 105},
+  {name: 'Bb7', frequency: 3729.310, midi: 106},
+  {name: 'B7',  frequency: 3951.070, midi: 107},
+  // index 96
+  {name: 'C8',  frequency: 4186.010, midi: 108},
+  {name: 'Db8', frequency: 4434.920, midi: 109},
+  {name: 'D8',  frequency: 4698.630, midi: 110},
+  {name: 'Eb8', frequency: 4978.030, midi: 111},
+  {name: 'E8',  frequency: 5274.040, midi: 112},
+  {name: 'F8',  frequency: 5587.650, midi: 113},
+  {name: 'Gb8', frequency: 5919.910, midi: 114},
+  {name: 'G8',  frequency: 6271.930, midi: 115},
+  {name: 'Ab8', frequency: 6644.880, midi: 116},
+  {name: 'A8',  frequency: 7040.000, midi: 117},
+  {name: 'Bb8', frequency: 7458.620, midi: 118},
+  {name: 'B8',  frequency: 7902.130, midi: 119},
+]
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)()
 
@@ -730,13 +723,6 @@ const midiController = (e) => {
   }
 }
 
-const rootNoteChanged = (val) => {
-  console.log('Synth rootNoteChanged', val)
-}
-const scaleTypeChanged = (val) => {
-  console.log('Synth scaleTypeChanged', val)
-}
-
 createMasterChain()
 createSendChain()
 
@@ -851,8 +837,6 @@ onMounted(() => {
 
   <Keyboard
     :musical-notes="musicalNotes"
-    :root-note="rootNote"
-    :scale-type="scaleType"
     :use-keyboard="useKeyboard"
     :use-mouse="useMouse"
     :use-midi="useMidi"
@@ -861,8 +845,6 @@ onMounted(() => {
     @checked-changed-midi="useMidiCheckboxChanged"
     @note-pressed="noteStart"
     @note-released="noteStop"
-    @select-changed-root-note="rootNoteChanged"
-    @select-changed-scale-type="scaleTypeChanged"
   />
 
 </template>

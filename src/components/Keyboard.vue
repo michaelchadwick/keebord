@@ -1,16 +1,8 @@
 <script setup>
-import { onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 
 const props = defineProps({
   musicalNotes: Array,
-  rootNote: {
-    type: String,
-    default: () => 'C'
-  },
-  scaleType: {
-    type: String,
-    default: () => 'chromatic'
-  },
   useKeyboard: {
     type: Boolean,
     default: () => false
@@ -28,16 +20,14 @@ const emit = defineEmits([
   'checkedChangedKeyboard',
   'checkedChangedMidi',
   'notePressed',
-  'noteReleased',
-  'selectChangedRootNote',
-  'selectChangedScaleType'
+  'noteReleased'
 ])
 
 let pianoDiv = null
 let useMouse = props.useMouse
 
-let rootNoteSelected = props.rootNote
-let scaleTypeSelected = props.scaleType
+let rootNoteSelected = 'C'
+let scaleTypeSelected = 'chromatic'
 
 let mousedown = false
 let hasTouch = 'ontouchstart' in window
@@ -146,15 +136,15 @@ const updateMouseFlag = (isChecked) => {
 const updateMidiFlag = (isChecked) => {
   emit('checkedChangedMidi', isChecked)
 }
-const updateRootNoteValue = (value) => {
-  emit('selectChangedRootNote', value)
+const updateRootNoteValue = (note) => {
+  rootNoteSelected = note
 
-  console.log('Keyboard updateRootNoteValue', value)
+  displayedNotes.value = scaleFilter(props.musicalNotes)
 }
-const updateScaleTypeValue = (value) => {
-  emit('selectChangedScaleType', value)
+const updateScaleTypeValue = (scale) => {
+  scaleTypeSelected = scale
 
-  console.log('Keyboard updateScaleTypeValue', value)
+  displayedNotes.value = scaleFilter(props.musicalNotes)
 }
 
 // update computer mouse support
@@ -235,19 +225,78 @@ const onTouchLeave = (selector, fn) => {
 	};
 }
 
-const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+const notes = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
 const scales = {
-  'chromatic':          ['1,1,1,1,1,1,1,1,1,1,1,1,1'],
-  'whole-tone':         ['2,2,2,2,2,2,2'],
-  'major':              ['2,2,2,1,2,2,2,1'],
-  'minor-harm':         ['2,1,2,2,1,3,3'],
-  'minor-melodic':      ['2,1,2,2,2,2,3'],
-  'major-pentatonic':   ['2,2,3,2,3,2'],
-  'minor-pentatonic':   ['3,2,2,3,2,3'],
-  'blues':              ['3,2,1,1,3,2,3'],
-  'phyrgian':           ['1,2,2,2,1,2,2,2'],
-  'dorian':             ['2,1,2,2,2,1,2,2']
+  'chromatic':          [1,1,1,1,1,1,1,1,1,1,1,1,1],
+
+  'bebop':              [2,2,1,2,2,1,1,1],  // Bebop dominant scale
+  'blues':              [3,2,1,1,3,2,3],
+  'dorian':             [2,1,2,2,2,1,2],    // Dorian mode
+  'flamenco':           [1,3,1,2,1,3,1],    // Flamenco mode
+  'harmonic-major':     [2,2,1,2,1,3,1],
+  'harmonic-minor':     [2,1,2,2,1,3,1],
+  'hungarian-major':    [3,1,2,1,2,1,2],
+  'hungarian-minor':    [2,1,3,1,1,3,1],
+  'major':              [2,2,1,2,2,2],      // Ionian mode
+  'melodic-minor':      [2,1,2,2,2,2,1],
+  'natural-minor':      [2,1,2,2,1,2,2],    // Aeolian mode
+  'pentatonic-major':   [2,2,3,2,3],
+  'pentatonic-minor':   [3,2,2,3,2],
+  'persian':            [1,3,1,1,2,3,1],    // Persian dominant scale
+  'phrygian':           [1,2,2,2,1,2,2,2],
+  'tritone':            [1,3,2,1,3,2],
+  'whole-tone':         [2,2,2,2,2,2,2],
 }
+
+const scaleFilter = () => {
+  console.log(`scaleFilter updated: ${rootNoteSelected} ${scaleTypeSelected}`)
+
+  let filteredNotes = []
+
+  // default setting, so just ignore all the logic
+  if (rootNoteSelected == 'C' && scaleTypeSelected == 'chromatic') {
+    filteredNotes = Object.values(props.musicalNotes)
+  } else {
+    let notes = Object.values(props.musicalNotes)
+
+    const startIndex = notes.map(
+      note => note.name[1] == 'b' ? `${note.name[0]}${note.name[1]}` : note.name[0]
+    ).indexOf(rootNoteSelected)
+    const octaveCount = Object.keys(props.musicalNotes).length / 12
+
+    // start scale on root note
+    notes = notes.slice(startIndex)
+
+    // cycle through other notes in each octave
+    for (let oct = 0; oct < octaveCount; oct++) {
+      console.log('filtering octave:', oct)
+
+      const scaleSteps = scales[scaleTypeSelected]
+      const octIndex = (oct * 12) + 12
+      let noteIndex = oct * 12
+      let scaleStepIndex = 0
+
+      while (noteIndex < octIndex) {
+        console.log('checking noteIndex:', noteIndex)
+        console.log('checking scaleStepIndex:', scaleStepIndex)
+        console.log('scaleSteps[scaleStepIndex]', scaleSteps[scaleStepIndex])
+
+        if (notes[noteIndex]) {
+          filteredNotes.push(notes[noteIndex])
+        }
+
+        noteIndex += scaleSteps[scaleStepIndex]
+        scaleStepIndex++
+      }
+    }
+  }
+
+  console.log('filteredNotes', filteredNotes)
+
+  return filteredNotes
+}
+
+const displayedNotes = ref(scaleFilter(props.musicalNotes))
 
 onMounted(() => {
   // grab reference to on-screen keyboard
@@ -272,7 +321,7 @@ onMounted(() => {
     }
   })
 
-  console.log('props', props)
+  // console.log('props', props)
 })
 </script>
 
@@ -280,10 +329,14 @@ onMounted(() => {
   <div id="keyboard-container">
     <div id="keyboard">
       <button
-        class="enabled-mouse"
-        v-for="(note, index) in props.musicalNotes()"
+        v-for="(note, index) in displayedNotes"
         :data-noteid="note.midi"
-        :class="(note.name[1] != 'b') ? 'key-white' : 'key-black'"
+        :class="{
+          'key-white': note.name[1] != 'b' || scaleTypeSelected != 'chromatic',
+          'key-black': note.name[1] == 'b' && scaleTypeSelected == 'chromatic',
+          'root-note': note.name[1] == 'b' ? `${note.name[0]}${note.name[1]}` == rootNoteSelected : note.name[0] == rootNoteSelected,
+          'enabled-mouse': useMouse
+        }"
         @mousedown="emitPressed($event, index)"
         @mouseenter="emitPressed($event, index)"
         @mouseup="emitReleased($event, index)"
@@ -293,6 +346,7 @@ onMounted(() => {
         @touchcancel="emitReleased($event, index)"
       >
         <div class="key-label" v-bind:data-key="note.key">{{ note.key }}</div>
+        <div class="midi-label">{{ note.midi }}</div>
         <div class="note-label">{{ note.name }}</div>
       </button>
     </div>
@@ -455,6 +509,7 @@ onMounted(() => {
       border: 2px solid var(--color-key-border);
       border-top-left-radius: 0;
       border-top-right-radius: 0;
+      cursor: auto;
       display: inline-block;
       font-size: 1.5rem;
       font-weight: 700;
@@ -506,6 +561,10 @@ onMounted(() => {
             width: 40px;
           }
         }
+        #keyboard button.key-white.root-note {
+          background-color: var(--color-button-white-root-background);
+        }
+
         body.dark-theme #keyboard button.key-white {
           border-top: 1px solid var(--color-border);
         }
@@ -513,6 +572,7 @@ onMounted(() => {
           #keyboard button.key-white.enabled-mouse:hover {
             background-color: var(--green-bright);
             color: var(--color-text);
+            cursor: pointer;
           }
             body.dark-theme #keyboard button.key-white.enabled-mouse:hover {
               background-color: var(--green-deep-active);
@@ -538,6 +598,9 @@ onMounted(() => {
                 margin: 0 6px;
               }
             }
+            #keyboard button.key-white div.midi-label {
+              color: var(--gray);
+            }
 
       #keyboard button.key-black {
         background-color: var(--color-button-black-background);
@@ -557,6 +620,10 @@ onMounted(() => {
             width: 36px;
           }
         }
+        #keyboard button.key-black.root-note {
+          background-color: var(--color-button-black-root-background);
+        }
+
         body.dark-theme #keyboard button.key-black {
           border-top: 1px solid var(--color-border);
         }
@@ -583,6 +650,9 @@ onMounted(() => {
             }
           #keyboard button.key-black div.note-label {
             color: var(--color-flatnote-text);
+          }
+          #keyboard button div.midi-label {
+            color: var(--gray);
           }
 
 #scroll-buttons {
