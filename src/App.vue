@@ -274,7 +274,7 @@ header {
     }
       header .title h1 span.flat {
         bottom: 3px;
-        color: var(--black);
+        color: var(--green-bright);
         position: relative;
       }
   @media (min-width: 768px) {
