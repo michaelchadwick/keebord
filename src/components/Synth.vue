@@ -1,8 +1,10 @@
 <script setup>
-import { reactive, onMounted } from 'vue'
+import { getCurrentInstance, onMounted, reactive } from 'vue'
 import NodeControl from './NodeControl.vue'
 import Keyboard from './Keyboard.vue'
 import ADSREnvelope from 'adsr-envelope'
+
+const env = getCurrentInstance().appContext.config.globalProperties.env
 
 const oscillators = reactive([])
 
@@ -838,7 +840,7 @@ onMounted(() => {
   <Keyboard
     :musical-notes="musicalNotes"
     :use-keyboard="useKeyboard"
-    :use-mouse="useMouse"
+    :use-mouse="env == 'prod' ? true : false"
     :use-midi="useMidi"
     @checked-changed-keyboard="useKeyboardCheckboxChanged"
     @checked-changed-mouse="useMouseCheckboxChanged"

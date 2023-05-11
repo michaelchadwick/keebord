@@ -3,7 +3,14 @@ import App from './App.vue'
 
 import './assets/css/main.css'
 
+const KEEBORD_ENV_PROD_URL = [
+  'keebord.neb.host',
+  'piano.neb.host'
+]
+
 const app = createApp(App)
+
+app.config.globalProperties.env = KEEBORD_ENV_PROD_URL.includes(document.location.hostname) ? 'prod' : 'local'
 
 app.mount('#app')
 

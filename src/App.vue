@@ -1,15 +1,10 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { getCurrentInstance, onMounted, ref } from 'vue';
 import Modal from './components/Modal.vue'
 import Synth from './components/Synth.vue'
 import NebyooApps from './components/NebyooApps.vue'
 
 if ((typeof Keebord) === 'undefined') var Keebord = {}
-
-const KEEBORD_ENV_PROD_URL = [
-  'keebord.neb.host',
-  'piano.neb.host'
-]
 
 const showHelpModal = ref(false)
 
@@ -39,9 +34,9 @@ onMounted(() => {
     // "btnSettings": document.getElementById('button-settings'),
   }
 
-  Keebord.env = KEEBORD_ENV_PROD_URL.includes(document.location.hostname) ? 'prod' : 'local'
+  const env = getCurrentInstance().appContext.config.globalProperties.env
 
-  if (Keebord.env == 'local') {
+  if (env == 'local') {
     document.title = '(LH) ' + document.title
   }
 

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 
 const props = defineProps({
   musicalNotes: Array,
@@ -7,10 +7,7 @@ const props = defineProps({
     type: Boolean,
     default: () => false
   },
-  useMouse: {
-    type: Boolean,
-    default: () => true
-  },
+  useMouse: Boolean,
   useMidi: {
     type: Boolean,
     default: () => false
