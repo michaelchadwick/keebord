@@ -318,7 +318,8 @@ onMounted(() => {
     }
   })
 
-  // console.log('props', props)
+  updateKeyFlag(props.useKeyboard)
+  updateMidiFlag(props.useMidi)
 })
 </script>
 
