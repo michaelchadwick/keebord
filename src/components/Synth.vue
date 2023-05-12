@@ -645,11 +645,13 @@ const updateMidiEventHandler = () => {
       console.error('navigator.requestMIDIAccess() not supported')
     }
   } else {
-    Array.from(Keybord.midi.inputs).forEach((input) => {
-      input[1].onmidimessage = null
-    })
-    Keybord.midi = null
-    console.log('midi support disabled', Keybord.midi)
+    if (Keybord.midi) {
+      Array.from(Keybord.midi.inputs).forEach((input) => {
+        input[1].onmidimessage = null
+      })
+      Keybord.midi = null
+      console.log('midi support disabled', Keybord.midi)
+    }
   }
 }
 const onMIDISuccess = (midi) => {
