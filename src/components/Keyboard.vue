@@ -10,7 +10,7 @@ const props = defineProps({
   useMouse: Boolean,
   useMidi: {
     type: Boolean,
-    default: () => false
+    default: () => true
   }
 })
 const emit = defineEmits([
@@ -656,7 +656,7 @@ onMounted(() => {
 #scroll-buttons {
   display: flex;
   justify-content: space-between;
-  margin-top: 10px;
+  margin-top: 5px;
   padding: 0 10px;
   width: 100%;
 }
@@ -684,7 +684,7 @@ onMounted(() => {
       }
     @media (hover: hover) {
       #scroll-buttons button:hover {
-        background-color: var(--green-deep-active);
+        background-color: var(--green);
         color: var(--green-bright-active);
       }
     }

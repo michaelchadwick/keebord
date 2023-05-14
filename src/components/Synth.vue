@@ -1,5 +1,5 @@
 <script setup>
-import { getCurrentInstance, onMounted, reactive } from 'vue'
+import { getCurrentInstance, onMounted, reactive, ref } from 'vue'
 import NodeControl from './NodeControl.vue'
 import Keyboard from './Keyboard.vue'
 import ADSREnvelope from 'adsr-envelope'
@@ -31,6 +31,16 @@ const adsr = new ADSREnvelope({
   decayCurve: 'exp',
   releaseCurve: 'exp',
 })
+
+const intervals = {
+  'major': [4,3],
+  'aug'  : [4,4],
+  'minor': [3,4],
+  'dim'  : [3,3],
+  'dom7' : [4,3,3],
+  'min7' : [3,4,3],
+  'maj7' : [4,3,4],
+}
 
 const nodeControls = reactive({
   waveType: {
@@ -300,6 +310,8 @@ const musicalNotes = [
   {name: 'B8',  frequency: 7902.130, midi: 119},
 ]
 
+let currentNotes = ref([])
+
 const audioContext = new (window.AudioContext || window.webkitAudioContext)()
 
 const gainMaster = audioContext.createGain()
@@ -483,10 +495,11 @@ const noteStart = function(noteNum, velocity = 64) {
   oscillators[noteNum][0].start(startTime)
 
   // TODO: note/chord recognition
-  // console.log('noteStart osc values', Object.values(oscillators))
-  // console.log('noteStart osc values length', Object.values(oscillators).length)
+  currentNotes.value = getChord(Object.keys(oscillators))
+
+  // console.log(`noteStart oscs: ${currentNotes}[${currentNotes.length}]`)
   // console.log('noteStart oscillators[noteNum]', oscillators[noteNum][0].frequency.value)
-  // console.log('noteStart osc values == null?', Object.values(oscillators).every(osc => osc == null))
+  // console.log('noteStart oscs == null?', Object.values(oscillators).every(osc => osc == null))
 
   // oscillators[noteNum][0].onended = function() {
   //   if (oscillators[noteNum]) {
@@ -537,9 +550,10 @@ const noteStop = function(noteNum, velocity = 64) {
     delete oscillators[noteNum]
 
     // TODO: note/chord recognition
-    // console.log('noteStop osc values', Object.values(oscillators))
-    // console.log('noteStop osc values length', Object.values(oscillators).length)
-    // console.log('noteStop osc values == null', Object.values(oscillators).every(osc => osc == null))
+    currentNotes.value = getChord(Object.keys(oscillators))
+
+    // console.log(`noteStop oscs: ${oscs}[${oscs.length}]`)
+    // console.log('noteStop oscs == null', Object.values(oscillators).every(osc => osc == null))
   }
 }
 const createFrequencyOscillator = function(noteNum, startTime, envelope) {
@@ -730,6 +744,84 @@ const midiController = (e) => {
 createMasterChain()
 createSendChain()
 
+const getChord = (midiNums) => {
+  // console.log('getChord notes', midiNums)
+
+  if (midiNums.length > 2) {
+    const noteCount = midiNums.length
+    let chordName
+    let intval1, intval2, intval3
+
+    switch (noteCount) {
+      case 3: // triad
+        intval1 = midiNums[1] - midiNums[0]
+        intval2 = midiNums[2] - midiNums[1]
+
+        if (_arraysAreEqual([intval1, intval2], intervals['major'])) {
+          chordName = `${_midi2Name(midiNums[0])}maj`
+        }
+        else if (_arraysAreEqual([intval1, intval2], intervals['aug'])) {
+          chordName = `${_midi2Name(midiNums[0])}aug`
+        }
+        else if (_arraysAreEqual([intval1, intval2], intervals['minor'])) {
+          chordName = `${_midi2Name(midiNums[0])}min`
+        }
+        else if (_arraysAreEqual([intval1, intval2], intervals['dim'])) {
+          chordName = `${_midi2Name(midiNums[0])}dim`
+        }
+        else {
+          chordName = `${_midi2Name(midiNums[0])}(unidentified)`
+        }
+
+        break
+
+      case 4:
+        intval1 = midiNums[1] - midiNums[0]
+        intval2 = midiNums[2] - midiNums[1]
+        intval3 = midiNums[3] - midiNums[2]
+
+        if (_arraysAreEqual([intval1, intval2, intval3], intervals['dom7'])) {
+          chordName = `${_midi2Name(midiNums[0])}7`
+        }
+        else if (_arraysAreEqual([intval1, intval2, intval3], intervals['min7'])) {
+          chordName = `${_midi2Name(midiNums[0])}min7`
+        }
+        else if (_arraysAreEqual([intval1, intval2, intval3], intervals['maj7'])) {
+          chordName = `${_midi2Name(midiNums[0])}maj7`
+        }
+        else {
+          chordName = `${_midi2Name(midiNums[0])}(unidentified)`
+        }
+
+        break
+
+      default:
+        chordName = `${_midi2Name(midiNums[0])}(unidentified)`
+
+        break
+    }
+
+    return chordName
+  } else {
+    const letters = []
+
+    midiNums.forEach(midi => {
+      letters.push(_midi2Name(midi))
+    })
+
+    return letters.join(',')
+  }
+}
+
+const _arraysAreEqual = (arr1, arr2) => {
+  return arr1.join() == arr2.join()
+}
+const _midi2Name = (midiNumber) => {
+  const name = musicalNotes.filter(mNote => mNote.midi == midiNumber)[0].name
+
+  return name[2] == 'b' ? `${name[0]}${name[1]}` : `${name[0]}`
+}
+
 // TODO: analyser/oscilloscope
 // const bufferLength = analyser.fftSize
 
@@ -804,14 +896,22 @@ onMounted(() => {
 
 <template>
 
-  <h3 id="synth-controls-header">
-    <span @click="toggleSynthControls">Synth Controls</span>
-    <img
-      id="toggle-synth-controls"
-      src="/assets/svg/bi-caret-right-fill.svg"
-      @click="toggleSynthControls"
-    />
-  </h3>
+  <div id="synth-controls-header">
+    <button @click="toggleSynthControls">
+      <img
+        id="toggle-synth-controls"
+        src="/assets/svg/bi-caret-right-fill.svg"
+      />
+      Synth Controls
+    </button>
+
+    <span
+      id="note-recognition"
+      :class="{ 'empty': !currentNotes.length }"
+    >
+      {{ currentNotes.length ? currentNotes : 'No notes held.' }}
+    </span>
+  </div>
   <div id="synth-controls-container" style="display: none">
     <NodeControl
       v-for="(control, key) in nodeControls"
@@ -826,18 +926,6 @@ onMounted(() => {
   </div>
 
   <canvas ref="canvas" id="visualizer"></canvas>
-
-  <!-- TODO: note/chord recognition
-  <div id="note-recognition">
-    <template v-if="Object.values(oscillators).length">
-      {{ Object.values(oscillators).map(osc => musicalNotes[noteNum - 12].name).join(',') }}
-      {{ Object.entries(oscillators) }}
-    </template>
-    <template v-else>
-      No notes.
-    </template>
-  </div>
-  -->
 
   <Keyboard
     :musical-notes="musicalNotes"
@@ -855,21 +943,48 @@ onMounted(() => {
 
 <style scoped>
 #synth-controls-header {
-  padding: 5px 10px 0 15px;
+  align-items: center;
+  display: flex;
+  justify-content: flex-start;
+  padding: 2px 15px;
 }
-  @media (hover: hover) {
-    #synth-controls-header:hover {
-      cursor: pointer;
+  #synth-controls-header button {
+    border: 2px solid var(--color-border);
+    color: var(--color-text);
+    font-size: 1.5rem;
+  }
+    @media (hover: hover) {
+      #synth-controls-header button:hover {
+        background-color: var(--green);
+        color: var(--green-bright-active);
+      }
     }
-  }
-  #synth-controls-header img {
-    left: 2px;
-    position: relative;
-    top: 3px;
-  }
+    #synth-controls-header button img {
+      left: 0;
+      position: relative;
+      top: 2px;
+    }
   body.dark-theme #synth-controls-header img {
     filter: invert(100%) sepia(100%) saturate(13%) hue-rotate(237deg) brightness(104%) contrast(104%);
   }
+  #note-recognition {
+    background-color: var(--green-bright-active);
+    border: 1px solid var(--gray-dark);
+    border-radius: 4px;
+    box-shadow: inset 0 0 5px 1px var(--green);
+    color: var(--black);
+    font-weight: bold;
+    height: 35px;
+    margin-left: 1rem;
+    padding: 0.4rem 0.75rem;
+    width: 150px;
+  }
+    #note-recognition.empty {
+      background-color: var(--gray-light);
+      box-shadow: inset 0 0 5px 1px var(--gray);
+      color: var(--gray);
+      font-weight: normal;
+    }
 
 #synth-controls-container {
   background-color: var(--white-soft);
@@ -924,17 +1039,6 @@ onMounted(() => {
       #synth-controls-container fieldset.control-column:last-child {
         margin-right: 0;
       }
-}
-
-#note-recognition {
-  background-color: var(--white-soft);
-  border: 1px solid var(--black);
-  box-shadow: 1px 1px 1px 1px;
-  color: var(--black);
-  height: 50px;
-  margin: 1rem auto;
-  padding: 1rem;
-  width: 50%;
 }
 
 #visualizer {
