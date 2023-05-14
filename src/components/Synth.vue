@@ -37,9 +37,12 @@ const intervals = {
   'aug'  : [4,4],
   'minor': [3,4],
   'dim'  : [3,3],
+  'sus2' : [2,5],
+  'sus4' : [5,2],
   'dom7' : [4,3,3],
   'min7' : [3,4,3],
   'maj7' : [4,3,4],
+  '7sus4': [5,2,3]
 }
 
 const nodeControls = reactive({
@@ -769,6 +772,12 @@ const getChord = (midiNums) => {
         else if (_arraysAreEqual([intval1, intval2], intervals['dim'])) {
           chordName = `${_midi2Name(midiNums[0])}dim`
         }
+        else if (_arraysAreEqual([intval1, intval2], intervals['sus2'])) {
+          chordName = `${_midi2Name(midiNums[0])}sus2`
+        }
+        else if (_arraysAreEqual([intval1, intval2], intervals['sus4'])) {
+          chordName = `${_midi2Name(midiNums[0])}sus4`
+        }
         else {
           chordName = `${_midi2Name(midiNums[0])}(unidentified)`
         }
@@ -788,6 +797,9 @@ const getChord = (midiNums) => {
         }
         else if (_arraysAreEqual([intval1, intval2, intval3], intervals['maj7'])) {
           chordName = `${_midi2Name(midiNums[0])}maj7`
+        }
+        else if (_arraysAreEqual([intval1, intval2, intval3], intervals['7sus4'])) {
+          chordName = `${_midi2Name(midiNums[0])}7sus4`
         }
         else {
           chordName = `${_midi2Name(midiNums[0])}(unidentified)`
