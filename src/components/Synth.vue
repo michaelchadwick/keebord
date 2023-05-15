@@ -505,18 +505,18 @@ const noteStart = function(noteNum, velocity = 64) {
   currentNotes.value = getChord(Object.keys(oscillators))
 
   // FIXME: potential stuck note fix?
-  // oscillators[noteNum][0].onended = function() {
-  //   if (oscillators[noteNum] &&
-  //     oscillators[noteNum][1] &&
-  //     oscillators[noteNum][1].gain &&
-  //     'disconnect' in oscillators[noteNum][1].gain
-  //   ) {
-  //     oscillators[noteNum][1].gain.cancelScheduledValues(startTime)
-  //     oscillators[noteNum][1].gain.disconnect()
-  //     oscillators[noteNum][1].disconnect()
-  //     delete oscillators[noteNum]
-  //   }
-  // }
+  oscillators[noteNum][0].onended = function() {
+    if (oscillators[noteNum] &&
+      oscillators[noteNum][1] &&
+      oscillators[noteNum][1].gain &&
+      'disconnect' in oscillators[noteNum][1].gain
+    ) {
+      oscillators[noteNum][1].gain.cancelScheduledValues(startTime)
+      oscillators[noteNum][1].gain.disconnect()
+      oscillators[noteNum][1].disconnect()
+      delete oscillators[noteNum]
+    }
+  }
 }
 const noteStop = function(noteNum, velocity = 64) {
   // kill current note reference
