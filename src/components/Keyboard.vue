@@ -11,6 +11,10 @@ const props = defineProps({
   useMidi: {
     type: Boolean,
     default: () => true
+  },
+  useVisualizer: {
+    type: Boolean,
+    default: () => false
   }
 })
 const emit = defineEmits([
@@ -142,6 +146,11 @@ const updateScaleTypeValue = (scale) => {
   scaleTypeSelected = scale
 
   displayedNotes.value = scaleFilter(props.musicalNotes)
+}
+const updateVisualizerFlag = (isChecked) => {
+  const canvas = document.getElementById('visualizer-container')
+
+  isChecked ? canvas.style.display = 'block' : canvas.style.display = 'none'
 }
 
 // update computer mouse support
@@ -324,6 +333,22 @@ onMounted(() => {
 </script>
 
 <template>
+
+  <div id="scroll-buttons">
+    <button id="button-octave-left" title="scroll octave left">
+      <i class="fa fa-arrow-left"></i><span> OCT</span>
+    </button>
+    <button id="button-note-left" title="scroll note left">
+      <i class="fa fa-arrow-left"></i><span> NOTE</span>
+    </button>
+    <button id="button-note-right" title="scroll note right">
+      <i class="fa fa-arrow-right"></i><span> NOTE</span>
+    </button>
+    <button id="button-octave-right" title="scroll octave right">
+      <i class="fa fa-arrow-right"></i><span> OCT</span>
+    </button>
+  </div>
+
   <div id="keyboard-container">
     <div id="keyboard">
       <button
@@ -381,7 +406,7 @@ onMounted(() => {
       <label for="use-midi" title="Enable MIDI keyboard support?">🎹</label>
     </fieldset>
 
-    <label for="root-scale" class="fieldset-label">Root/Scale</label>
+    <label for="root-scale" class="fieldset-label">Scale</label>
     <fieldset id="root-scale">
       <select
         class="small"
@@ -411,70 +436,63 @@ onMounted(() => {
         >{{ key }}</option>
       </select>
     </fieldset>
+
+    <label for="output-types" class="fieldset-label">Output</label>
+    <fieldset id="output-types">
+      <input
+        type="checkbox"
+        id="use-visualizer"
+        name="use-visualizer"
+        :checked="useVisualizer"
+        @change="updateVisualizerFlag($event.target.checked)"
+      />
+      <label for="use-visualizer" title="Enable visualizer?">📈</label>
+    </fieldset>
   </div>
 
-  <div id="scroll-buttons">
-    <button id="button-octave-left" title="scroll octave left">
-      <i class="fa fa-arrow-left"></i><span> OCT</span>
-    </button>
-    <button id="button-note-left" title="scroll note left">
-      <i class="fa fa-arrow-left"></i><span> NOTE</span>
-    </button>
-    <button id="button-note-right" title="scroll note right">
-      <i class="fa fa-arrow-right"></i><span> NOTE</span>
-    </button>
-    <button id="button-octave-right" title="scroll octave right">
-      <i class="fa fa-arrow-right"></i><span> OCT</span>
-    </button>
-  </div>
 </template>
 
 <style scoped>
-#other-controls-container {
-  align-items: center;
+#scroll-buttons {
   display: flex;
-  flex-direction: column;
-  height: 60px;
-  margin: 5px 0;
-  overflow-y: auto;
+  justify-content: space-between;
+  margin: 2px 0;
+  padding: 0 3px;
+  width: 100%;
 }
-  #other-controls-container fieldset {
-    align-items: center;
-    background-color: #fafafa;
-    border: 1px solid #aaaaaa;
-    border-radius: 4px;
-    display: flex;
-    margin-right: 10px;
-    padding: 2px;
+  @media (min-width: 1024px) {
+    #scroll-buttons {
+      padding: 5px 20px;
+    }
   }
-  #other-controls-container input {
-    margin: 0 0.35em;
+  #scroll-buttons button {
+    border: 2px solid var(--color-border);
+    color: var(--color-text);
+    font-size: 1.5rem;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
   }
-  #other-controls-container label {
-    margin-right: 0.5em;
-    min-width: 20px;
-  }
-    #other-controls-container label.fieldset-label {
+    #scroll-buttons button > span {
       display: none;
+      font-weight: bold;
     }
-    #other-controls-container label + select.small {
-      margin-right: 5px;
+      @media (min-width: 375px) {
+        #scroll-buttons button > span {
+          display: inline;
+        }
+      }
+    @media (hover: hover) {
+      #scroll-buttons button:hover {
+        background-color: var(--green);
+        color: var(--green-bright-active);
+      }
     }
-  #other-controls-container select.small {
-    height: 24px;
-    padding: 0;
-  }
-
-@media (min-width: 600px) {
-  #other-controls-container {
-    flex-direction: row;
-    height: 40px;
-    margin: 0 16px 3px;
-  }
-    #other-controls-container label.fieldset-label {
-      display: block;
+    @media (min-width: 768px) {
+      #scroll-buttons button {
+        font-size: 1.75rem;
+      }
     }
-}
 
 #keyboard-container {
   border-top: 1px solid var(--black);
@@ -653,44 +671,83 @@ onMounted(() => {
             color: var(--gray);
           }
 
-#scroll-buttons {
+#other-controls-container {
+  align-items: center;
   display: flex;
-  justify-content: space-between;
-  margin-top: 5px;
-  padding: 0 10px;
-  width: 100%;
+  flex-direction: column;
+  height: 60px;
+  margin: 5px 0;
+  overflow-y: auto;
 }
+  @media (min-width: 667px) {
+    #other-controls-container {
+      flex-direction: row;
+      height: 40px;
+      margin: 0 5px;
+    }
+  }
   @media (min-width: 1024px) {
-    #scroll-buttons {
-      padding: 0 20px;
+    #other-controls-container {
+      margin: 5px 20px;
     }
   }
-  #scroll-buttons button {
-    border: 2px solid var(--color-border);
-    color: var(--color-text);
-    font-size: 1.5rem;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
+  #other-controls-container fieldset {
+    align-items: center;
+    background-color: #fafafa;
+    border: 1px solid #aaaaaa;
+    border-radius: 4px;
+    border-bottom-left-radius: 4px;
+    border-top-left-radius: 4px;
+    display: flex;
+    height: 30px;
+    margin: 0 10px 0 0;
+    padding: 2px;
   }
-    #scroll-buttons button > span {
+  #other-controls-container input {
+    margin: 0 0.35em;
+  }
+  #other-controls-container label {
+    margin-right: 0.2em;
+    min-width: 20px;
+  }
+    @media (min-width: 667px) {
+      #other-controls-container fieldset {
+        border-bottom-left-radius: 0;
+        border-top-left-radius: 0;
+      }
+      #other-controls-container label {
+        margin-right: 0.5em;
+      }
+    }
+    #other-controls-container label.fieldset-label {
+      background-color: var(--white-mute);
+      border: 1px solid #aaaaaa;
+      border-radius: 4px;
+      border-bottom-right-radius: 0;
+      border-top-right-radius: 0;
+      border-right: none;
       display: none;
+      font-size: 1.4rem;
       font-weight: bold;
+      height: 30px;
+      padding: 0 5px;
+      text-transform: uppercase;
     }
-      @media (min-width: 375px) {
-        #scroll-buttons button > span {
-          display: inline;
-        }
-      }
-    @media (hover: hover) {
-      #scroll-buttons button:hover {
-        background-color: var(--green);
-        color: var(--green-bright-active);
-      }
+    body.dark-theme #other-controls-container label.fieldset-label {
+      color: #000000;
     }
-    @media (min-width: 768px) {
-      #scroll-buttons button {
-        font-size: 1.75rem;
+    @media (min-width: 667px) {
+      #other-controls-container label.fieldset-label {
+        align-items: center;
+        display: flex;
+        margin-right: 0;
       }
     }
+    #other-controls-container label + select.small {
+      margin-right: 5px;
+    }
+  #other-controls-container select.small {
+    height: 24px;
+    padding: 0;
+  }
 </style>

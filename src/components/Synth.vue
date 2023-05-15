@@ -6,45 +6,8 @@ import ADSREnvelope from 'adsr-envelope'
 
 const env = getCurrentInstance().appContext.config.globalProperties.env
 
+const currentNotes = ref([])
 const oscillators = reactive([])
-
-let Keybord = {}
-let oscillatorType = 0
-let noteMap = {}
-let noteCurrent = null
-let startTime = 0
-let detuneAmount = 64
-let drawVisual
-
-let useKeyboard
-let useMouse
-let useMidi
-
-const adsr = new ADSREnvelope({
-  attackTime: 0.1,
-  decayTime: 0.5,
-  sustainLevel: 0.1,
-  releaseTime: 0.5,
-  gateTime: 1,
-  peakLevel: 0.5,
-  attackCurve: 'exp',
-  decayCurve: 'exp',
-  releaseCurve: 'exp',
-})
-
-const intervals = {
-  'major': [4,3],
-  'aug'  : [4,4],
-  'minor': [3,4],
-  'dim'  : [3,3],
-  'sus2' : [2,5],
-  'sus4' : [5,2],
-  'dom7' : [4,3,3],
-  'min7' : [3,4,3],
-  'maj7' : [4,3,4],
-  '7sus4': [5,2,3]
-}
-
 const nodeControls = reactive({
   waveType: {
     title: 'Wave Type',
@@ -193,6 +156,48 @@ const nodeControls = reactive({
   }
 })
 
+let Keybord = {}
+let oscillatorType = 0
+let noteMap = {}
+let noteCurrent = null
+let startTime = 0
+let detuneAmount = 64
+let drawVisual
+
+let useKeyboard
+let useMouse
+let useMidi
+let useVisualizer
+
+const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+
+const adsr = new ADSREnvelope({
+  attackTime: 0.1,
+  decayTime: 0.5,
+  sustainLevel: 0.1,
+  releaseTime: 0.5,
+  gateTime: 1,
+  peakLevel: 0.5,
+  attackCurve: 'exp',
+  decayCurve: 'exp',
+  releaseCurve: 'exp',
+})
+const visualizer = new AnalyserNode(audioContext, {
+  fftSize: 2048,
+  smoothingTimeConstant: 1
+})
+const intervals = {
+  'major': [4,3],
+  'aug'  : [4,4],
+  'minor': [3,4],
+  'dim'  : [3,3],
+  'sus2' : [2,5],
+  'sus4' : [5,2],
+  'dom7' : [4,3,3],
+  'min7' : [3,4,3],
+  'maj7' : [4,3,4],
+  '7sus4': [5,2,3]
+}
 const musicalNotes = [
   // index 0
   {name: 'C0',  frequency: 16.350,   midi: 12},
@@ -313,10 +318,6 @@ const musicalNotes = [
   {name: 'B8',  frequency: 7902.130, midi: 119},
 ]
 
-let currentNotes = ref([])
-
-const audioContext = new (window.AudioContext || window.webkitAudioContext)()
-
 const gainMaster = audioContext.createGain()
 gainMaster.gain.value = parseFloat(nodeControls.masterGain.currentValue)
 
@@ -325,6 +326,7 @@ nodeControls.masterGain.audioNode.gain.value = parseFloat(nodeControls.masterGai
 
 const destinationMaster = audioContext.destination
 
+// creates a connection of nodes for FX
 const createSendChain = function() {
   // console.log('creating send chain')
 
@@ -360,6 +362,7 @@ const createSendChain = function() {
     nodeControls.masterGain.audioNode.connect(nodeControls.eqLow.audioNode)
   }
 }
+// creates a connection of nodes from FX
 const createMasterChain = function() {
   // console.log('creating master chain')
 
@@ -395,10 +398,6 @@ const createMasterChain = function() {
   nodeControls.eqMid.audioNode.connect(nodeControls.eqHigh.audioNode)
   nodeControls.eqHigh.audioNode.connect(nodeControls.compressor.audioNode)
 
-  // TODO: analyser
-  // nodeControls.compressor.audioNode.connect(analyser)
-  // analyser.connect(destinationMaster)
-
   // if panning, then compressor->pan->destination
   if (audioContext.createStereoPanner && nodeControls.pan) {
     nodeControls.pan.audioNode = audioContext.createStereoPanner()
@@ -406,11 +405,13 @@ const createMasterChain = function() {
 
     nodeControls.compressor.audioNode.connect(nodeControls.pan.audioNode)
 
-    nodeControls.pan.audioNode.connect(destinationMaster)
+    nodeControls.pan.audioNode.connect(visualizer)
+    visualizer.connect(destinationMaster)
   }
   // if no panning, compressor->destination
   else {
-    nodeControls.compressor.audioNode.connect(destinationMaster)
+    nodeControls.compressor.audioNode.connect(visualizer)
+    visualizer.connect(destinationMaster)
   }
 }
 
@@ -483,6 +484,7 @@ const toggleSynthControls = function() {
 const noteStart = function(noteNum, velocity = 64) {
   const domKey = document.querySelectorAll(`button[data-noteid='${noteNum}']`)[0]
 
+  // update UI
   if (domKey) {
     domKey.classList.add('active')
   }
@@ -493,45 +495,43 @@ const noteStart = function(noteNum, velocity = 64) {
   const envelope = adsr.clone()
   envelope.peakLevel = (velocity / 127) * parseFloat(nodeControls.masterGain.currentValue)
 
+  // create a new Oscillator, and add it to array of Oscillator instances
   createFrequencyOscillator(noteNum, startTime, envelope)
 
+  // start playing the oscillator
   oscillators[noteNum][0].start(startTime)
 
-  // TODO: note/chord recognition
+  // update chord recognition display
   currentNotes.value = getChord(Object.keys(oscillators))
 
-  // console.log(`noteStart oscs: ${currentNotes}[${currentNotes.length}]`)
-  // console.log('noteStart oscillators[noteNum]', oscillators[noteNum][0].frequency.value)
-  // console.log('noteStart oscs == null?', Object.values(oscillators).every(osc => osc == null))
-
+  // FIXME: potential stuck note fix?
   // oscillators[noteNum][0].onended = function() {
-  //   if (oscillators[noteNum]) {
-  //     if (oscillators[noteNum][1]) {
-  //       if (oscillators[noteNum][1].gain) {
-  //         if ('disconnect' in oscillators[noteNum][1].gain) {
-  //           oscillators[noteNum][1].gain.disconnect()
-  //         }
-  //       }
-
-  //       oscillators[noteNum][1].disconnect()
-
-  //       delete oscillators[noteNum]
-  //     }
+  //   if (oscillators[noteNum] &&
+  //     oscillators[noteNum][1] &&
+  //     oscillators[noteNum][1].gain &&
+  //     'disconnect' in oscillators[noteNum][1].gain
+  //   ) {
+  //     oscillators[noteNum][1].gain.cancelScheduledValues(startTime)
+  //     oscillators[noteNum][1].gain.disconnect()
+  //     oscillators[noteNum][1].disconnect()
+  //     delete oscillators[noteNum]
   //   }
   // }
 }
 const noteStop = function(noteNum, velocity = 64) {
+  // kill current note reference
   noteCurrent = null
 
+  // if the note being stopped is in the array of oscillators, kill it
   if (oscillators[noteNum]) {
     const domKey = document.querySelectorAll(`button[data-noteid='${noteNum}']`)[0]
 
+    // update UI
     if (domKey) {
       domKey.classList.remove('active')
     }
 
     const playbackTime = audioContext.currentTime
-    // const stopTime = playbackTime + 0.5
 
     oscillators[noteNum][1].gain.cancelScheduledValues(startTime)
 
@@ -540,6 +540,7 @@ const noteStop = function(noteNum, velocity = 64) {
     envelope.peakLevel = (velocity / 127) * parseFloat(nodeControls.masterGain.currentValue)
 
     // FIXME: potential popping fix?
+    // const stopTime = playbackTime + 0.5
     // oscillators[noteNum][1].gain.setValueAtTime(nodeControls.masterGain.currentValue, playbackTime)
     // oscillators[noteNum][1].gain.exponentialRampToValueAtTime(0.0001, stopTime)
     // oscillators[noteNum][0].stop(stopTime + 0.6)
@@ -549,14 +550,13 @@ const noteStop = function(noteNum, velocity = 64) {
 
     oscillators[noteNum][0].stop(startTime + envelope.duration)
 
+    // set array key for note to null
     oscillators[noteNum] = null
+    // delete oscillator key in array
     delete oscillators[noteNum]
 
-    // TODO: note/chord recognition
+    // update chord recognition display
     currentNotes.value = getChord(Object.keys(oscillators))
-
-    // console.log(`noteStop oscs: ${oscs}[${oscs.length}]`)
-    // console.log('noteStop oscs == null', Object.values(oscillators).every(osc => osc == null))
   }
 }
 const createFrequencyOscillator = function(noteNum, startTime, envelope) {
@@ -582,7 +582,8 @@ const createFrequencyOscillator = function(noteNum, startTime, envelope) {
   envelope.applyTo(gainNode.gain, audioContext.currentTime)
 
   // connect oscillator to master gain node
-  oscillator.connect(gainNode).connect(nodeControls.masterGain.audioNode)
+  oscillator.connect(gainNode)
+  gainNode.connect(nodeControls.masterGain.audioNode)
 
   // add oscillator to list of oscillators
   oscillators[noteNum] = [oscillator, gainNode]
@@ -743,6 +744,14 @@ const midiController = (e) => {
       break
   }
 }
+const useVisualizerCheckboxChanged = (isChecked) => {
+  useVisualizer = isChecked
+  if (useVisualizer) {
+    document.querySelector('#visualizer').style.display = 'block'
+  } else {
+    document.querySelector('#visualizer').style.display = 'none'
+  }
+}
 
 createMasterChain()
 createSendChain()
@@ -834,38 +843,12 @@ const _midi2Name = (midiNumber) => {
   return name[2] == 'b' ? `${name[0]}${name[1]}` : `${name[0]}`
 }
 
-// TODO: analyser/oscilloscope
-// const bufferLength = analyser.fftSize
-
-let isPlaying, pixelRatio, sizeOnScreen, segmentWidth
-
-// const canvas = ref(null)
-// const canvasCtx = ref(null)
-
-const analyser = audioContext.createAnalyser()
-analyser.fftSize = 2048
-analyser.smoothingTimeConstant = 1
-const bufferLength = analyser.frequencyBinCount
-const dataArray = new Uint8Array(bufferLength)
-
-// drawToCanvas()
+let segmentWidth
+const dataArray = new Uint8Array(visualizer.frequencyBinCount)
 
 onMounted(() => {
-  // TODO: analyser
   const canvas = document.getElementById('visualizer')
   const c = canvas.getContext('2d')
-
-  // make canvas take up entire content
-  // canvas.style.position = 'relative'
-  // canvas.style.top = '10%'
-  // canvas.width = window.innerWidth;
-  // canvas.height = window.innerHeight;
-  // pixelRatio = window.devicePixelRatio;
-  // sizeOnScreen = canvas.getBoundingClientRect();
-  // canvas.width = sizeOnScreen.width * pixelRatio;
-  // canvas.height = sizeOnScreen.height * pixelRatio;
-  // canvas.style.width = canvas.width / pixelRatio + "px";
-  // canvas.style.height = canvas.height / pixelRatio + "px";
 
   // make canvas take up limited box size
   canvas.width = 640
@@ -883,15 +866,15 @@ onMounted(() => {
   // define function to update canvas
   const drawToCanvas = function() {
     // drawVisual = requestAnimationFrame(drawToCanvas)
-    analyser.getByteTimeDomainData(dataArray)
-    segmentWidth = canvas.width / analyser.frequencyBinCount
+    visualizer.getByteTimeDomainData(dataArray)
+    segmentWidth = canvas.width / visualizer.frequencyBinCount
 
     c.fillRect(0, 0, canvas.width, canvas.height)
     c.beginPath()
     c.moveTo(-100, canvas.height / 2)
 
-    if (isPlaying) {
-      for (let i = 1; i < analyser.frequencyBinCount; i += 1) {
+    if (currentNotes.value.length) {
+      for (let i = 1; i < visualizer.frequencyBinCount; i += 1) {
         let x = i * segmentWidth
         let v = dataArray[i] / 128.0
         let y = (v * canvas.height) / 2
@@ -901,12 +884,30 @@ onMounted(() => {
 
     c.lineTo(canvas.width + 100, canvas.height / 2)
     c.stroke()
-    requestAnimationFrame(draw)
+    requestAnimationFrame(drawToCanvas)
   }
+
+  drawToCanvas()
 })
 </script>
 
 <template>
+
+  <Keyboard
+    :musical-notes="musicalNotes"
+    :use-keyboard="useKeyboard"
+    :use-mouse="env == 'prod' ? true : false"
+    :use-midi="useMidi"
+    @checked-changed-keyboard="useKeyboardCheckboxChanged"
+    @checked-changed-mouse="useMouseCheckboxChanged"
+    @checked-changed-midi="useMidiCheckboxChanged"
+    @note-pressed="noteStart"
+    @note-released="noteStop"
+  />
+
+  <div id="visualizer-container" style="display: none">
+    <canvas ref="canvas" id="visualizer"></canvas>
+  </div>
 
   <div id="synth-controls-header">
     <button @click="toggleSynthControls">
@@ -921,7 +922,7 @@ onMounted(() => {
       id="note-recognition"
       :class="{ 'empty': !currentNotes.length }"
     >
-      {{ currentNotes.length ? currentNotes : 'No notes held.' }}
+      {{ currentNotes.length ? currentNotes : 'No notes.' }}
     </span>
   </div>
   <div id="synth-controls-container" style="display: none">
@@ -937,20 +938,6 @@ onMounted(() => {
     />
   </div>
 
-  <canvas ref="canvas" id="visualizer"></canvas>
-
-  <Keyboard
-    :musical-notes="musicalNotes"
-    :use-keyboard="useKeyboard"
-    :use-mouse="env == 'prod' ? true : false"
-    :use-midi="useMidi"
-    @checked-changed-keyboard="useKeyboardCheckboxChanged"
-    @checked-changed-mouse="useMouseCheckboxChanged"
-    @checked-changed-midi="useMidiCheckboxChanged"
-    @note-pressed="noteStart"
-    @note-released="noteStop"
-  />
-
 </template>
 
 <style scoped>
@@ -958,8 +945,13 @@ onMounted(() => {
   align-items: center;
   display: flex;
   justify-content: flex-start;
-  padding: 2px 15px;
+  padding: 0 5px;
 }
+  @media (min-width: 1024px) {
+    #synth-controls-header {
+      padding: 0 20px;
+    }
+  }
   #synth-controls-header button {
     border: 2px solid var(--color-border);
     color: var(--color-text);
@@ -989,8 +981,13 @@ onMounted(() => {
     height: 35px;
     margin-left: 1rem;
     padding: 0.4rem 0.75rem;
-    width: 150px;
+    width: 100%;
   }
+    @media (min-width: 768px) {
+      #note-recognition {
+        max-width: 150px;
+      }
+    }
     #note-recognition.empty {
       background-color: var(--gray-light);
       box-shadow: inset 0 0 5px 1px var(--gray);
@@ -1003,10 +1000,15 @@ onMounted(() => {
   border: 2px solid var(--gray-light);
   flex-direction: column;
   height: 150px;
-  margin: 0 10px 5px 15px;
+  margin: 5px;
   overflow-y: auto;
   padding: 5px;
 }
+  @media (min-width: 768px) {
+    #synth-controls-container {
+      margin: 0 10px 5px 15px;
+    }
+  }
   body.dark-theme #synth-controls-container {
     background-color: var(--black-mute);
   }
@@ -1053,10 +1055,17 @@ onMounted(() => {
       }
 }
 
-#visualizer {
-  border: 1px solid #000000;
-  display: none;
-  margin: 0 auto 10px;
-  position: relative;
+#visualizer-container {
+  margin: 5px auto 0;
+  width: 50%;
 }
+  #visualizer {
+    border: 2px solid var(--black);
+    border-radius: 4px;
+    height: 50px;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    width: 100%;
+  }
 </style>
