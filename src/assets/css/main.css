@@ -264,6 +264,16 @@ hr {
   color: rgb(189, 0, 0);
 }
 
+.modal-header h3 {
+  font-size: 2.25rem;
+}
+.modal-body p {
+  margin: 5px 0 10px;
+}
+.modal-body strong {
+  font-weight: bold;
+}
+
 /* animation */
 @keyFrames SlideRight {
   0% {

@@ -99,7 +99,11 @@ onMounted(() => {
             <h3>How to Use Keebord</h3>
           </template>
           <template v-slot:body>
-            <p>Welcome to Keebord, where you can play the piano. Use your mouse or finger (or enable computer keyboard or MIDI keyboard in the "Input" settings) to play the keys and revel in the sound of oscillators spinning for your pleasure. Various things about the synth used can be tweaked in the Synth Controls dropdown.</p>
+            <p>Welcome to <strong>Keebord</strong>, where you can play the piano. Use your mouse or finger (or keyboard, be it computer or MIDI) to play the keys and revel in the sound of oscillators spinning for your pleasure. The outer scroll buttons at the top move the keyboard left/right by octave; the inner ones by note.</p>
+
+            <p>Tweak the synth used in the <strong>Synth Controls</strong> dropdown.</p>
+
+            <p>Choose a root note and scale from the dropdown to filter the keys and make it easier to jam. The output checkbox toggles an oscillator so you can <em>see</em> your sound.</p>
 
             <hr />
 
