@@ -744,14 +744,6 @@ const midiController = (e) => {
       break
   }
 }
-const useVisualizerCheckboxChanged = (isChecked) => {
-  useVisualizer = isChecked
-  if (useVisualizer) {
-    document.querySelector('#visualizer').style.display = 'block'
-  } else {
-    document.querySelector('#visualizer').style.display = 'none'
-  }
-}
 
 createMasterChain()
 createSendChain()
