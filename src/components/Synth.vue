@@ -559,6 +559,37 @@ const noteStop = function(noteNum, velocity = 64) {
     currentNotes.value = getChord(Object.keys(oscillators))
   }
 }
+const pitchBend = function(velocity) {
+  // 0 (-1 octave) -> 64 (no bend) -> 127 (+1 octave)
+  const pbRaw = velocity
+
+  // MIDI 0 - 127
+  const inMin = 0
+  const inMax = 127
+  // musical cents (100 == half-step)
+  const outMin = -1200
+  const outMax = 1200
+  const calcScale = Math.pow(10, 2)
+
+  // scale to useful multiplier
+  // -1 (-1 octave) -> 0 (no bend) -> 1 (+1 octave)
+  let pbMult = (pbRaw - inMin) * (outMax - outMin) / (inMax - inMin) + outMin
+  pbMult = Math.round(pbMult * calcScale) / calcScale
+
+  if (pbMult > 0 && pbMult <= 0.02) {
+    pbMult = 0
+  }
+
+  oscillators.forEach(osc => {
+    osc[0].detune.setValueAtTime(pbMult, audioContext.currentTime)
+
+    // const curFreq = osc[0].frequency.value
+    // const newFreq = curFreq + pbMult
+    // console.log(`pitchBend - cur: ${curFreq}, mult: ${pbMult}, new: ${newFreq}`)
+  })
+}
+
+// creates new OscillatorNode in array of currentNotes
 const createFrequencyOscillator = function(noteNum, startTime, envelope) {
   // create Web Audio oscillator
   const oscillator = audioContext.createOscillator()
@@ -711,50 +742,7 @@ const midiController = (e) => {
       break
     // pitch bend
     case 224:
-      // 0 (-1 octave) -> 64 (no bend) -> 127 (+1 octave)
-      const pbRaw = e.data[2]
-
-      // console.log('pbRaw', pbRaw)
-
-      const inMin = 0
-      const inMax = 127
-      const outMin = -1
-      const outMax = 1
-      const calcScale = Math.pow(10, 2)
-
-      // scale to useful multiplier
-      // -1 (-1 octave) -> 0 (no bend) -> 1 (+1 octave)
-      let pbMult = (pbRaw - inMin) * (outMax - outMin) / (inMax - inMin) + outMin
-      pbMult = Math.round(pbMult * calcScale) / calcScale
-
-      if (pbMult > 0 && pbMult <= 0.02) {
-        pbMult = 0
-      }
-
-      oscillators.forEach(osc => {
-        const curFreq = osc[0].frequency.value
-        const newFreq = curFreq + (curFreq * (pbMult < 0 ? pbMult * 0.5 : pbMult))
-        console.log(`pitchBend - cur: ${curFreq}, mult: ${pbMult}, new: ${newFreq}`)
-      })
-
-      // if (noteMap[noteCurrent]) {
-      //   console.log('midi', noteMap[noteCurrent].oscillator)
-
-      //   const curFreq = noteMap[noteCurrent].oscillator.frequency.value
-
-      //   console.log('curFreq', curFreq)
-
-      //   if (pitchBend == 64) {
-      //     noteMap[noteCurrent].oscillator.frequency.setTargetAtTime(curFreq, 0, 0.05)
-      //     detuneAmount = 0
-      //   } else {
-      //     const detuneFreq = Math.pow(2, 1 / 12) * (pitchBend - 64)
-
-      //     noteMap[noteCurrent].oscillator.frequency.setTargetAtTime(curFreq + detuneFreq, 0, 0.05)
-      //     detuneAmount = detuneFreq
-      //   }
-      // }
-
+      pitchBend(velocity)
       break
     // TODO: mod change
     case 176:
