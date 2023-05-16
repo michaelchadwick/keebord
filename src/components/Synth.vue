@@ -675,11 +675,12 @@ const updateMidiEventHandler = () => {
 const onMIDISuccess = (midi) => {
   Keybord.midi = midi
 
-  Array.from(Keybord.midi.inputs).forEach((input) => {
-    input[1].onmidimessage = midiController
-  })
+  console.log('midi support enabled')
 
-  console.log('midi support enabled', Keybord.midi)
+  Array.from(Keybord.midi.inputs).forEach((input, index) => {
+    input[1].onmidimessage = midiController
+    console.log(`midi input #${index} detected: ${input[1].name}`)
+  })
 }
 const onMIDIFailure = (msg) => {
   console.error(`Failed to get MIDI access - ${msg}`)
@@ -693,8 +694,11 @@ const midiController = (e) => {
   }
 
   let data = e.data
-  let cmd = data[0] >> 4, channel = data[0] & 0xf,
-      type = data[0] & 0xf0, noteNum = data[1], velocity = data[2]
+  let cmd = data[0] >> 4
+  let channel = data[0] & 0xf
+  let type = data[0] & 0xf0
+  let noteNum = data[1]
+  let velocity = data[2]
 
   switch (type) {
     // noteOn message
@@ -705,34 +709,51 @@ const midiController = (e) => {
     case 128:
       noteStop(noteNum, velocity)
       break
-    // TODO: pitch bend
+    // pitch bend
     case 224:
       // 0 (-1 octave) -> 64 (no bend) -> 127 (+1 octave)
-      const pitchBend = e.data[2]
-      // 0 (-1 octave) -> 1 (no bend) -> 2 (+1 octave)
-      // pitchBend = ((pitchBend / 127).toFixed(2)) * 2
+      const pbRaw = e.data[2]
 
-      if (noteMap[noteCurrent]) {
-        console.log('midi', noteMap[noteCurrent].oscillator)
+      // console.log('pbRaw', pbRaw)
 
-        const curFreq = noteMap[noteCurrent].oscillator.frequency.value
+      const inMin = 0
+      const inMax = 127
+      const outMin = -1
+      const outMax = 1
+      const calcScale = Math.pow(10, 2)
 
-        console.log('curFreq', curFreq)
+      // scale to useful multiplier
+      // -1 (-1 octave) -> 0 (no bend) -> 1 (+1 octave)
+      let pbMult = (pbRaw - inMin) * (outMax - outMin) / (inMax - inMin) + outMin
+      pbMult = Math.round(pbMult * calcScale) / calcScale
 
-        if (pitchBend == 64) {
-          noteMap[noteCurrent].oscillator.frequency.setTargetAtTime(curFreq, 0, 0.05)
-          detuneAmount = 0
-        } else {
-          const detuneFreq = Math.pow(2, 1 / 12) * (pitchBend - 64)
-
-          noteMap[noteCurrent].oscillator.frequency.setTargetAtTime(curFreq + detuneFreq, 0, 0.05)
-          detuneAmount = detuneFreq
-        }
-
-        console.log('midi', noteMap[noteCurrent].oscillator)
-        // console.log('freq + bend', noteMap[noteCurrent].oscillator.frequency.value)
-        // console.log('detune', noteMap[noteCurrent].oscillator)
+      if (pbMult > 0 && pbMult <= 0.02) {
+        pbMult = 0
       }
+
+      oscillators.forEach(osc => {
+        const curFreq = osc[0].frequency.value
+        const newFreq = curFreq + (curFreq * (pbMult < 0 ? pbMult * 0.5 : pbMult))
+        console.log(`pitchBend - cur: ${curFreq}, mult: ${pbMult}, new: ${newFreq}`)
+      })
+
+      // if (noteMap[noteCurrent]) {
+      //   console.log('midi', noteMap[noteCurrent].oscillator)
+
+      //   const curFreq = noteMap[noteCurrent].oscillator.frequency.value
+
+      //   console.log('curFreq', curFreq)
+
+      //   if (pitchBend == 64) {
+      //     noteMap[noteCurrent].oscillator.frequency.setTargetAtTime(curFreq, 0, 0.05)
+      //     detuneAmount = 0
+      //   } else {
+      //     const detuneFreq = Math.pow(2, 1 / 12) * (pitchBend - 64)
+
+      //     noteMap[noteCurrent].oscillator.frequency.setTargetAtTime(curFreq + detuneFreq, 0, 0.05)
+      //     detuneAmount = detuneFreq
+      //   }
+      // }
 
       break
     // TODO: mod change
