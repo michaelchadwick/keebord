@@ -158,16 +158,13 @@ const nodeControls = reactive({
 
 let Keybord = {}
 let oscillatorType = 0
-let noteMap = {}
 let noteCurrent = null
 let startTime = 0
-let detuneAmount = 64
-let drawVisual
+let modInterval = null
 
 let useKeyboard
 let useMouse
 let useMidi
-let useVisualizer
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)()
 
@@ -496,7 +493,7 @@ const noteStart = function(noteNum, velocity = 64) {
   envelope.peakLevel = (velocity / 127) * parseFloat(nodeControls.masterGain.currentValue)
 
   // create a new Oscillator, and add it to array of Oscillator instances
-  createFrequencyOscillator(noteNum, startTime, envelope)
+  createOscillatorNode(noteNum, startTime, envelope)
 
   // start playing the oscillator
   oscillators[noteNum][0].start(startTime)
@@ -573,24 +570,108 @@ const pitchBend = function(velocity) {
 
   // scale to useful multiplier
   // -1 (-1 octave) -> 0 (no bend) -> 1 (+1 octave)
-  let pbMult = (pbRaw - inMin) * (outMax - outMin) / (inMax - inMin) + outMin
-  pbMult = Math.round(pbMult * calcScale) / calcScale
+  let pbCents = (pbRaw - inMin) * (outMax - outMin) / (inMax - inMin) + outMin
+  pbCents = Math.round(pbCents * calcScale) / calcScale
 
-  if (pbMult > 0 && pbMult <= 0.02) {
-    pbMult = 0
+  if (pbCents > 0 && pbCents <= 0.02) {
+    pbCents = 0
   }
 
+  console.log('pbCents', pbCents)
+
   oscillators.forEach(osc => {
-    osc[0].detune.setValueAtTime(pbMult, audioContext.currentTime)
+    osc[0].detune.setValueAtTime(pbCents, audioContext.currentTime)
 
     // const curFreq = osc[0].frequency.value
-    // const newFreq = curFreq + pbMult
-    // console.log(`pitchBend - cur: ${curFreq}, mult: ${pbMult}, new: ${newFreq}`)
+    // const newFreq = curFreq + pbCents
+    // console.log(`pitchBend - cur: ${curFreq}, mult: ${pbCents}, new: ${newFreq}`)
   })
 }
+// TODO: pitchMod
+//   sort of works, but effect is not quite correct yet
+//   also, setting to 0 does not reset properly
+//   and make pitchBend inoperable
+//
+// const pitchMod = function(velocity) {
+//   // 0 (-5) -> 64 (no mod) -> 127 (+1 octave)
+//   const pmRaw = velocity
 
-// creates new OscillatorNode in array of currentNotes
-const createFrequencyOscillator = function(noteNum, startTime, envelope) {
+//   // console.log('pmRaw', pmRaw)
+
+//   // MIDI 0 - 127
+//   const inMin = 0
+//   const inMax = 127
+//   // musical cents (100 == half-step)
+//   const outMin = 0
+//   const outMax = 100
+//   const calcScale = Math.pow(10, 2)
+
+//   // scale to useful multiplier
+//   // 0 (0 no mod) -> 1 (+50 cents)
+//   let pmCents = (pmRaw - inMin) * (outMax - outMin) / (inMax - inMin) + outMin
+//   pmCents = Math.round(pmCents * calcScale) / calcScale
+
+//   console.log('pmCents', pmCents)
+
+//   let xspacing = 16
+//   let height = 16
+//   let width = 16
+//   let theta = 0.0
+//   let theta_dx = 0.02
+//   let amplitude = 75.0
+//   let period = 500.0
+//   let dx = (Math.PI * 2) / period
+//   let yvalues = new Array(Math.floor(width / xspacing))
+
+//   function draw() {
+//     calcWave()
+//     return renderWave()
+//   }
+
+//   function calcWave() {
+//     // Increment theta (try different values for 'angular velocity' here)
+//     theta += theta_dx;
+
+//     // For every x value, calculate a y value with sine function
+//     let x = theta;
+//     for (let i = 0; i < yvalues.length; i++) {
+//       yvalues[i] = Math.sin(x) * amplitude;
+//       x += dx;
+//     }
+//   }
+
+//   function renderWave() {
+//     for (let x = 0; x < yvalues.length; x++) {
+//       const xCoord = x * xspacing
+//       const yCoord = ((height / 2) + yvalues[x]) * 0.2
+
+//       return yCoord
+//     }
+//   }
+
+//   if (pmCents > 0) {
+//     modInterval = setInterval(() => {
+//       oscillators.forEach(osc => {
+//         const newDetune = draw()
+//         console.log('newDetune', newDetune)
+//         osc[0].detune.setValueAtTime(newDetune, audioContext.currentTime)
+//       }, 1)
+//     })
+//   } else {
+//     console.log('no pitchmod applied', velocity)
+
+//     if (modInterval) {
+//       clearInterval(modInterval)
+//       console.log('cleared modInterval', modInterval)
+
+//       // reset all oscillators' detune value
+//       oscillators.forEach(osc => osc[0].detune.setValueAtTime(0, audioContext.currentTime))
+//     }
+//   }
+// }
+
+// add new OscillatorNode to array of oscillators
+const createOscillatorNode = function(noteNum, startTime, envelope) {
   // create Web Audio oscillator
   const oscillator = audioContext.createOscillator()
   const note = musicalNotes[noteNum]
@@ -744,8 +825,9 @@ const midiController = (e) => {
     case 224:
       pitchBend(velocity)
       break
-    // TODO: mod change
+    // mod change
     case 176:
+      // pitchMod(velocity)
       break
     // all others
     default:
@@ -866,7 +948,6 @@ onMounted(() => {
 
   // define function to update canvas
   const drawToCanvas = function() {
-    // drawVisual = requestAnimationFrame(drawToCanvas)
     visualizer.getByteTimeDomainData(dataArray)
     segmentWidth = canvas.width / visualizer.frequencyBinCount
 

@@ -33,3 +33,4 @@ npm run lint
 * [simulation of onTouchEnter](https://gist.github.com/zerobytes/677410f1e6ed33d133aa016422a8c706)
 * [List of musical scales and modes](https://en.wikipedia.org/wiki/List_of_musical_scales_and_modes)
 * [Interval_(music)](https://en.wikipedia.org/wiki/Interval_(music))
+* [Sinusoidal example](https://p5js.org/examples/math-sine-wave.html)
