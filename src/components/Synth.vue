@@ -39,6 +39,20 @@ const nodeControls = reactive({
     enabled: true,
     isVertical: false
   },
+  pitchBend: {
+    title: 'Pitch Bend',
+    type: 'range',
+    numberInputId: 'pitchbend-value',
+    rangeInputId: 'pitchbend-range',
+    currentValue: '2',
+    audioNode: '',
+    step: '1',
+    min: '1',
+    max: '12',
+    parameter: 'delayTime',
+    enabled: true,
+    isVertical: true
+  },
   // distortion: {
   //   title: 'Distortion',
   //   type: 'range',
@@ -160,6 +174,7 @@ let Keybord = {}
 let oscillatorType = 0
 let noteCurrent = null
 let startTime = 0
+let pitchBendRange = 2
 let modInterval = null
 
 let useKeyboard
@@ -421,12 +436,15 @@ const controlValueChanged = function(controlName, newValue) {
 
   // console.log(`updating nodeControls[${controlName}]`, newValue)
 
-  if (control.parameter == 'root') {
+  if (controlName == 'pitchBend') {
+    const semitones = parseInt(newValue)
 
+    if (semitones <= control.max && semitones >= control.min) {
+      control.currentValue = semitones
+      pitchBendRange = parseInt(semitones)
+    }
   }
-  else if (control.parameter == 'waveType') {
-
-  }
+  else if (control.parameter == 'waveType') {}
   // otherwise, it's a gain modifier, most likely
   else if (control && control.audioNode[control.parameter]) {
     // console.log('control.parameter', control.parameter)
@@ -449,7 +467,7 @@ const controlValueChanged = function(controlName, newValue) {
       )
     }
   } else {
-    // console.error(`nodeControls['${controlName}'] not found, value could not be updated.`)
+    console.error(`nodeControls['${controlName}'] not found, value could not be updated.`)
   }
 }
 
@@ -564,8 +582,8 @@ const pitchBend = function(velocity) {
   const inMin = 0
   const inMax = 127
   // musical cents (100 == half-step)
-  const outMin = -1200
-  const outMax = 1200
+  const outMin = pitchBendRange * -100
+  const outMax = pitchBendRange * 100
   const calcScale = Math.pow(10, 2)
 
   // scale to useful multiplier
@@ -577,7 +595,7 @@ const pitchBend = function(velocity) {
     pbCents = 0
   }
 
-  console.log('pbCents', pbCents)
+  // console.log('pbCents', pbCents)
 
   oscillators.forEach(osc => {
     osc[0].detune.setValueAtTime(pbCents, audioContext.currentTime)
