@@ -47,12 +47,6 @@ onMounted(() => {
     Keebord.dom.navOverlay.classList.toggle('show')
   })
 
-  if (Keebord.dom.btnMidiReset) {
-    Keebord.dom.btnMidiReset.addEventListener('click', () => {
-      //
-    })
-  }
-
   // When the user clicks or touches anywhere outside of the modal, close it
   window.addEventListener('click', Keebord._handleClickTouch)
   window.addEventListener('touchend', Keebord._handleClickTouch)

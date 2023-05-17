@@ -4,8 +4,6 @@ import NodeControl from './NodeControl.vue'
 import Keyboard from './Keyboard.vue'
 import ADSREnvelope from 'adsr-envelope'
 
-const env = getCurrentInstance().appContext.config.globalProperties.env
-
 const currentNotes = ref([])
 const oscillators = reactive([])
 const nodeControls = reactive({
@@ -170,7 +168,7 @@ const nodeControls = reactive({
   }
 })
 
-let Keybord = {}
+let Keybord = getCurrentInstance().appContext.config.globalProperties
 let oscillatorType = 0
 let noteCurrent = null
 let startTime = 0
@@ -798,6 +796,7 @@ const updateMidiEventHandler = () => {
         input[1].onmidimessage = null
       })
       Keybord.midi = null
+
       console.log('midi support disabled', Keybord.midi)
     }
   }
@@ -805,10 +804,11 @@ const updateMidiEventHandler = () => {
 const onMIDISuccess = (midi) => {
   Keybord.midi = midi
 
-  console.log('midi support enabled')
+  console.log('midi support enabled', midi)
 
   Array.from(Keybord.midi.inputs).forEach((input, index) => {
     input[1].onmidimessage = midiController
+
     console.log(`midi input #${index} detected: ${input[1].name}`)
   })
 }
@@ -817,18 +817,27 @@ const onMIDIFailure = (msg) => {
 }
 // handle midi inputs
 const midiController = (e) => {
-  let str = `MIDI message received at ${e.timeStamp}[${e.data.length} bytes]: `
-
-  for (const character of e.data) {
-    str += `0x${character.toString(16)} `
-  }
-
+  let timestamp = e.timeStamp
   let data = e.data
   let cmd = data[0] >> 4
   let channel = data[0] & 0xf
   let type = data[0] & 0xf0
   let noteNum = data[1]
   let velocity = data[2]
+  // let midiRaw = '   raw[ '
+
+  // console.log(`MIDI message received at ${timestamp}[${data.length} bytes]:`)
+
+  // for (const character of data) {
+  //   midiRaw += `0x${character.toString(16)} `
+  // }
+
+  // midiRaw += ']'
+
+  // let midiProcessed = `  proc[ cmd: ${cmd}, chan: ${channel}, type: ${type}, note: ${noteNum}, vel: ${velocity} ]`
+
+  // console.log(midiRaw)
+  // console.log(midiProcessed)
 
   switch (type) {
     // noteOn message
@@ -849,13 +858,19 @@ const midiController = (e) => {
       break
     // all others
     default:
-      console.log('str', str)
       break
   }
 }
 
 createMasterChain()
 createSendChain()
+
+// stop all runaway oscillators
+const panic = () => {
+  oscillators.map(osc => osc[0].stop())
+
+  console.log('oscillators stopped')
+}
 
 const getChord = (midiNums) => {
   // console.log('getChord notes', midiNums)
@@ -996,13 +1011,14 @@ onMounted(() => {
   <Keyboard
     :musical-notes="musicalNotes"
     :use-keyboard="useKeyboard"
-    :use-mouse="env == 'prod' ? true : false"
+    :use-mouse="Keybord.env == 'prod' ? true : false"
     :use-midi="useMidi"
     @checked-changed-keyboard="useKeyboardCheckboxChanged"
     @checked-changed-mouse="useMouseCheckboxChanged"
     @checked-changed-midi="useMidiCheckboxChanged"
     @note-pressed="noteStart"
     @note-released="noteStop"
+    @panic="panic"
   />
 
   <div id="visualizer-container" style="display: none">

@@ -21,7 +21,8 @@ const emit = defineEmits([
   'checkedChangedKeyboard',
   'checkedChangedMidi',
   'notePressed',
-  'noteReleased'
+  'noteReleased',
+  'panic'
 ])
 
 let pianoDiv = null
@@ -109,6 +110,10 @@ const addScrollHandlers = () => {
       pianoDiv.scrollLeft += octaveDistance
     }
   })
+}
+
+const handlePanic = () => {
+  emit('panic')
 }
 
 // show/hide computer keyboard key labels depending on checkbox
@@ -336,16 +341,29 @@ onMounted(() => {
 
   <div id="scroll-buttons">
     <button id="button-octave-left" title="scroll octave left">
-      <i class="fa fa-arrow-left"></i><span> OCT</span>
+      <i class="fa fa-arrow-left"></i>
+      <span class="small"> 8va</span>
+      <span class="large"> OCT</span>
     </button>
     <button id="button-note-left" title="scroll note left">
-      <i class="fa fa-arrow-left"></i><span> NOTE</span>
+      <i class="fa fa-arrow-left"></i>
+      <span class="small"> ♩</span>
+      <span class="large"> NOTE</span>
+    </button>
+    <button id="button-panic" title="clear all midi notes" @click="handlePanic">
+      <i class="fa fa-circle-stop"></i>
+      <span class="small"></span>
+      <span class="large"> RESET</span>
     </button>
     <button id="button-note-right" title="scroll note right">
-      <i class="fa fa-arrow-right"></i><span> NOTE</span>
+      <i class="fa fa-arrow-right"></i>
+      <span class="small"> ♩</span>
+      <span class="large"> NOTE</span>
     </button>
     <button id="button-octave-right" title="scroll octave right">
-      <i class="fa fa-arrow-right"></i><span> OCT</span>
+      <i class="fa fa-arrow-right"></i>
+      <span class="small"> 8va</span>
+      <span class="large"> OCT</span>
     </button>
   </div>
 
@@ -466,19 +484,41 @@ onMounted(() => {
     }
   }
   #scroll-buttons button {
+    align-items: center;
     border: 2px solid var(--color-border);
     color: var(--color-text);
+    display: flex;
     font-size: 1.5rem;
+    height: 40px;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;
   }
+    #scroll-buttons button i {
+      margin-right: 5px;
+    }
+      #scroll-buttons button i.fa-circle-stop {
+        margin-right: 0;
+      }
+        @media (min-width: 425px) {
+          #scroll-buttons button i.fa-circle-stop {
+            margin-right: 5px;
+          }
+        }
     #scroll-buttons button > span {
-      display: none;
       font-weight: bold;
     }
-      @media (min-width: 375px) {
-        #scroll-buttons button > span {
+      #scroll-buttons button > span.small {
+        display: inline;
+      }
+      #scroll-buttons button > span.large {
+        display: none;
+      }
+      @media (min-width: 425px) {
+        #scroll-buttons button > span.small {
+          display: none;
+        }
+        #scroll-buttons button > span.large {
           display: inline;
         }
       }
