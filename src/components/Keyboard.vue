@@ -22,7 +22,7 @@ const emit = defineEmits([
   'checkedChangedMidi',
   'notePressed',
   'noteReleased',
-  'panic'
+  'noteReset'
 ])
 
 let pianoDiv = null
@@ -112,8 +112,8 @@ const addScrollHandlers = () => {
   })
 }
 
-const handlePanic = () => {
-  emit('panic')
+const handleNoteReset = () => {
+  emit('noteReset')
 }
 
 // show/hide computer keyboard key labels depending on checkbox
@@ -350,7 +350,7 @@ onMounted(() => {
       <span class="small"> ♩</span>
       <span class="large"> NOTE</span>
     </button>
-    <button id="button-panic" title="clear all midi notes" @click="handlePanic">
+    <button id="button-note-reset" title="clear all midi notes" @click="handleNoteReset">
       <i class="fa fa-circle-stop"></i>
       <span class="small"></span>
       <span class="large"> RESET</span>
