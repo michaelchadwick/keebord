@@ -22,7 +22,7 @@ const emit = defineEmits([
         type="checkbox"
         :id="props.controlData.controlEnabledCheckId"
         @change="$emit('checkEnabledChanged', props.controlKey, $event.target.checked)"
-      />{{ props.controlData.title }}
+      /><label :for="props.controlData.controlEnabledCheckId">{{ props.controlData.title }}</label>
     </legend>
 
     <!-- <SELECT> -->
@@ -85,12 +85,14 @@ const emit = defineEmits([
         <div class="increase-decrease-container">
           <button
             class="control-value-increase"
+            :disabled="!props.controlData.enabled"
             @click="$emit('increaseValue', props.controlKey)"
           >
             <img src="/assets/svg/bi-caret-up-fill.svg" />
           </button>
           <button
             class="control-value-decrease"
+            :disabled="!props.controlData.enabled"
             @click="$emit('decreaseValue', props.controlKey)"
           >
             <img src="/assets/svg/bi-caret-down-fill.svg" />
@@ -133,6 +135,9 @@ const emit = defineEmits([
       right: 2px;
       top: 1px;
     }
+    .node-control legend label {
+      font-weight: bold;
+    }
   .node-control .value-container {
     display: flex;
     flex-direction: row;
@@ -171,8 +176,14 @@ const emit = defineEmits([
         text-align: center;
         width: 12px;
       }
+        .node-control .value-container .control-value-increase:disabled,
+        .node-control .value-container .control-value-decrease:disabled {
+          cursor: default;
+          filter: invert(100%) sepia(1%) saturate(1895%) hue-rotate(235deg) brightness(111%) contrast(60%);
+        }
         .node-control .value-container .increase-decrease-container .control-value-increase img,
         .node-control .value-container .increase-decrease-container .control-value-decrease img {
+          filter: none;
           height: 16px;
           left: 0.09rem;
           margin: 0;
@@ -182,7 +193,8 @@ const emit = defineEmits([
           width: 16px;
         }
         @media (hover: hover) {
-          .node-control .value-container img:hover {
+          .node-control .value-container .control-value-increase:not(:disabled) img:hover,
+          .node-control .value-container .control-value-decrease:not(:disabled) img:hover {
             filter: invert(63%) sepia(38%) saturate(649%) hue-rotate(99deg) brightness(89%) contrast(86%);
           }
         }
