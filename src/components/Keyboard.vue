@@ -724,7 +724,7 @@ onMounted(() => {
     #other-controls-container {
       flex-direction: row;
       height: 40px;
-      margin: 0 5px;
+      margin: 0 3px;
     }
   }
   @media (min-width: 1024px) {

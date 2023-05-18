@@ -181,25 +181,25 @@ const nodeControls = reactive({
     step: '1',
     min: '1',
     max: '12',
-    parameter: 'delayTime',
+    parameter: 'pitch',
     enabled: true,
     isVertical: true
   },
-  // distortion: {
-  //   title: 'Distortion',
-  //   type: 'range',
-  //   controlEnabledCheckId: 'send-effect-distortion-check',
-  //   numberInputId: 'distortion-value',
-  //   rangeInputId: 'distortion-range',
-  //   currentValue: '0.8',
-  //   audioNode: '',
-  //   step: '0.1',
-  //   min: '0.0',
-  //   max: '1.0',
-  //   parameter: 'gain',
-  //   enabled: false,
-  //   isVertical: true
-  // },
+  distortion: {
+    title: 'Distortion',
+    type: 'range',
+    controlEnabledCheckId: 'send-effect-distortion-check',
+    numberInputId: 'distortion-value',
+    rangeInputId: 'distortion-range',
+    currentValue: '0.0',
+    audioNode: '',
+    step: '0.1',
+    min: '0.0',
+    max: '1.0',
+    parameter: 'gain',
+    enabled: false,
+    isVertical: true
+  },
   // reverb: {
   //   title: 'Reverb',
   //   type: 'range',
@@ -305,10 +305,10 @@ const nodeControls = reactive({
 let Keebord = getCurrentInstance().appContext.config.globalProperties
 
 let oscillatorType = 0
-let noteCurrent = null
 let startTime = 0
 let pitchBendRange = 2
 let modInterval = null
+let segmentWidth
 
 let useKeyboard
 let useMouse
@@ -335,40 +335,49 @@ const adsr = new ADSREnvelope({
   decayCurve: 'exp',
   releaseCurve: 'exp',
 })
-const visualizer = new AnalyserNode(audioContext, {
-  fftSize: 2048,
-  smoothingTimeConstant: 1
-})
+const analyzerNode = new AnalyserNode(
+  audioContext,
+  {
+    fftSize: 2048,
+    smoothingTimeConstant: 1
+  }
+)
+const dataArray = new Uint8Array(analyzerNode.frequencyBinCount)
 
-const gainMaster = audioContext.createGain()
-gainMaster.gain.value = parseFloat(nodeControls.masterGain.currentValue)
+const masterGainNode = audioContext.createGain()
+masterGainNode.gain.value = parseFloat(nodeControls.masterGain.currentValue)
 
 nodeControls.masterGain.audioNode = audioContext.createGain()
 nodeControls.masterGain.audioNode.gain.value = parseFloat(nodeControls.masterGain.currentValue)
 
 const destinationMaster = audioContext.destination
 
-// creates a connection of nodes for FX
+// creates a connection of nodes
+// masterGain->distortion->(reverb)->(delay)->eqLow
 const createSendChain = function() {
   // console.log('creating send chain')
 
   // TODO: distortion
-  // oscSend = audioContext.createWaveShaper()
-  // oscSend.curve = makeDistortionCurve(80) //0-100 optimal
-  // oscSend.oversample = "4x"
+  // masterGain->distortion
+  // const distortionNode = createDistNode('4x')
 
-  // TODO: reverb
-  // oscSend = audioContext.createConvolver()
+  // nodeControls.distortion.audioNode = distortionNode
+  // nodeControls.masterGain.audioNode.connect(nodeControls.distortion.audioNode)
+
+  // TODO: distortion->reverb
+  // const reverbNode = createReverbNode()
 
   // delay
   // masterGain->delay->eqLow
-  if (nodeControls.delay.enabled !== false && !nodeControls.delay.audioNode) {
-    nodeControls.delay.audioNode = audioContext.createDelay(nodeControls.delay.max)
-    nodeControls.delay.audioNode.delayTime.setValueAtTime(nodeControls.delay.currentValue, audioContext.currentTime)
+  if (nodeControls.delay.enabled === true && !nodeControls.delay.audioNode) {
+    const delayNode = createDelayNode(nodeControls.delay.max)
+    nodeControls.delay.audioNode = delayNode
 
     const delayGainNode = audioContext.createGain()
     delayGainNode.gain.value = (parseFloat(nodeControls.masterGain.currentValue) * 0.75).toFixed(1)
 
+    // TODO: distortion
+    // nodeControls.distortion.audioNode.connect(delayGainNode)
     nodeControls.masterGain.audioNode.connect(delayGainNode)
     delayGainNode.connect(nodeControls.delay.audioNode)
 
@@ -377,43 +386,30 @@ const createSendChain = function() {
   // masterGain->eqLow
   else if (nodeControls.delay.audioNode && !nodeControls.delay.enabled) {
     nodeControls.delay.audioNode.disconnect()
+
+    // TODO: distortion
+    // nodeControls.distortion.audioNode.connect(nodeControls.eqLow.audioNode)
     nodeControls.masterGain.audioNode.connect(nodeControls.eqLow.audioNode)
   }
   // masterGain->eqLow
   else {
+    // TODO: distortion
+    // nodeControls.distortion.audioNode.connect(nodeControls.eqLow.audioNode)
     nodeControls.masterGain.audioNode.connect(nodeControls.eqLow.audioNode)
   }
 }
-// creates a connection of nodes from FX
+// creates a connection of nodes
+// eqLow->eqMid->eqHigh->compressor->(pan)->analyzerNode->destinationMaster
 const createMasterChain = function() {
   // console.log('creating master chain')
 
-  // eqLow
-  nodeControls.eqLow.audioNode = audioContext.createBiquadFilter()
-  nodeControls.eqLow.audioNode.type = 'lowshelf'
-  nodeControls.eqLow.audioNode.frequency.value = 35
-  nodeControls.eqLow.audioNode.gain.value = 0.5
-
-  // eqMid
-  nodeControls.eqMid.audioNode = audioContext.createBiquadFilter()
-  nodeControls.eqMid.audioNode.type = 'peaking'
-  nodeControls.eqMid.audioNode.frequency.value = 440
-  nodeControls.eqMid.audioNode.Q.value = 0 // larger value means smaller band
-  nodeControls.eqMid.audioNode.gain.value = 0
-
-  // eqHigh
-  nodeControls.eqHigh.audioNode = audioContext.createBiquadFilter()
-  nodeControls.eqHigh.audioNode.type = 'highshelf'
-  nodeControls.eqHigh.audioNode.frequency.value = 4700
-  nodeControls.eqHigh.audioNode.gain.value = 0.5
+  // 3-band EQ
+  nodeControls.eqLow.audioNode = createEQNode('lowshelf', 35, 0, 0.5)
+  nodeControls.eqMid.audioNode = createEQNode('peaking', 440, 0, 0)
+  nodeControls.eqHigh.audioNode = createEQNode('highshelf', 4700, 0, 0.5)
 
   // compressor
-  nodeControls.compressor.audioNode = audioContext.createDynamicsCompressor()
-  nodeControls.compressor.audioNode.threshold.setValueAtTime(-50, audioContext.currentTime)
-  nodeControls.compressor.audioNode.knee.setValueAtTime(40, audioContext.currentTime)
-  nodeControls.compressor.audioNode.ratio.setValueAtTime(nodeControls.compressor.currentValue, audioContext.currentTime)
-  nodeControls.compressor.audioNode.attack.setValueAtTime(0, audioContext.currentTime)
-  nodeControls.compressor.audioNode.release.setValueAtTime(0.25, audioContext.currentTime)
+  nodeControls.compressor.audioNode = createCompNode(-50, 40, nodeControls.compressor.currentValue, 0, 0.25)
 
   // eqLow->eqMid->eqHigh->compressor
   nodeControls.eqLow.audioNode.connect(nodeControls.eqMid.audioNode)
@@ -422,19 +418,66 @@ const createMasterChain = function() {
 
   // if panning, then compressor->pan->destination
   if (audioContext.createStereoPanner && nodeControls.pan) {
-    nodeControls.pan.audioNode = audioContext.createStereoPanner()
-    nodeControls.pan.audioNode.pan.setValueAtTime(0, audioContext.currentTime)
+    nodeControls.pan.audioNode = createPanNode(0)
 
     nodeControls.compressor.audioNode.connect(nodeControls.pan.audioNode)
-
-    nodeControls.pan.audioNode.connect(visualizer)
-    visualizer.connect(destinationMaster)
+    nodeControls.pan.audioNode.connect(analyzerNode)
+    analyzerNode.connect(destinationMaster)
   }
   // if no panning, compressor->destination
   else {
-    nodeControls.compressor.audioNode.connect(visualizer)
-    visualizer.connect(destinationMaster)
+    nodeControls.compressor.audioNode.connect(analyzerNode)
+    analyzerNode.connect(destinationMaster)
   }
+}
+
+const createDistNode = (oversample) => {
+  const audioNode = audioContext.createWaveShaper()
+
+  // 0-100 optimal
+  audioNode.curve = _makeDistortionCurve(nodeControls.distortion.currentValue * 100)
+  audioNode.oversample = oversample
+
+  return audioNode
+}
+const createReverbNode = () => {
+  const audioNode = audioContext.createConvolver()
+
+  return audioNode
+}
+const createDelayNode = (max) => {
+  const audioNode = audioContext.createDelay(nodeControls.delay.max)
+
+  audioNode.delayTime.setValueAtTime(nodeControls.delay.currentValue, audioContext.currentTime)
+
+}
+const createEQNode = (type, freq, q, gain) => {
+  const audioNode = audioContext.createBiquadFilter()
+
+  audioNode.type = type
+  audioNode.frequency.value = freq
+  audioNode.Q.value = q // larger value means smaller band
+  audioNode.gain.value = gain
+
+  return audioNode
+}
+const createCompNode = (threshold, knee, ratio, attack, release) => {
+  const audioNode = audioContext.createDynamicsCompressor()
+
+  audioNode.threshold.setValueAtTime(threshold, audioContext.currentTime)
+  audioNode.knee.setValueAtTime(knee, audioContext.currentTime)
+  audioNode.ratio.setValueAtTime(ratio, audioContext.currentTime)
+  audioNode.attack.setValueAtTime(attack, audioContext.currentTime)
+  audioNode.release.setValueAtTime(release, audioContext.currentTime)
+
+  return audioNode
+}
+const createPanNode = (value) => {
+  const audioNode = audioContext.createStereoPanner()
+
+  audioNode.pan.setValueAtTime(value, audioContext.currentTime)
+
+  return audioNode
 }
 
 const checkEnabledChanged = function(controlName, isChecked) {
@@ -444,7 +487,7 @@ const checkEnabledChanged = function(controlName, isChecked) {
 const controlValueChanged = function(controlName, newValue) {
   const control = nodeControls[controlName]
 
-  // console.log(`updating nodeControls[${controlName}]`, newValue)
+  console.log(`updating nodeControls['${controlName}']`, nodeControls, newValue)
 
   if (controlName == 'pitchBend') {
     const semitones = parseInt(newValue)
@@ -454,12 +497,12 @@ const controlValueChanged = function(controlName, newValue) {
       pitchBendRange = parseInt(semitones)
     }
   }
-  else if (control.parameter == 'waveType') {}
+  else if (controlName == 'waveType') {}
   // otherwise, it's a gain modifier, most likely
   else if (control && control.audioNode[control.parameter]) {
-    // console.log('control.parameter', control.parameter)
-    // console.log('control.audioNode', control.audioNode)
-    // console.log('control.audioNode[control.parameter]', control.audioNode[control.parameter])
+    console.log('control.parameter', control.parameter)
+    console.log('control.audioNode', control.audioNode)
+    console.log('control.audioNode[control.parameter]', control.audioNode[control.parameter])
 
     if (control.type == 'range') {
       if (newValue <= parseFloat(control.max) && newValue >= parseFloat(control.min)) {
@@ -549,9 +592,6 @@ const noteStart = function(noteNum, velocity = 64) {
   currentNotes.value = getChord(Object.keys(oscillators))
 }
 const noteStop = function(noteNum, velocity = 64) {
-  // kill current note reference
-  noteCurrent = null
-
   // update UI
   const domKey = document.querySelectorAll(`button[data-noteid='${noteNum}']`)[0]
   if (domKey) {
@@ -560,19 +600,19 @@ const noteStop = function(noteNum, velocity = 64) {
 
   // if the note being stopped is in the array of oscillators, kill it
   if (oscillators[noteNum]) {
-    const playbackTime = audioContext.currentTime
-
     oscillators[noteNum][1].gain.cancelScheduledValues(startTime)
+
+    const playbackTime = audioContext.currentTime
 
     // set note's volume envelope
     const envelope = adsr.clone()
     envelope.peakLevel = (velocity / 127) * parseFloat(nodeControls.masterGain.currentValue)
 
     // FIXME: potential popping fix?
-    // const stopTime = playbackTime + 0.5
-    // oscillators[noteNum][1].gain.setValueAtTime(nodeControls.masterGain.currentValue, playbackTime)
+    // const stopTime = playbackTime + 0.08
+    // oscillators[noteNum][1].gain.setValueAtTime(oscillators[noteNum][1].gain.currentValue, playbackTime)
     // oscillators[noteNum][1].gain.exponentialRampToValueAtTime(0.0001, stopTime)
-    // oscillators[noteNum][0].stop(stopTime + 0.6)
+    // oscillators[noteNum][0].stop(stopTime + 0.1)
 
     envelope.gateTime = playbackTime - startTime
     envelope.applyTo(oscillators[noteNum][1].gain, startTime)
@@ -919,9 +959,6 @@ const midiController = (e) => {
   }
 }
 
-createMasterChain()
-createSendChain()
-
 // convert midi note numbers into chords, if applicable
 const getChord = (midiNums) => {
   // console.log('getChord notes', midiNums)
@@ -1001,19 +1038,7 @@ const getChord = (midiNums) => {
   }
 }
 
-const _arraysAreEqual = (arr1, arr2) => {
-  return arr1.join() == arr2.join()
-}
-const _midi2Name = (midiNumber) => {
-  const name = MUSICAL_NOTES.filter(mNote => mNote.midi == midiNumber)[0].name
-
-  return name[2] == 'b' ? `${name[0]}${name[1]}` : `${name[0]}`
-}
-
-let segmentWidth
-const dataArray = new Uint8Array(visualizer.frequencyBinCount)
-
-onMounted(() => {
+const initVisualizer = () => {
   const canvas = document.getElementById('visualizer')
   const c = canvas.getContext('2d')
 
@@ -1032,15 +1057,15 @@ onMounted(() => {
 
   // define function to update canvas
   const drawToCanvas = function() {
-    visualizer.getByteTimeDomainData(dataArray)
-    segmentWidth = canvas.width / visualizer.frequencyBinCount
+    analyzerNode.getByteTimeDomainData(dataArray)
+    segmentWidth = canvas.width / analyzerNode.frequencyBinCount
 
     c.fillRect(0, 0, canvas.width, canvas.height)
     c.beginPath()
     c.moveTo(-100, canvas.height / 2)
 
     if (currentNotes.value.length) {
-      for (let i = 1; i < visualizer.frequencyBinCount; i += 1) {
+      for (let i = 1; i < analyzerNode.frequencyBinCount; i += 1) {
         let x = i * segmentWidth
         let v = dataArray[i] / 128.0
         let y = (v * canvas.height) / 2
@@ -1054,6 +1079,36 @@ onMounted(() => {
   }
 
   drawToCanvas()
+}
+
+const _arraysAreEqual = (arr1, arr2) => {
+  return arr1.join() == arr2.join()
+}
+const _midi2Name = (midiNumber) => {
+  const name = MUSICAL_NOTES.filter(mNote => mNote.midi == midiNumber)[0].name
+
+  return name[2] == 'b' ? `${name[0]}${name[1]}` : `${name[0]}`
+}
+// https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createWaveShaper
+const _makeDistortionCurve = (amount) => {
+  const k = typeof amount === "number" ? amount : 50
+  const n_samples = 44100
+  const curve = new Float32Array(n_samples)
+  const deg = Math.PI / 180
+
+  for (let i = 0; i < n_samples; i++) {
+    const x = (i * 2) / n_samples - 1
+    curve[i] = ((3 + k) * x * 20 * deg) / (Math.PI + k * Math.abs(x))
+  }
+
+  return curve
+}
+
+createMasterChain()
+createSendChain()
+
+onMounted(() => {
+  initVisualizer()
 })
 </script>
 
@@ -1080,7 +1135,7 @@ onMounted(() => {
     <button @click="toggleSynthControls">
       <img
         id="toggle-synth-controls"
-        src="/assets/svg/bi-caret-right-fill.svg"
+        src="/assets/svg/bi-caret-down-fill.svg"
       />
       Synth Controls
     </button>
@@ -1092,13 +1147,13 @@ onMounted(() => {
       {{ currentNotes.length ? currentNotes : 'No notes.' }}
     </span>
   </div>
-  <div id="synth-controls-container" style="display: none">
+  <div id="synth-controls-container" style="display: flex">
     <NodeControl
       v-for="(control, key) in nodeControls"
       :control-key="key"
       :control-data="control"
-      @control-value-changed="controlValueChanged"
       @check-enabled-changed="checkEnabledChanged"
+      @control-value-changed="controlValueChanged"
       @select-option-changed="selectOptionChanged"
       @increase-value="(controlKey) => controlValueChanged(controlKey, (parseFloat(nodeControls[controlKey].currentValue) + parseFloat(nodeControls[controlKey].step)).toFixed(1))"
       @decrease-value="(controlKey) => controlValueChanged(controlKey, (parseFloat(nodeControls[controlKey].currentValue) - parseFloat(nodeControls[controlKey].step)).toFixed(1))"
@@ -1112,7 +1167,7 @@ onMounted(() => {
   align-items: center;
   display: flex;
   justify-content: flex-start;
-  padding: 0 5px;
+  padding: 0 3px;
 }
   @media (min-width: 1024px) {
     #synth-controls-header {
@@ -1167,13 +1222,13 @@ onMounted(() => {
   border: 2px solid var(--gray-light);
   flex-direction: column;
   height: 150px;
-  margin: 5px;
+  margin: 5px 3px;
   overflow-y: auto;
   padding: 5px;
 }
-  @media (min-width: 768px) {
+  @media (min-width: 1024px) {
     #synth-controls-container {
-      margin: 0 10px 5px 15px;
+      margin: 5px 20px;
     }
   }
   body.dark-theme #synth-controls-container {
