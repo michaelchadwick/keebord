@@ -38,7 +38,7 @@ npm run lint
 
 ## Credits
 
-Much thanks to [dabbmedia/web-audio-synth](https://github.com/dabbmedia/web-audio-synth?ref=vuejsexamples.com) for providing a starting point for someone who has never done VueJS before.
+Much thanks to [dabbmedia/web-audio-synth](https://github.com/dabbmedia/web-audio-synth) for providing a starting point for someone who has never done VueJS before.
 
 ### Other Help
 
