@@ -185,21 +185,21 @@ const nodeControls = reactive({
     enabled: true,
     isVertical: true
   },
-  distortion: {
-    title: 'Distortion',
-    type: 'range',
-    controlEnabledCheckId: 'send-effect-distortion-check',
-    numberInputId: 'distortion-value',
-    rangeInputId: 'distortion-range',
-    currentValue: '0.0',
-    audioNode: '',
-    step: '0.1',
-    min: '0.0',
-    max: '1.0',
-    parameter: 'gain',
-    enabled: false,
-    isVertical: true
-  },
+  // distortion: {
+  //   title: 'Distortion',
+  //   type: 'range',
+  //   controlEnabledCheckId: 'send-effect-distortion-check',
+  //   numberInputId: 'distortion-value',
+  //   rangeInputId: 'distortion-range',
+  //   currentValue: '0.0',
+  //   audioNode: '',
+  //   step: '0.1',
+  //   min: '0.0',
+  //   max: '1.0',
+  //   parameter: 'gain',
+  //   enabled: false,
+  //   isVertical: true
+  // },
   // reverb: {
   //   title: 'Reverb',
   //   type: 'range',
@@ -369,7 +369,7 @@ const createSendChain = function() {
 
   // delay
   // masterGain->delay->eqLow
-  if (nodeControls.delay.enabled === true && !nodeControls.delay.audioNode) {
+  if (nodeControls.delay.enabled !== false && !nodeControls.delay.audioNode) {
     const delayNode = createDelayNode(nodeControls.delay.max)
     nodeControls.delay.audioNode = delayNode
 
@@ -446,10 +446,11 @@ const createReverbNode = () => {
   return audioNode
 }
 const createDelayNode = (max) => {
-  const audioNode = audioContext.createDelay(nodeControls.delay.max)
+  const audioNode = audioContext.createDelay(max)
 
   audioNode.delayTime.setValueAtTime(nodeControls.delay.currentValue, audioContext.currentTime)
 
+  return audioNode
 }
 const createEQNode = (type, freq, q, gain) => {
   const audioNode = audioContext.createBiquadFilter()
