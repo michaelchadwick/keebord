@@ -830,7 +830,15 @@ const updateMidiEventHandler = () => {
   }
 }
 const noteReset = () => {
-  oscillators.map(osc => osc[0].stop())
+  oscillators.map(osc => {
+    const playbackTime = audioContext.currentTime
+    const stopTime = playbackTime + 0.08
+
+    osc[1].gain.setValueAtTime(osc[1].gain.value, playbackTime)
+    osc[1].gain.exponentialRampToValueAtTime(0.0001, stopTime)
+
+    osc[0].stop(stopTime + 0.1)
+  })
 
   console.log('oscillators stopped')
 }
