@@ -661,6 +661,7 @@ onMounted(() => {
       #keyboard button.key-black {
         background-color: var(--color-button-black-background);
         color: var(--color-flatnote-text);
+        display: inline-flex;
         font-size: 1.25rem;
         height: 45%;
         margin-left: -20px;
