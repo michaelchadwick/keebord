@@ -3,6 +3,8 @@ import { getCurrentInstance, onMounted, reactive, ref } from 'vue'
 import NodeControl from './NodeControl.vue'
 import Keyboard from './Keyboard.vue'
 import ADSREnvelope from 'adsr-envelope'
+import webAudioFontLoader from '../assets/js/app/wafScript.js'
+import webAudioFontTonesLoader from '../assets/js/app/wafTones.js'
 
 const currentNotes = ref([])
 const oscillators = reactive([])
@@ -168,7 +170,18 @@ const nodeControls = reactive({
   }
 })
 
-let Keybord = getCurrentInstance().appContext.config.globalProperties
+let Keebord = getCurrentInstance().appContext.config.globalProperties
+
+// WebAudioFontPlayer
+let wafPlayer = null
+
+if (Keebord.settings.player == 'waf') {
+  // load main file, and then tone files
+  webAudioFontLoader.then(() => webAudioFontTonesLoader).then(() => {
+    wafPlayer = new WebAudioFontPlayer()
+  })
+}
+
 let oscillatorType = 0
 let noteCurrent = null
 let startTime = 0
@@ -508,42 +521,47 @@ const noteStart = function(noteNum, velocity = 64) {
   const envelope = adsr.clone()
   envelope.peakLevel = (velocity / 127) * parseFloat(nodeControls.masterGain.currentValue)
 
-  // create a new Oscillator, and add it to array of Oscillator instances
-  createOscillatorNode(noteNum, startTime, envelope)
+  // use WebAudioFont
+  if (Keebord.settings.player == 'waf') {
+    createWafNode(noteNum, startTime)
+  }
+  // use OscillatorNodes
+  else {
+    // create a new Oscillator, and add it to array of Oscillator instances
+    createOscillatorNode(noteNum, startTime, envelope)
 
-  // start playing the oscillator
-  oscillators[noteNum][0].start(startTime)
+    // start playing the oscillator
+    oscillators[noteNum][0].start(startTime)
+
+    oscillators[noteNum][0].onended = function() {
+      if (oscillators[noteNum] &&
+        oscillators[noteNum][1] &&
+        oscillators[noteNum][1].gain &&
+        'disconnect' in oscillators[noteNum][1].gain
+      ) {
+        oscillators[noteNum][1].gain.cancelScheduledValues(startTime)
+        oscillators[noteNum][1].gain.disconnect()
+        oscillators[noteNum][1].disconnect()
+        delete oscillators[noteNum]
+      }
+    }
+  }
 
   // update chord recognition display
   currentNotes.value = getChord(Object.keys(oscillators))
-
-  // FIXME: potential stuck note fix?
-  oscillators[noteNum][0].onended = function() {
-    if (oscillators[noteNum] &&
-      oscillators[noteNum][1] &&
-      oscillators[noteNum][1].gain &&
-      'disconnect' in oscillators[noteNum][1].gain
-    ) {
-      oscillators[noteNum][1].gain.cancelScheduledValues(startTime)
-      oscillators[noteNum][1].gain.disconnect()
-      oscillators[noteNum][1].disconnect()
-      delete oscillators[noteNum]
-    }
-  }
 }
 const noteStop = function(noteNum, velocity = 64) {
   // kill current note reference
   noteCurrent = null
 
+  // update UI
+  const domKey = document.querySelectorAll(`button[data-noteid='${noteNum}']`)[0]
+  if (domKey) {
+    domKey.classList.remove('active')
+  }
+
   // if the note being stopped is in the array of oscillators, kill it
   if (oscillators[noteNum]) {
-    const domKey = document.querySelectorAll(`button[data-noteid='${noteNum}']`)[0]
-
-    // update UI
-    if (domKey) {
-      domKey.classList.remove('active')
-    }
-
     const playbackTime = audioContext.currentTime
 
     oscillators[noteNum][1].gain.cancelScheduledValues(startTime)
@@ -567,10 +585,10 @@ const noteStop = function(noteNum, velocity = 64) {
     oscillators[noteNum] = null
     // delete oscillator key in array
     delete oscillators[noteNum]
-
-    // update chord recognition display
-    currentNotes.value = getChord(Object.keys(oscillators))
   }
+
+  // update chord recognition display
+  currentNotes.value = getChord(Object.keys(oscillators))
 }
 const pitchBend = function(velocity) {
   // 0 (-1 octave) -> 64 (no bend) -> 127 (+1 octave)
@@ -603,6 +621,7 @@ const pitchBend = function(velocity) {
     // console.log(`pitchBend - cur: ${curFreq}, mult: ${pbCents}, new: ${newFreq}`)
   })
 }
+
 // TODO: pitchMod
 //   sort of works, but effect is not quite correct yet
 //   also, setting to 0 does not reset properly
@@ -686,20 +705,42 @@ const pitchBend = function(velocity) {
 //   }
 // }
 
+const createWafNode = function(noteNum, startTime) {
+  const tone = Keebord.settings.wafTone
+  // get _tone_####_Name_sf2 object from string
+  const toneObject = eval(tone)
+
+  wafPlayer.loader.decodeAfterLoading(audioContext, tone)
+
+  const wafEnvelope = wafPlayer.queueWaveTable(
+    audioContext,       // AudioContext
+    destinationMaster,  // destination
+    toneObject,         // preset
+    startTime,          // when
+    noteNum,            // midi note number (0..127)
+    0.5,                // duration (seconds)
+    1                   // volume (0..1)
+  )
+
+  // console.log('wafEnvelope', wafEnvelope)
+
+  setTimeout(noteStop, 5)
+}
+
 // add new OscillatorNode to array of oscillators
 const createOscillatorNode = function(noteNum, startTime, envelope) {
   // create Web Audio oscillator
-  const oscillator = audioContext.createOscillator()
-  const note = musicalNotes[noteNum]
+  const oscNode = audioContext.createOscillator()
+  const noteFreq = parseFloat(musicalNotes[noteNum].frequency)
 
   // set oscillator wave type
   oscillatorType = document.getElementById('osc-type')
     .options[document.getElementById('osc-type').selectedIndex]
     .value
-  oscillator.type = oscillatorType
+  oscNode.type = oscillatorType
 
   // set oscillator frequency
-  oscillator.frequency.value = parseFloat(note.frequency)
+  oscNode.frequency.value = parseFloat(noteFreq)
 
   // create oscillator gain
   var gainNode = audioContext.createGain()
@@ -710,11 +751,11 @@ const createOscillatorNode = function(noteNum, startTime, envelope) {
   envelope.applyTo(gainNode.gain, audioContext.currentTime)
 
   // connect oscillator to master gain node
-  oscillator.connect(gainNode)
+  oscNode.connect(gainNode)
   gainNode.connect(nodeControls.masterGain.audioNode)
 
   // add oscillator to list of oscillators
-  oscillators[noteNum] = [oscillator, gainNode]
+  oscillators[noteNum] = [oscNode, gainNode]
 }
 
 const useKeyboardCheckboxChanged = (isChecked) => {
@@ -791,22 +832,22 @@ const updateMidiEventHandler = () => {
       console.error('navigator.requestMIDIAccess() not supported')
     }
   } else {
-    if (Keybord.midi) {
-      Array.from(Keybord.midi.inputs).forEach((input) => {
+    if (Keebord.midi) {
+      Array.from(Keebord.midi.inputs).forEach((input) => {
         input[1].onmidimessage = null
       })
-      Keybord.midi = null
+      Keebord.midi = null
 
-      console.log('midi support disabled', Keybord.midi)
+      console.log('midi support disabled', Keebord.midi)
     }
   }
 }
 const onMIDISuccess = (midi) => {
-  Keybord.midi = midi
+  Keebord.midi = midi
 
   console.log('midi support enabled', midi)
 
-  Array.from(Keybord.midi.inputs).forEach((input, index) => {
+  Array.from(Keebord.midi.inputs).forEach((input, index) => {
     input[1].onmidimessage = midiController
 
     console.log(`midi input #${index} detected: ${input[1].name}`)
@@ -1011,7 +1052,7 @@ onMounted(() => {
   <Keyboard
     :musical-notes="musicalNotes"
     :use-keyboard="useKeyboard"
-    :use-mouse="Keybord.env == 'prod' ? true : false"
+    :use-mouse="Keebord.env == 'prod' ? true : false"
     :use-midi="useMidi"
     @checked-changed-keyboard="useKeyboardCheckboxChanged"
     @checked-changed-mouse="useMouseCheckboxChanged"

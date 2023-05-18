@@ -4,12 +4,10 @@ import Modal from './components/Modal.vue'
 import Synth from './components/Synth.vue'
 import NebyooApps from './components/NebyooApps.vue'
 
-if ((typeof Keebord) === 'undefined') var Keebord = {}
-
 const showHelpModal = ref(false)
 
 // handle both clicks and touches outside of modals
-Keebord._handleClickTouch = function(event) {
+const handleClickTouch = function(event) {
   const dialog = document.getElementsByClassName('modal-wrapper')[0]
 
   if (dialog) {
@@ -25,11 +23,10 @@ Keebord._handleClickTouch = function(event) {
 
 onMounted(() => {
   // DOM > main divs/elements
-  Keebord.dom = {
+  const dom = {
     "navOverlay": document.getElementById('nav-overlay'),
     "btnNav": document.getElementById('button-nav'),
     "btnNavClose": document.getElementById('button-nav-close'),
-    // "btnMidiReset": document.getElementById('button-midi-reset')
     "btnHelp": document.getElementById('button-help'),
     // "btnSettings": document.getElementById('button-settings'),
   }
@@ -40,16 +37,16 @@ onMounted(() => {
     document.title = '(LH) ' + document.title
   }
 
-  Keebord.dom.btnNav.addEventListener('click', () => {
-    Keebord.dom.navOverlay.classList.toggle('show')
+  dom.btnNav.addEventListener('click', () => {
+    dom.navOverlay.classList.toggle('show')
   })
-  Keebord.dom.btnNavClose.addEventListener('click', () => {
-    Keebord.dom.navOverlay.classList.toggle('show')
+  dom.btnNavClose.addEventListener('click', () => {
+    dom.navOverlay.classList.toggle('show')
   })
 
   // When the user clicks or touches anywhere outside of the modal, close it
-  window.addEventListener('click', Keebord._handleClickTouch)
-  window.addEventListener('touchend', Keebord._handleClickTouch)
+  window.addEventListener('click', handleClickTouch)
+  window.addEventListener('touchend', handleClickTouch)
 })
 </script>
 
