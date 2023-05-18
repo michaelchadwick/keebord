@@ -922,8 +922,6 @@ const midiController = (e) => {
 createMasterChain()
 createSendChain()
 
-
-
 // convert midi note numbers into chords, if applicable
 const getChord = (midiNums) => {
   // console.log('getChord notes', midiNums)
