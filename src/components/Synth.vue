@@ -629,6 +629,26 @@ const noteStop = function(noteNum, velocity = 64) {
   // update chord recognition display
   currentNotes.value = getChord(Object.keys(oscillators))
 }
+const noteResetAll = () => {
+  oscillators.map(osc => {
+    const playbackTime = audioContext.currentTime
+    const stopTime = playbackTime + 0.08
+
+    osc[1].gain.cancelScheduledValues(audioContext.currentTime)
+
+    osc[1].gain.setValueAtTime(osc[1].gain.value, playbackTime)
+    osc[1].gain.exponentialRampToValueAtTime(0.0001, stopTime)
+
+    // osc[1].gain.disconnect()
+    osc[1].disconnect()
+
+    osc[0].stop(stopTime + 0.1)
+
+    osc = null
+  })
+
+  console.log('oscillators stopped')
+}
 
 // MIDI FX
 
@@ -869,19 +889,6 @@ const updateMidiEventHandler = () => {
       console.log('midi support disabled', Keebord.midi)
     }
   }
-}
-const noteReset = () => {
-  oscillators.map(osc => {
-    const playbackTime = audioContext.currentTime
-    const stopTime = playbackTime + 0.08
-
-    osc[1].gain.setValueAtTime(osc[1].gain.value, playbackTime)
-    osc[1].gain.exponentialRampToValueAtTime(0.0001, stopTime)
-
-    osc[0].stop(stopTime + 0.1)
-  })
-
-  console.log('oscillators stopped')
 }
 
 // INPUT CONTROLLERS
@@ -1125,7 +1132,7 @@ onMounted(() => {
     @checked-changed-midi="useMidiCheckboxChanged"
     @note-pressed="noteStart"
     @note-released="noteStop"
-    @note-reset="noteReset"
+    @note-reset-all="noteResetAll"
   />
 
   <div id="visualizer-container" style="display: none">
