@@ -550,6 +550,8 @@ const toggleSynthControls = function() {
 
 // midi, keyboard, mouse, and touch inputs all come here to create actual sound
 const noteStart = function(noteNum, velocity = 64) {
+  console.log(`oscillators[${noteNum}] noteStart`)
+
   const domKey = document.querySelectorAll(`button[data-noteid='${noteNum}']`)[0]
 
   // update UI
@@ -576,16 +578,18 @@ const noteStart = function(noteNum, velocity = 64) {
     oscillators[noteNum][0].start(startTime)
 
     oscillators[noteNum][0].onended = function() {
-      if (oscillators[noteNum] &&
-        oscillators[noteNum][1] &&
-        oscillators[noteNum][1].gain &&
-        'disconnect' in oscillators[noteNum][1].gain
-      ) {
-        oscillators[noteNum][1].gain.cancelScheduledValues(startTime)
-        oscillators[noteNum][1].gain.disconnect()
-        oscillators[noteNum][1].disconnect()
-        delete oscillators[noteNum]
-      }
+      console.log(`oscillators[${noteNum}] ended`)
+
+      // if (oscillators[noteNum] &&
+      //   oscillators[noteNum][1] &&
+      //   oscillators[noteNum][1].gain &&
+      //   'disconnect' in oscillators[noteNum][1].gain
+      // ) {
+      //   oscillators[noteNum][1].gain.cancelScheduledValues(startTime)
+      //   oscillators[noteNum][1].gain.disconnect()
+      //   oscillators[noteNum][1].disconnect()
+      //   delete oscillators[noteNum]
+      // }
     }
   }
 
@@ -601,6 +605,8 @@ const noteStop = function(noteNum, velocity = 64) {
 
   // if the note being stopped is in the array of oscillators, kill it
   if (oscillators[noteNum]) {
+    console.log(`oscillators[${noteNum}] noteStop`)
+
     oscillators[noteNum][1].gain.cancelScheduledValues(startTime)
 
     const playbackTime = audioContext.currentTime
