@@ -488,7 +488,7 @@ const checkEnabledChanged = function(controlName, isChecked) {
 const controlValueChanged = function(controlName, newValue) {
   const control = nodeControls[controlName]
 
-  console.log(`updating nodeControls['${controlName}']`, nodeControls, newValue)
+  // console.log(`updating nodeControls['${controlName}']`, nodeControls, newValue)
 
   if (controlName == 'pitchBend') {
     const semitones = parseInt(newValue)
@@ -501,9 +501,9 @@ const controlValueChanged = function(controlName, newValue) {
   else if (controlName == 'waveType') {}
   // otherwise, it's a gain modifier, most likely
   else if (control && control.audioNode[control.parameter]) {
-    console.log('control.parameter', control.parameter)
-    console.log('control.audioNode', control.audioNode)
-    console.log('control.audioNode[control.parameter]', control.audioNode[control.parameter])
+    // console.log('control.parameter', control.parameter)
+    // console.log('control.audioNode', control.audioNode)
+    // console.log('control.audioNode[control.parameter]', control.audioNode[control.parameter])
 
     if (control.type == 'range') {
       if (newValue <= parseFloat(control.max) && newValue >= parseFloat(control.min)) {
