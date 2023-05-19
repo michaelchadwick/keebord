@@ -571,25 +571,31 @@ const noteStart = function(noteNum, velocity = 64) {
   }
   // use OscillatorNodes
   else {
-    // create a new Oscillator, and add it to array of Oscillator instances
-    createOscillatorNode(noteNum, startTime, envelope)
+    if (!oscillators[noteNum]) {
+      // create a new Oscillator, and add it to array of Oscillator instances
+      createOscillatorNode(noteNum, startTime, envelope)
 
-    // start playing the oscillator
-    oscillators[noteNum][0].start(startTime)
+      // start playing the oscillator
+      oscillators[noteNum][0].start(startTime)
 
-    oscillators[noteNum][0].onended = function() {
-      console.log(`oscillators[${noteNum}] ended`)
+      // console.log('osc start', oscillators)
 
-      // if (oscillators[noteNum] &&
-      //   oscillators[noteNum][1] &&
-      //   oscillators[noteNum][1].gain &&
-      //   'disconnect' in oscillators[noteNum][1].gain
-      // ) {
-      //   oscillators[noteNum][1].gain.cancelScheduledValues(startTime)
-      //   oscillators[noteNum][1].gain.disconnect()
-      //   oscillators[noteNum][1].disconnect()
-      //   delete oscillators[noteNum]
-      // }
+      oscillators[noteNum][0].onended = function() {
+        console.log(`oscillators[${noteNum}] ended`)
+
+        // if (oscillators[noteNum] &&
+        //   oscillators[noteNum][1] &&
+        //   oscillators[noteNum][1].gain &&
+        //   'disconnect' in oscillators[noteNum][1].gain
+        // ) {
+        //   oscillators[noteNum][1].gain.cancelScheduledValues(startTime)
+        //   oscillators[noteNum][1].gain.disconnect()
+        //   oscillators[noteNum][1].disconnect()
+        //   delete oscillators[noteNum]
+        // }
+      }
+    } else {
+      // console.error(`oscillators[${noteNum}] already exists`)
     }
   }
 
@@ -630,6 +636,8 @@ const noteStop = function(noteNum, velocity = 64) {
     oscillators[noteNum] = null
     // delete oscillator key in array
     delete oscillators[noteNum]
+
+    // console.log('osc stop', oscillators)
   }
 
   // update chord recognition display
