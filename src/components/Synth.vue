@@ -3,146 +3,170 @@ import { getCurrentInstance, onMounted, reactive, ref } from 'vue'
 import NodeControl from './NodeControl.vue'
 import Keyboard from './Keyboard.vue'
 import ADSREnvelope from 'adsr-envelope'
-import webAudioFontLoader from '../assets/js/app/wafScript.js'
-import webAudioFontTonesLoader from '../assets/js/app/wafTones.js'
+import { loadSoundfont, startPresetNote } from 'sfumato'
+// import webAudioFontLoader from '../assets/js/app/wafLoader.js'
+// import webAudioFontTonesLoader from '../assets/js/app/wafTonesLoader.js'
 
 const INTERVALS = {
-  'major': [4,3],
-  'aug'  : [4,4],
-  'minor': [3,4],
-  'dim'  : [3,3],
-  'sus2' : [2,5],
-  'sus4' : [5,2],
-  'dom7' : [4,3,3],
-  'min7' : [3,4,3],
-  'maj7' : [4,3,4],
-  '7sus4': [5,2,3]
+  'major': [4, 3],
+  'aug': [4, 4],
+  'minor': [3, 4],
+  'dim': [3, 3],
+  'sus2': [2, 5],
+  'sus4': [5, 2],
+  'dom7': [4, 3, 3],
+  'min7': [3, 4, 3],
+  'maj7': [4, 3, 4],
+  '7sus4': [5, 2, 3]
 }
 const MUSICAL_NOTES = [
   // index 0
-  {name: 'C0',  frequency: 16.350,   midi: 12},
-  {name: 'Db0', frequency: 17.320,   midi: 13},
-  {name: 'D0',  frequency: 18.350,   midi: 14},
-  {name: 'Eb0', frequency: 19.450,   midi: 15},
-  {name: 'E0',  frequency: 20.600,   midi: 16},
-  {name: 'F0',  frequency: 21.830,   midi: 17},
-  {name: 'Gb0', frequency: 23.120,   midi: 18},
-  {name: 'G0',  frequency: 24.500,   midi: 19},
-  {name: 'Ab0', frequency: 25.960,   midi: 20},
-  {name: 'A0',  frequency: 27.500,   midi: 21},
-  {name: 'Bb0', frequency: 29.140,   midi: 22},
-  {name: 'B0',  frequency: 30.870,   midi: 23},
+  { name: 'C0', frequency: 16.350, midi: 12 },
+  { name: 'Db0', frequency: 17.320, midi: 13 },
+  { name: 'D0', frequency: 18.350, midi: 14 },
+  { name: 'Eb0', frequency: 19.450, midi: 15 },
+  { name: 'E0', frequency: 20.600, midi: 16 },
+  { name: 'F0', frequency: 21.830, midi: 17 },
+  { name: 'Gb0', frequency: 23.120, midi: 18 },
+  { name: 'G0', frequency: 24.500, midi: 19 },
+  { name: 'Ab0', frequency: 25.960, midi: 20 },
+  { name: 'A0', frequency: 27.500, midi: 21 },
+  { name: 'Bb0', frequency: 29.140, midi: 22 },
+  { name: 'B0', frequency: 30.870, midi: 23 },
   // index 12
-  {name: 'C1',  frequency: 32.700,   midi: 24},
-  {name: 'Db1', frequency: 34.650,   midi: 25},
-  {name: 'D1',  frequency: 36.710,   midi: 26},
-  {name: 'Eb1', frequency: 38.890,   midi: 27},
-  {name: 'E1',  frequency: 41.200,   midi: 28},
-  {name: 'F1',  frequency: 43.650,   midi: 29},
-  {name: 'Gb1', frequency: 46.250,   midi: 30},
-  {name: 'G1',  frequency: 49.000,   midi: 31},
-  {name: 'Ab1', frequency: 51.910,   midi: 32},
-  {name: 'A1',  frequency: 55.000,   midi: 33},
-  {name: 'Bb1', frequency: 58.270,   midi: 34},
-  {name: 'B1',  frequency: 61.740,   midi: 35},
+  { name: 'C1', frequency: 32.700, midi: 24 },
+  { name: 'Db1', frequency: 34.650, midi: 25 },
+  { name: 'D1', frequency: 36.710, midi: 26 },
+  { name: 'Eb1', frequency: 38.890, midi: 27 },
+  { name: 'E1', frequency: 41.200, midi: 28 },
+  { name: 'F1', frequency: 43.650, midi: 29 },
+  { name: 'Gb1', frequency: 46.250, midi: 30 },
+  { name: 'G1', frequency: 49.000, midi: 31 },
+  { name: 'Ab1', frequency: 51.910, midi: 32 },
+  { name: 'A1', frequency: 55.000, midi: 33 },
+  { name: 'Bb1', frequency: 58.270, midi: 34 },
+  { name: 'B1', frequency: 61.740, midi: 35 },
   // index 24
-  {name: 'C2',  frequency: 65.410,   midi: 36},
-  {name: 'Db2', frequency: 69.300,   midi: 37},
-  {name: 'D2',  frequency: 73.420,   midi: 38},
-  {name: 'Eb2', frequency: 77.780,   midi: 39},
-  {name: 'E2',  frequency: 82.410,   midi: 40},
-  {name: 'F2',  frequency: 87.310,   midi: 41},
-  {name: 'Gb2', frequency: 92.500,   midi: 42},
-  {name: 'G2',  frequency: 98.000,   midi: 43},
-  {name: 'Ab2', frequency: 103.830,  midi: 44},
-  {name: 'A2',  frequency: 110.000,  midi: 45},
-  {name: 'Bb2', frequency: 116.540,  midi: 46},
-  {name: 'B2',  frequency: 123.470,  midi: 47},
+  { name: 'C2', frequency: 65.410, midi: 36 },
+  { name: 'Db2', frequency: 69.300, midi: 37 },
+  { name: 'D2', frequency: 73.420, midi: 38 },
+  { name: 'Eb2', frequency: 77.780, midi: 39 },
+  { name: 'E2', frequency: 82.410, midi: 40 },
+  { name: 'F2', frequency: 87.310, midi: 41 },
+  { name: 'Gb2', frequency: 92.500, midi: 42 },
+  { name: 'G2', frequency: 98.000, midi: 43 },
+  { name: 'Ab2', frequency: 103.830, midi: 44 },
+  { name: 'A2', frequency: 110.000, midi: 45 },
+  { name: 'Bb2', frequency: 116.540, midi: 46 },
+  { name: 'B2', frequency: 123.470, midi: 47 },
   // index 36
-  {name: 'C3',  frequency: 130.810,  midi: 48},
-  {name: 'Db3', frequency: 138.590,  midi: 49},
-  {name: 'D3',  frequency: 146.830,  midi: 50},
-  {name: 'Eb3', frequency: 155.560,  midi: 51},
-  {name: 'E3',  frequency: 164.810,  midi: 52},
-  {name: 'F3',  frequency: 174.610,  midi: 53},
-  {name: 'Gb3', frequency: 185.000,  midi: 54},
-  {name: 'G3',  frequency: 196.000,  midi: 55},
-  {name: 'Ab3', frequency: 207.650,  midi: 56},
-  {name: 'A3',  frequency: 220.000,  midi: 57},
-  {name: 'Bb3', frequency: 233.080,  midi: 58},
-  {name: 'B3',  frequency: 246.940,  midi: 59},
+  { name: 'C3', frequency: 130.810, midi: 48 },
+  { name: 'Db3', frequency: 138.590, midi: 49 },
+  { name: 'D3', frequency: 146.830, midi: 50 },
+  { name: 'Eb3', frequency: 155.560, midi: 51 },
+  { name: 'E3', frequency: 164.810, midi: 52 },
+  { name: 'F3', frequency: 174.610, midi: 53 },
+  { name: 'Gb3', frequency: 185.000, midi: 54 },
+  { name: 'G3', frequency: 196.000, midi: 55 },
+  { name: 'Ab3', frequency: 207.650, midi: 56 },
+  { name: 'A3', frequency: 220.000, midi: 57 },
+  { name: 'Bb3', frequency: 233.080, midi: 58 },
+  { name: 'B3', frequency: 246.940, midi: 59 },
   // index 48
-  {name: 'C4',  frequency: 261.630,  midi: 60, key: 'z'},
-  {name: 'Db4', frequency: 277.180,  midi: 61, key: 's'},
-  {name: 'D4',  frequency: 293.660,  midi: 62, key: 'x'},
-  {name: 'Eb4', frequency: 311.130,  midi: 63, key: 'd'},
-  {name: 'E4',  frequency: 329.630,  midi: 64, key: 'c'},
-  {name: 'F4',  frequency: 349.230,  midi: 65, key: 'v'},
-  {name: 'Gb4', frequency: 369.990,  midi: 66, key: 'g'},
-  {name: 'G4',  frequency: 392.000,  midi: 67, key: 'b'},
-  {name: 'Ab4', frequency: 415.300,  midi: 68, key: 'h'},
-  {name: 'A4',  frequency: 440.000,  midi: 69, key: 'n'},
-  {name: 'Bb4', frequency: 466.160,  midi: 70, key: 'j'},
-  {name: 'B4',  frequency: 493.880,  midi: 71, key: 'm'},
+  { name: 'C4', frequency: 261.630, midi: 60, key: 'z' },
+  { name: 'Db4', frequency: 277.180, midi: 61, key: 's' },
+  { name: 'D4', frequency: 293.660, midi: 62, key: 'x' },
+  { name: 'Eb4', frequency: 311.130, midi: 63, key: 'd' },
+  { name: 'E4', frequency: 329.630, midi: 64, key: 'c' },
+  { name: 'F4', frequency: 349.230, midi: 65, key: 'v' },
+  { name: 'Gb4', frequency: 369.990, midi: 66, key: 'g' },
+  { name: 'G4', frequency: 392.000, midi: 67, key: 'b' },
+  { name: 'Ab4', frequency: 415.300, midi: 68, key: 'h' },
+  { name: 'A4', frequency: 440.000, midi: 69, key: 'n' },
+  { name: 'Bb4', frequency: 466.160, midi: 70, key: 'j' },
+  { name: 'B4', frequency: 493.880, midi: 71, key: 'm' },
   // index 60
-  {name: 'C5',  frequency: 523.250,  midi: 72, key: 'q'},
-  {name: 'Db5', frequency: 554.370,  midi: 73, key: '2'},
-  {name: 'D5',  frequency: 587.330,  midi: 74, key: 'w'},
-  {name: 'Eb5', frequency: 622.250,  midi: 75, key: '3'},
-  {name: 'E5',  frequency: 659.250,  midi: 76, key: 'e'},
-  {name: 'F5',  frequency: 698.460,  midi: 77, key: 'r'},
-  {name: 'Gb5', frequency: 739.990,  midi: 78, key: '5'},
-  {name: 'G5',  frequency: 783.990,  midi: 79, key: 't'},
-  {name: 'Ab5', frequency: 830.610,  midi: 80, key: '6'},
-  {name: 'A5',  frequency: 880.000,  midi: 81, key: 'y'},
-  {name: 'Bb5', frequency: 932.330,  midi: 82, key: 'u',},
-  {name: 'B5',  frequency: 987.770,  midi: 83, key: 'i'},
+  { name: 'C5', frequency: 523.250, midi: 72, key: 'q' },
+  { name: 'Db5', frequency: 554.370, midi: 73, key: '2' },
+  { name: 'D5', frequency: 587.330, midi: 74, key: 'w' },
+  { name: 'Eb5', frequency: 622.250, midi: 75, key: '3' },
+  { name: 'E5', frequency: 659.250, midi: 76, key: 'e' },
+  { name: 'F5', frequency: 698.460, midi: 77, key: 'r' },
+  { name: 'Gb5', frequency: 739.990, midi: 78, key: '5' },
+  { name: 'G5', frequency: 783.990, midi: 79, key: 't' },
+  { name: 'Ab5', frequency: 830.610, midi: 80, key: '6' },
+  { name: 'A5', frequency: 880.000, midi: 81, key: 'y' },
+  { name: 'Bb5', frequency: 932.330, midi: 82, key: 'u', },
+  { name: 'B5', frequency: 987.770, midi: 83, key: 'i' },
   // index 72
-  {name: 'C6',  frequency: 1046.500, midi: 84, key: 'o'},
-  {name: 'Db6', frequency: 1108.730, midi: 85},
-  {name: 'D6',  frequency: 1174.660, midi: 86},
-  {name: 'Eb6', frequency: 1244.510, midi: 87},
-  {name: 'E6',  frequency: 1318.510, midi: 88},
-  {name: 'F6',  frequency: 1396.910, midi: 89},
-  {name: 'Gb6', frequency: 1479.980, midi: 90},
-  {name: 'G6',  frequency: 1567.980, midi: 91},
-  {name: 'Ab6', frequency: 1661.220, midi: 92},
-  {name: 'A6',  frequency: 1760.000, midi: 93},
-  {name: 'Bb6', frequency: 1864.660, midi: 94},
-  {name: 'B6',  frequency: 1975.530, midi: 95},
+  { name: 'C6', frequency: 1046.500, midi: 84, key: 'o' },
+  { name: 'Db6', frequency: 1108.730, midi: 85 },
+  { name: 'D6', frequency: 1174.660, midi: 86 },
+  { name: 'Eb6', frequency: 1244.510, midi: 87 },
+  { name: 'E6', frequency: 1318.510, midi: 88 },
+  { name: 'F6', frequency: 1396.910, midi: 89 },
+  { name: 'Gb6', frequency: 1479.980, midi: 90 },
+  { name: 'G6', frequency: 1567.980, midi: 91 },
+  { name: 'Ab6', frequency: 1661.220, midi: 92 },
+  { name: 'A6', frequency: 1760.000, midi: 93 },
+  { name: 'Bb6', frequency: 1864.660, midi: 94 },
+  { name: 'B6', frequency: 1975.530, midi: 95 },
   // index 84
-  {name: 'C7',  frequency: 2093.000, midi: 96},
-  {name: 'Db7', frequency: 2217.460, midi: 97},
-  {name: 'D7',  frequency: 2349.320, midi: 98},
-  {name: 'Eb7', frequency: 2489.020, midi: 99},
-  {name: 'E7',  frequency: 2637.020, midi: 100},
-  {name: 'F7',  frequency: 2793.830, midi: 101},
-  {name: 'Gb7', frequency: 2959.960, midi: 102},
-  {name: 'G7',  frequency: 3135.960, midi: 103},
-  {name: 'Ab7', frequency: 3322.440, midi: 104},
-  {name: 'A7',  frequency: 3520.000, midi: 105},
-  {name: 'Bb7', frequency: 3729.310, midi: 106},
-  {name: 'B7',  frequency: 3951.070, midi: 107},
+  { name: 'C7', frequency: 2093.000, midi: 96 },
+  { name: 'Db7', frequency: 2217.460, midi: 97 },
+  { name: 'D7', frequency: 2349.320, midi: 98 },
+  { name: 'Eb7', frequency: 2489.020, midi: 99 },
+  { name: 'E7', frequency: 2637.020, midi: 100 },
+  { name: 'F7', frequency: 2793.830, midi: 101 },
+  { name: 'Gb7', frequency: 2959.960, midi: 102 },
+  { name: 'G7', frequency: 3135.960, midi: 103 },
+  { name: 'Ab7', frequency: 3322.440, midi: 104 },
+  { name: 'A7', frequency: 3520.000, midi: 105 },
+  { name: 'Bb7', frequency: 3729.310, midi: 106 },
+  { name: 'B7', frequency: 3951.070, midi: 107 },
   // index 96
-  {name: 'C8',  frequency: 4186.010, midi: 108},
-  {name: 'Db8', frequency: 4434.920, midi: 109},
-  {name: 'D8',  frequency: 4698.630, midi: 110},
-  {name: 'Eb8', frequency: 4978.030, midi: 111},
-  {name: 'E8',  frequency: 5274.040, midi: 112},
-  {name: 'F8',  frequency: 5587.650, midi: 113},
-  {name: 'Gb8', frequency: 5919.910, midi: 114},
-  {name: 'G8',  frequency: 6271.930, midi: 115},
-  {name: 'Ab8', frequency: 6644.880, midi: 116},
-  {name: 'A8',  frequency: 7040.000, midi: 117},
-  {name: 'Bb8', frequency: 7458.620, midi: 118},
-  {name: 'B8',  frequency: 7902.130, midi: 119},
+  { name: 'C8', frequency: 4186.010, midi: 108 },
+  { name: 'Db8', frequency: 4434.920, midi: 109 },
+  { name: 'D8', frequency: 4698.630, midi: 110 },
+  { name: 'Eb8', frequency: 4978.030, midi: 111 },
+  { name: 'E8', frequency: 5274.040, midi: 112 },
+  { name: 'F8', frequency: 5587.650, midi: 113 },
+  { name: 'Gb8', frequency: 5919.910, midi: 114 },
+  { name: 'G8', frequency: 6271.930, midi: 115 },
+  { name: 'Ab8', frequency: 6644.880, midi: 116 },
+  { name: 'A8', frequency: 7040.000, midi: 117 },
+  { name: 'Bb8', frequency: 7458.620, midi: 118 },
+  { name: 'B8', frequency: 7902.130, midi: 119 },
 ]
 
+const oscNotes = reactive([])
+const sf2Notes = reactive([])
+const sf2Presets = reactive([])
+const wafNotes = reactive([])
+
+// holds current notes being played
+// used to get chord recognition
 const currentNotes = ref([])
-const oscillators = reactive([])
+
 const nodeControls = reactive({
-  waveType: {
-    title: 'Wave Type',
+  outputType: {
+    title: 'Output Type',
+    type: 'select',
+    selectId: 'output-type',
+    options: [
+      { text: 'Oscillator', value: 'osc' },
+      { text: 'Soundfont', value: 'sf2' },
+      { text: 'WebAudioFont', value: 'waf' }
+    ],
+    currentValue: 'osc',
+    audioNode: '',
+    parameter: 'type',
+    visible: true,
+    enabled: true,
+    isVertical: true
+  },
+  oscType: {
+    title: 'Osc Type',
     type: 'select',
     selectId: 'osc-type',
     options: [
@@ -154,8 +178,55 @@ const nodeControls = reactive({
     currentValue: 'sine',
     audioNode: '',
     parameter: 'type',
+    visible: true,
     enabled: true,
-    isVertical: true
+    isVertical: false
+  },
+  sf2Source: {
+    title: 'SF2 Source',
+    type: 'select',
+    selectId: 'sf2-source',
+    options: [
+      { text: 'Default', value: '_default' },
+      { text: 'Donkey Kong Country', value: 'donkey_kong_country' },
+      { text: 'Earthbound', value: 'earthbound' },
+      { text: 'Super Mario World', value: 'super_mario_world' },
+      { text: 'Vintage Dreams', value: 'vintage_dreams_waves_v2' }
+    ],
+    currentValue: 'super_mario_world',
+    audioNode: '',
+    parameter: 'type',
+    visible: false,
+    enabled: false,
+    isVertical: false
+  },
+  sf2Preset: {
+    title: 'SF2 Instrument',
+    type: 'select',
+    selectId: 'sf2-preset',
+    options: sf2Presets.value,
+    currentValue: '',
+    audioNode: '',
+    parameter: 'type',
+    visible: false,
+    enabled: false,
+    isVertical: false
+  },
+  wafSource: {
+    title: 'WAF Source',
+    type: 'select',
+    selectId: 'waf-source',
+    options: [
+      { text: 'Aspirin', value: '_tone_0000_Aspirin_sf2' },
+      { text: 'SoundBlasterOld', value: '_tone_0250_SoundBlasterOld_sf2' }
+    ],
+    currentValue: '_tone_0000_Aspirin_sf2',
+    // currentValue: '_tone_0250_SoundBlasterOld_sf2',
+    audioNode: '',
+    parameter: 'type',
+    visible: false,
+    enabled: false,
+    isVertical: false
   },
   pan: {
     title: 'Pan',
@@ -168,6 +239,7 @@ const nodeControls = reactive({
     min: '-1.0',
     max: '1.0',
     parameter: 'pan',
+    visible: true,
     enabled: true,
     isVertical: false
   },
@@ -182,6 +254,7 @@ const nodeControls = reactive({
     min: '1',
     max: '12',
     parameter: 'pitch',
+    visible: true,
     enabled: true,
     isVertical: true
   },
@@ -197,6 +270,7 @@ const nodeControls = reactive({
   //   min: '0.0',
   //   max: '1.0',
   //   parameter: 'gain',
+  //   visible: true,
   //   enabled: false,
   //   isVertical: true
   // },
@@ -212,6 +286,7 @@ const nodeControls = reactive({
   //   min: '0.0',
   //   max: '1.0',
   //   parameter: 'gain',
+  //   visible: true,
   //   enabled: false,
   //   isVertical: true
   // },
@@ -227,6 +302,7 @@ const nodeControls = reactive({
     min: '0.0',
     max: '6.0',
     parameter: 'delayTime',
+    visible: true,
     enabled: false,
     isVertical: true
   },
@@ -241,6 +317,7 @@ const nodeControls = reactive({
     min: '0.0',
     max: '1.0',
     parameter: 'gain',
+    visible: true,
     enabled: true,
     isVertical: true
   },
@@ -255,6 +332,7 @@ const nodeControls = reactive({
     min: '0.0',
     max: '1.0',
     parameter: 'gain',
+    visible: true,
     enabled: true,
     isVertical: true
   },
@@ -269,6 +347,7 @@ const nodeControls = reactive({
     min: '0.0',
     max: '1.0',
     parameter: 'gain',
+    visible: true,
     enabled: true,
     isVertical: true
   },
@@ -283,6 +362,7 @@ const nodeControls = reactive({
     min: '1',
     max: '20',
     parameter: 'ratio',
+    visible: true,
     enabled: true,
     isVertical: true
   },
@@ -297,6 +377,7 @@ const nodeControls = reactive({
     min: '0.0',
     max: '1.0',
     parameter: 'gain',
+    visible: true,
     enabled: true,
     isVertical: true
   }
@@ -315,11 +396,12 @@ let useMouse
 let useMidi
 let wafPlayer = null
 
-if (Keebord.settings.player == 'waf') {
-  // load main file, and then tone files
-  webAudioFontLoader.then(() => webAudioFontTonesLoader).then(() => {
-    wafPlayer = new WebAudioFontPlayer()
-  })
+if (nodeControls.outputType == 'sf2') {
+  initSF2()
+}
+
+if (nodeControls.outputType == 'waf') {
+  initWAF()
 }
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)()
@@ -335,13 +417,10 @@ const adsr = new ADSREnvelope({
   decayCurve: 'exp',
   releaseCurve: 'exp',
 })
-const analyzerNode = new AnalyserNode(
-  audioContext,
-  {
-    fftSize: 2048,
-    smoothingTimeConstant: 1
-  }
-)
+const analyzerNode = new AnalyserNode(audioContext, {
+  fftSize: 2048,
+  smoothingTimeConstant: 1
+})
 const dataArray = new Uint8Array(analyzerNode.frequencyBinCount)
 
 const masterGainNode = audioContext.createGain()
@@ -354,7 +433,7 @@ const destinationMaster = audioContext.destination
 
 // creates a connection of nodes
 // masterGain->distortion->(reverb)->(delay)->eqLow
-const createSendChain = function() {
+const createSendChain = function () {
   // console.log('creating send chain')
 
   // TODO: distortion
@@ -400,7 +479,7 @@ const createSendChain = function() {
 }
 // creates a connection of nodes
 // eqLow->eqMid->eqHigh->compressor->(pan)->analyzerNode->destinationMaster
-const createMasterChain = function() {
+const createMasterChain = function () {
   // console.log('creating master chain')
 
   // 3-band EQ
@@ -430,6 +509,8 @@ const createMasterChain = function() {
     analyzerNode.connect(destinationMaster)
   }
 }
+
+// FX NODE CREATORS
 
 const createDistNode = (oversample) => {
   const audioNode = audioContext.createWaveShaper()
@@ -481,14 +562,15 @@ const createPanNode = (value) => {
   return audioNode
 }
 
-const checkEnabledChanged = function(controlName, isChecked) {
+const checkEnabledChanged = function (controlName, isChecked) {
   nodeControls[controlName].enabled = isChecked
   createSendChain()
+  createMasterChain()
 }
-const controlValueChanged = function(controlName, newValue) {
+const controlValueChanged = function (controlName, newValue) {
   const control = nodeControls[controlName]
 
-  // console.log(`updating nodeControls['${controlName}']`, nodeControls, newValue)
+  console.log(`updating controlValue for nodeControls['${controlName}']`, nodeControls, newValue)
 
   if (controlName == 'pitchBend') {
     const semitones = parseInt(newValue)
@@ -498,7 +580,6 @@ const controlValueChanged = function(controlName, newValue) {
       pitchBendRange = parseInt(semitones)
     }
   }
-  else if (controlName == 'waveType') {}
   // otherwise, it's a gain modifier, most likely
   else if (control && control.audioNode[control.parameter]) {
     // console.log('control.parameter', control.parameter)
@@ -524,17 +605,40 @@ const controlValueChanged = function(controlName, newValue) {
     console.error(`nodeControls['${controlName}'] not found, value could not be updated.`)
   }
 }
-const selectOptionChanged = function(controlName, newValue) {
+const selectOptionChanged = function (controlName, newValue) {
+  console.log('selectOptionChanged', controlName, newValue)
+
+  switch (controlName) {
+    case 'outputType':
+      updateOutputHandler(newValue)
+
+      break
+
+    case 'sf2Source':
+      noteResetAll()
+      initSF2()
+
+      break
+
+    case 'sf2Preset':
+      noteResetAll()
+
+      break
+  }
+
   const control = nodeControls[controlName]
 
-  // console.log('controlName', controlName)
-  // console.log('newValue', newValue)
-  // console.log('control', control)
-  // console.log('control.parameter', control.parameter)
+  if (control) {
+    nodeControls[controlName].currentValue = newValue
+
+    console.log('control has been updated', control)
+  } else {
+    console.error('control could not be found', controlName)
+  }
 }
 
 // expand/collapse Synth Controls section
-const toggleSynthControls = function() {
+const toggleSynthControls = function () {
   let toggleSynthControl = document.getElementById('synth-controls-container')
 
   if (toggleSynthControl.style.display === 'none') {
@@ -549,12 +653,9 @@ const toggleSynthControls = function() {
 }
 
 // midi, keyboard, mouse, and touch inputs all come here to create actual sound
-const noteStart = function(noteNum, velocity = 64) {
-  console.log(`oscillators[${noteNum}] noteStart`)
-
-  const domKey = document.querySelectorAll(`button[data-noteid='${noteNum}']`)[0]
-
+const noteStart = function (noteNum, velocity = 64) {
   // update UI
+  const domKey = document.querySelectorAll(`button[data-noteid='${noteNum}']`)[0]
   if (domKey) {
     domKey.classList.add('active')
   }
@@ -565,108 +666,257 @@ const noteStart = function(noteNum, velocity = 64) {
   const envelope = adsr.clone()
   envelope.peakLevel = (velocity / 127) * parseFloat(nodeControls.masterGain.currentValue)
 
-  // use WebAudioFont
-  if (Keebord.settings.player == 'waf') {
-    createWafNode(noteNum, startTime)
+  switch (nodeControls.outputType.currentValue) {
+    // use sfumato
+    case 'sf2':
+      console.log(`sf2Notes[${noteNum}] noteStart`)
+
+      createSF2Node(noteNum, startTime)
+
+      currentNotes.value = getChord(Object.keys(sf2Notes))
+
+      break
+
+    // use WebAudioFont
+    case 'waf':
+      console.log(`wafNotes[${noteNum}] noteStart`)
+
+      createWafNode(noteNum, startTime)
+
+      currentNotes.value = getChord(Object.keys(wafNotes))
+
+      break
+
+    // use OscillatorNodes
+    default:
+      console.log(`oscNotes[${noteNum}] noteStart`)
+
+      createOscNode(noteNum, startTime, envelope)
+
+      currentNotes.value = getChord(Object.keys(oscNotes))
+
+      break
   }
-  // use OscillatorNodes
-  else {
-    if (!oscillators[noteNum]) {
-      // create a new Oscillator, and add it to array of Oscillator instances
-      createOscillatorNode(noteNum, startTime, envelope)
-
-      // start playing the oscillator
-      oscillators[noteNum][0].start(startTime)
-
-      // console.log('osc start', oscillators)
-
-      oscillators[noteNum][0].onended = function() {
-        console.log(`oscillators[${noteNum}] ended`)
-
-        // if (oscillators[noteNum] &&
-        //   oscillators[noteNum][1] &&
-        //   oscillators[noteNum][1].gain &&
-        //   'disconnect' in oscillators[noteNum][1].gain
-        // ) {
-        //   oscillators[noteNum][1].gain.cancelScheduledValues(startTime)
-        //   oscillators[noteNum][1].gain.disconnect()
-        //   oscillators[noteNum][1].disconnect()
-        //   delete oscillators[noteNum]
-        // }
-      }
-    } else {
-      // console.error(`oscillators[${noteNum}] already exists`)
-    }
-  }
-
-  // update chord recognition display
-  currentNotes.value = getChord(Object.keys(oscillators))
 }
-const noteStop = function(noteNum, velocity = 64) {
+const noteStop = function (noteNum, velocity = 64) {
   // update UI
   const domKey = document.querySelectorAll(`button[data-noteid='${noteNum}']`)[0]
   if (domKey) {
     domKey.classList.remove('active')
   }
 
-  // if the note being stopped is in the array of oscillators, kill it
-  if (oscillators[noteNum]) {
-    console.log(`oscillators[${noteNum}] noteStop`)
+  const playbackTime = audioContext.currentTime
 
-    oscillators[noteNum][1].gain.cancelScheduledValues(startTime)
+  // if the note being stopped is in the array of notes, kill it
+  switch (nodeControls.outputType.currentValue) {
+    case 'sf2':
+      if (sf2Notes[noteNum]) {
+        console.log(`sf2Notes[${noteNum}] noteStop`)
 
-    const playbackTime = audioContext.currentTime
+        // sf2Notes[noteNum].stopHandle()
+        sf2Notes[noteNum] = null
+        delete sf2Notes[noteNum]
+      }
 
-    // set note's volume envelope
-    const envelope = adsr.clone()
-    envelope.peakLevel = (velocity / 127) * parseFloat(nodeControls.masterGain.currentValue)
+      // update chord recognition display
+      currentNotes.value = getChord(Object.keys(sf2Notes))
 
-    // FIXME: potential popping fix?
-    // const stopTime = playbackTime + 0.08
-    // oscillators[noteNum][1].gain.setValueAtTime(oscillators[noteNum][1].gain.currentValue, playbackTime)
-    // oscillators[noteNum][1].gain.exponentialRampToValueAtTime(0.0001, stopTime)
-    // oscillators[noteNum][0].stop(stopTime + 0.1)
+      break
 
-    envelope.gateTime = playbackTime - startTime
-    envelope.applyTo(oscillators[noteNum][1].gain, startTime)
+    case 'waf':
 
-    oscillators[noteNum][0].stop(startTime + envelope.duration)
+      wafNotes[noteNum] = null
+      delete wafNotes[noteNum]
 
-    // set array key for note to null
-    oscillators[noteNum] = null
-    // delete oscillator key in array
-    delete oscillators[noteNum]
+      // update chord recognition display
+      currentNotes.value = getChord(Object.keys(wafNotes))
 
-    // console.log('osc stop', oscillators)
+      break
+
+    default:
+      if (oscNotes[noteNum]) {
+        console.log(`oscNotes[${noteNum}] noteStop`)
+
+        oscNotes[noteNum][1].gain.cancelScheduledValues(startTime)
+
+        // FIXME: potential popping fix?
+        // const stopTime = playbackTime + 0.08
+        // oscNotes[noteNum][1].gain.setValueAtTime(oscNotes[noteNum][1].gain.currentValue, playbackTime)
+        // oscNotes[noteNum][1].gain.exponentialRampToValueAtTime(0.0001, stopTime)
+        // oscNotes[noteNum][0].stop(stopTime + 0.1)
+
+        // set note's volume envelope
+        const envelope = adsr.clone()
+        envelope.peakLevel = (velocity / 127) * parseFloat(nodeControls.masterGain.currentValue)
+        envelope.gateTime = playbackTime - startTime
+        envelope.applyTo(oscNotes[noteNum][1].gain, startTime)
+
+        oscNotes[noteNum][0].stop(startTime + envelope.duration)
+
+        // set array key for note to null
+        oscNotes[noteNum] = null
+        // delete oscillator key in array
+        delete oscNotes[noteNum]
+
+        // console.log('osc stop', oscNotes)
+      }
+
+      // update chord recognition display
+      currentNotes.value = getChord(Object.keys(oscNotes))
+
+      break
   }
-
-  // update chord recognition display
-  currentNotes.value = getChord(Object.keys(oscillators))
 }
 const noteResetAll = () => {
-  oscillators.map(osc => {
-    const playbackTime = audioContext.currentTime
-    const stopTime = playbackTime + 0.08
+  switch (nodeControls.outputType.currentValue) {
+    case 'sf2':
+      sf2Notes.map(noteNum => {
+        sf2Notes[noteNum] = null
+        delete sf2Notes[noteNum]
+      })
 
-    osc[1].gain.cancelScheduledValues(audioContext.currentTime)
+      console.log('sf2Notes stopped', sf2Notes)
 
-    osc[1].gain.setValueAtTime(osc[1].gain.value, playbackTime)
-    osc[1].gain.exponentialRampToValueAtTime(0.0001, stopTime)
+      break
 
-    // osc[1].gain.disconnect()
-    osc[1].disconnect()
+    case 'waf':
+      wafNotes.map(noteNum => {
+        wafNotes[noteNum] = null
+        delete wafNotes[noteNum]
+      })
 
-    osc[0].stop(stopTime + 0.1)
+      console.log('wafNotes stopped', wafNotes)
 
-    osc = null
-  })
+      break
 
-  console.log('oscillators stopped')
+    default:
+      oscNotes.map(osc => {
+        const playbackTime = audioContext.currentTime
+        const stopTime = playbackTime + 0.08
+
+        osc[1].gain.cancelScheduledValues(audioContext.currentTime)
+
+        osc[1].gain.setValueAtTime(osc[1].gain.value, playbackTime)
+        osc[1].gain.exponentialRampToValueAtTime(0.0001, stopTime)
+
+        // osc[1].gain.disconnect()
+        osc[1].disconnect()
+
+        osc[0].stop(stopTime + 0.1)
+
+        osc = null
+      })
+
+      console.log('oscNotes stopped', oscNotes)
+
+      break
+  }
+}
+
+const createOscNode = function (noteNum, startTime, envelope) {
+  if (!oscNotes[noteNum]) {
+    // create Web Audio oscillator
+    const oscNode = audioContext.createOscillator()
+    const noteFreq = parseFloat(MUSICAL_NOTES[noteNum].frequency)
+
+    // set oscillator wave type
+    oscillatorType = document.getElementById('osc-type')
+      .options[document.getElementById('osc-type').selectedIndex]
+      .value
+    oscNode.type = oscillatorType
+
+    // set oscillator frequency
+    oscNode.frequency.value = parseFloat(noteFreq)
+
+    // create oscillator gain
+    var gainNode = audioContext.createGain()
+    gainNode.gain.value = nodeControls.masterGain.currentValue
+
+    // apply ADSR to gain
+    envelope.gateTime = Infinity
+    envelope.applyTo(gainNode.gain, audioContext.currentTime)
+
+    // connect oscillator to master gain node
+    oscNode.connect(gainNode)
+    gainNode.connect(nodeControls.masterGain.audioNode)
+
+    // add oscillator to list of oscNotes
+    oscNotes[noteNum] = [oscNode, gainNode]
+
+    // start playing oscillator
+    oscNotes[noteNum][0].start(startTime)
+
+    // console.log('osc start', oscNotes)
+
+    oscNotes[noteNum][0].onended = function () {
+      console.log(`oscNotes[${noteNum}] ended`)
+
+      // if (oscNotes[noteNum] &&
+      //   oscNotes[noteNum][1] &&
+      //   oscNotes[noteNum][1].gain &&
+      //   'disconnect' in oscNotes[noteNum][1].gain
+      // ) {
+      //   oscNotes[noteNum][1].gain.cancelScheduledValues(startTime)
+      //   oscNotes[noteNum][1].gain.disconnect()
+      //   oscNotes[noteNum][1].disconnect()
+      //   delete oscNotes[noteNum]
+      // }
+    }
+  } else {
+    // console.error(`oscNotes[${noteNum}] already exists`)
+  }
+}
+const createSF2Node = function (noteNum, startTime) {
+  const curPresetValue = nodeControls.sf2Preset.currentValue
+
+  console.log('curPresetValue', curPresetValue)
+
+  console.log('sf2Presets', sf2Presets)
+
+  const presetObj = sf2Presets.value.filter(preset => preset.header.name == curPresetValue)[0]
+
+  console.log('presetObj', presetObj)
+
+  const stopHandle = startPresetNote(
+    audioContext,
+    presetObj,
+    noteNum,
+    (startTime || 0)
+  )
+
+  sf2Notes[noteNum] = stopHandle
+}
+const createWafNode = function (noteNum, startTime) {
+  const wafTone = nodeControls.wafSource.currentValue
+  // get _tone_####_Name_sf2 object from string
+  const wafToneObj = eval(wafTone)
+
+  wafPlayer.loader.decodeAfterLoading(audioContext, wafToneObj)
+
+  const wafDuration = adsr.attackTime + adsr.decayTime
+  const wafGain = nodeControls.masterGain.currentValue
+  const wafDestination = nodeControls.masterGain.audioNode
+
+  const wafEnvelope = wafPlayer.queueWaveTable(
+    audioContext,       // AudioContext
+    wafDestination,     // destination
+    wafToneObj,         // preset
+    startTime,          // when
+    noteNum,            // midi note number (0..127)
+    wafDuration,        // duration (seconds)
+    wafGain             // volume (0..1)
+  )
+
+  console.log('wafEnvelope', wafEnvelope)
+
+  wafNotes[noteNum] = wafEnvelope
+
+  setTimeout(noteStop, 200)
 }
 
 // MIDI FX
 
-const pitchBend = function(velocity) {
+const pitchBend = function (velocity) {
   // 0 (-1 octave) -> 64 (no bend) -> 127 (+1 octave)
   const pbRaw = velocity
 
@@ -689,7 +939,7 @@ const pitchBend = function(velocity) {
 
   // console.log('pbCents', pbCents)
 
-  oscillators.forEach(osc => {
+  oscNotes.forEach(osc => {
     osc[0].detune.setValueAtTime(pbCents, audioContext.currentTime)
 
     // const curFreq = osc[0].frequency.value
@@ -697,7 +947,7 @@ const pitchBend = function(velocity) {
     // console.log(`pitchBend - cur: ${curFreq}, mult: ${pbCents}, new: ${newFreq}`)
   })
 }
-const pitchMod = function(velocity) {
+const pitchMod = function (velocity) {
   // TODO: pitchMod
   //   sort of works, but effect is not quite correct yet
   //   also, setting to 0 does not reset properly
@@ -762,7 +1012,7 @@ const pitchMod = function(velocity) {
 
   if (pmCents > 0) {
     modInterval = setInterval(() => {
-      oscillators.forEach(osc => {
+      oscNotes.forEach(osc => {
         const newDetune = draw()
         console.log('newDetune', newDetune)
         osc[0].detune.setValueAtTime(newDetune, audioContext.currentTime)
@@ -775,62 +1025,10 @@ const pitchMod = function(velocity) {
       clearInterval(modInterval)
       console.log('cleared modInterval', modInterval)
 
-      // reset all oscillators' detune value
-      oscillators.forEach(osc => osc[0].detune.setValueAtTime(0, audioContext.currentTime))
+      // reset all oscNotes' detune value
+      oscNotes.forEach(osc => osc[0].detune.setValueAtTime(0, audioContext.currentTime))
     }
   }
-}
-
-// add new OscillatorNode to array of oscillators
-const createOscillatorNode = function(noteNum, startTime, envelope) {
-  // create Web Audio oscillator
-  const oscNode = audioContext.createOscillator()
-  const noteFreq = parseFloat(MUSICAL_NOTES[noteNum].frequency)
-
-  // set oscillator wave type
-  oscillatorType = document.getElementById('osc-type')
-    .options[document.getElementById('osc-type').selectedIndex]
-    .value
-  oscNode.type = oscillatorType
-
-  // set oscillator frequency
-  oscNode.frequency.value = parseFloat(noteFreq)
-
-  // create oscillator gain
-  var gainNode = audioContext.createGain()
-  gainNode.gain.value = nodeControls.masterGain.currentValue
-
-  // apply ADSR to gain
-  envelope.gateTime = Infinity
-  envelope.applyTo(gainNode.gain, audioContext.currentTime)
-
-  // connect oscillator to master gain node
-  oscNode.connect(gainNode)
-  gainNode.connect(nodeControls.masterGain.audioNode)
-
-  // add oscillator to list of oscillators
-  oscillators[noteNum] = [oscNode, gainNode]
-}
-const createWafNode = function(noteNum, startTime) {
-  const tone = Keebord.settings.wafTone
-  // get _tone_####_Name_sf2 object from string
-  const toneObject = eval(tone)
-
-  wafPlayer.loader.decodeAfterLoading(audioContext, tone)
-
-  const wafEnvelope = wafPlayer.queueWaveTable(
-    audioContext,       // AudioContext
-    destinationMaster,  // destination
-    toneObject,         // preset
-    startTime,          // when
-    noteNum,            // midi note number (0..127)
-    0.5,                // duration (seconds)
-    1                   // volume (0..1)
-  )
-
-  // console.log('wafEnvelope', wafEnvelope)
-
-  setTimeout(noteStop, 5)
 }
 
 // INPUT TOGGLES
@@ -902,6 +1100,33 @@ const updateMidiEventHandler = () => {
 
       console.log('midi support disabled', Keebord.midi)
     }
+  }
+}
+const updateOutputHandler = (newValue) => {
+  switch (newValue) {
+    case 'sf2':
+      initSF2()
+
+      break
+
+    case 'waf':
+      initWAF()
+
+      break
+
+    default:
+      nodeControls.oscType.enabled = true
+      nodeControls.oscType.visible = true
+
+      nodeControls.sf2Source.enabled = false
+      nodeControls.sf2Source.visible = false
+      nodeControls.sf2Preset.enabled = false
+      nodeControls.sf2Preset.visible = false
+
+      nodeControls.wafSource.enabled = false
+      nodeControls.wafSource.visible = false
+
+      break
   }
 }
 
@@ -1078,7 +1303,7 @@ const initVisualizer = () => {
   c.stroke()
 
   // define function to update canvas
-  const drawToCanvas = function() {
+  const drawToCanvas = function () {
     analyzerNode.getByteTimeDomainData(dataArray)
     segmentWidth = canvas.width / analyzerNode.frequencyBinCount
 
@@ -1101,6 +1326,78 @@ const initVisualizer = () => {
   }
 
   drawToCanvas()
+}
+const initSF2 = () => {
+  nodeControls.oscType.enabled = false
+  nodeControls.oscType.visible = false
+
+  nodeControls.sf2Source.enabled = true
+  nodeControls.sf2Source.visible = true
+  nodeControls.sf2Preset.enabled = true
+  nodeControls.sf2Preset.visible = true
+
+  nodeControls.wafSource.enabled = false
+  nodeControls.wafSource.visible = false
+
+  loadSoundfont(`src/assets/sf2/${nodeControls.sf2Source.currentValue}.sf2`).then((player) => {
+    console.log('sf2Player', player)
+
+    // load SF2 Preset dropdown
+    let options = []
+
+    player.presets.map(preset => options.push({
+      text: preset.header.name,
+      value: preset.header.name
+    }))
+
+    nodeControls.sf2Preset.options = options
+
+    if (nodeControls.sf2Source.currentValue == 'super_mario_world') {
+      nodeControls.sf2Preset.currentValue = options[8].text
+    } else {
+      nodeControls.sf2Preset.currentValue = options[0].text
+    }
+
+    sf2Presets.value = player.presets
+
+    console.log('nodeControls.sf2Source', nodeControls.sf2Source.currentValue)
+    console.log('nodeControls.sf2Preset', nodeControls.sf2Preset.currentValue)
+  })
+}
+const initWAF = async () => {
+  nodeControls.oscType.enabled = false
+  nodeControls.oscType.visible = false
+
+  nodeControls.sf2Source.enabled = false
+  nodeControls.sf2Source.visible = false
+  nodeControls.sf2Preset.enabled = false
+  nodeControls.sf2Preset.visible = false
+
+  nodeControls.wafSource.enabled = true
+  nodeControls.wafSource.visible = true
+
+  // load main file, and then tone files
+  // webAudioFontLoader.then(() => webAudioFontTonesLoader).then(() => {
+  //   wafPlayer = new WebAudioFontPlayer()
+  // })
+
+  let script = document.createElement('script')
+  script.onload = () => wafPlayer = new WebAudioFontPlayer()
+  // script.setAttribute('src', 'src/assets/js/vendor/WebAudioFontPlayer.js')
+  script.setAttribute('src', 'https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js')
+  document.head.appendChild(script)
+
+  script = document.createElement('script')
+  // script.onload = () => res()
+  script.setAttribute('src', 'src/assets/sf2/0000_Aspirin_sf2.js')
+  // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0000_Aspirin_sf2_file.js')
+  document.head.appendChild(script)
+
+  script = document.createElement('script')
+  // script.onload = () => res()
+  script.setAttribute('src', 'src/assets/sf2/0250_SoundBlasterOld_sf2.js')
+  // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0250_SoundBlasterOld_sf2.js')
+  document.head.appendChild(script)
 }
 
 const _arraysAreEqual = (arr1, arr2) => {
@@ -1135,19 +1432,10 @@ onMounted(() => {
 </script>
 
 <template>
-
-  <Keyboard
-    :musical-notes="MUSICAL_NOTES"
-    :use-keyboard="useKeyboard"
-    :use-mouse="Keebord.env == 'prod' ? true : false"
-    :use-midi="useMidi"
-    @checked-changed-keyboard="useKeyboardCheckboxChanged"
-    @checked-changed-mouse="useMouseCheckboxChanged"
-    @checked-changed-midi="useMidiCheckboxChanged"
-    @note-pressed="noteStart"
-    @note-released="noteStop"
-    @note-reset-all="noteResetAll"
-  />
+  <Keyboard :musical-notes="MUSICAL_NOTES" :use-keyboard="useKeyboard" :use-mouse="Keebord.env == 'prod' ? true : false"
+    :use-midi="useMidi" @checked-changed-keyboard="useKeyboardCheckboxChanged"
+    @checked-changed-mouse="useMouseCheckboxChanged" @checked-changed-midi="useMidiCheckboxChanged"
+    @note-pressed="noteStart" @note-released="noteStop" @note-reset-all="noteResetAll" />
 
   <div id="visualizer-container" style="display: none">
     <canvas ref="canvas" id="visualizer"></canvas>
@@ -1155,33 +1443,21 @@ onMounted(() => {
 
   <div id="synth-controls-header">
     <button @click="toggleSynthControls">
-      <img
-        id="toggle-synth-controls"
-        src="/assets/svg/bi-caret-down-fill.svg"
-      />
+      <img id="toggle-synth-controls" src="/assets/svg/bi-caret-down-fill.svg" />
       Synth Controls
     </button>
 
-    <span
-      id="note-recognition"
-      :class="{ 'empty': !currentNotes.length }"
-    >
+    <span id="note-recognition" :class="{ 'empty': !currentNotes.length }">
       {{ currentNotes.length ? currentNotes : 'No notes.' }}
     </span>
   </div>
   <div id="synth-controls-container" style="display: flex">
-    <NodeControl
-      v-for="(control, key) in nodeControls"
-      :control-key="key"
-      :control-data="control"
-      @check-enabled-changed="checkEnabledChanged"
-      @control-value-changed="controlValueChanged"
+    <NodeControl v-for="(control, key) in nodeControls" :control-key="key" :control-data="control"
+      @check-enabled-changed="checkEnabledChanged" @control-value-changed="controlValueChanged"
       @select-option-changed="selectOptionChanged"
       @increase-value="(controlKey) => controlValueChanged(controlKey, (parseFloat(nodeControls[controlKey].currentValue) + parseFloat(nodeControls[controlKey].step)).toFixed(1))"
-      @decrease-value="(controlKey) => controlValueChanged(controlKey, (parseFloat(nodeControls[controlKey].currentValue) - parseFloat(nodeControls[controlKey].step)).toFixed(1))"
-    />
+      @decrease-value="(controlKey) => controlValueChanged(controlKey, (parseFloat(nodeControls[controlKey].currentValue) - parseFloat(nodeControls[controlKey].step)).toFixed(1))" />
   </div>
-
 </template>
 
 <style scoped>
@@ -1212,32 +1488,34 @@ onMounted(() => {
       position: relative;
       top: 2px;
     }
-  body.dark-theme #synth-controls-header img {
-    filter: invert(100%) sepia(100%) saturate(13%) hue-rotate(237deg) brightness(104%) contrast(104%);
-  }
-  #note-recognition {
-    background-color: var(--green-bright-active);
-    border: 1px solid var(--gray-dark);
-    border-radius: 4px;
-    box-shadow: inset 0 0 5px 1px var(--green);
-    color: var(--black);
-    font-weight: bold;
-    height: 35px;
-    margin-left: 1rem;
-    padding: 0.4rem 0.75rem;
-    width: 100%;
-  }
-    @media (min-width: 768px) {
-      #note-recognition {
-        max-width: 150px;
-      }
+
+    body.dark-theme #synth-controls-header img {
+  filter: invert(100%) sepia(100%) saturate(13%) hue-rotate(237deg) brightness(104%) contrast(104%);
+}
+
+#note-recognition {
+  background-color: var(--green-bright-active);
+  border: 1px solid var(--gray-dark);
+  border-radius: 4px;
+  box-shadow: inset 0 0 5px 1px var(--green);
+  color: var(--black);
+  font-weight: bold;
+  height: 35px;
+  margin-left: 1rem;
+  padding: 0.4rem 0.75rem;
+  width: 100%;
+}
+  @media (min-width: 768px) {
+    #note-recognition {
+      max-width: 150px;
     }
-    #note-recognition.empty {
-      background-color: var(--gray-light);
-      box-shadow: inset 0 0 5px 1px var(--gray);
-      color: var(--gray);
-      font-weight: normal;
-    }
+  }
+  #note-recognition.empty {
+    background-color: var(--gray-light);
+    box-shadow: inset 0 0 5px 1px var(--gray);
+    color: var(--gray);
+    font-weight: normal;
+  }
 
 #synth-controls-container {
   background-color: var(--white-soft);
@@ -1253,63 +1531,41 @@ onMounted(() => {
       margin: 5px 20px;
     }
   }
-  body.dark-theme #synth-controls-container {
-    background-color: var(--black-mute);
-  }
-  #synth-controls-container fieldset.control-column {
-    align-items: center;
-    border: 1px solid var(--color-text);
-    border-radius: 0.5rem;
-    display: flex;
-    flex-direction: column;
-    margin: 0;
-    padding: 5px;
-    text-align: center;
-  }
-    #synth-controls-container fieldset.control-column.dropdown-control {
-      padding-bottom: 8px;
-    }
-    #synth-controls-container fieldset.control-column legend {
-      margin: 0 auto;
-      text-align: center;
-      white-space: nowrap;
-    }
-    #synth-controls-container fieldset.control-column input[type=checkbox] {
-      margin: 0 4px;
-    }
-    #synth-controls-container fieldset.control-column input[type=number] {
-      margin: 0 auto;
-    }
-    #synth-controls-container fieldset.control-column input[type=range] {
-      display: block;
-      margin: 8px auto;
-    }
+
+body.dark-theme #synth-controls-container {
+  background-color: var(--black-mute);
+}
+
+
 
 @media (min-width: 600px) {
   #synth-controls-container {
     align-items: normal;
     flex-wrap: wrap;
   }
-    #synth-controls-container fieldset.control-column {
-      margin-left: 0;
-      margin-right: 8px;
-    }
-      #synth-controls-container fieldset.control-column:last-child {
-        margin-right: 0;
-      }
+
+  #synth-controls-container fieldset.control-column {
+    margin-left: 0;
+    margin-right: 8px;
+  }
+
+  #synth-controls-container fieldset.control-column:last-child {
+    margin-right: 0;
+  }
 }
 
 #visualizer-container {
   margin: 5px auto 0;
   width: 50%;
 }
-  #visualizer {
-    border: 2px solid var(--black);
-    border-radius: 4px;
-    height: 50px;
-    margin: 0;
-    padding: 0;
-    position: relative;
-    width: 100%;
-  }
+
+#visualizer {
+  border: 2px solid var(--black);
+  border-radius: 4px;
+  height: 50px;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  width: 100%;
+}
 </style>

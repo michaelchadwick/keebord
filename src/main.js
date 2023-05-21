@@ -11,7 +11,6 @@ const KEEBORD_ENV_PROD_URL = [
   'keebord.neb.host',
   'piano.neb.host'
 ]
-const KEEBORD_PLAYER_TYPE = 'osc'
 const SUN_EMOJI = '☀️'
 const MOON_EMOJI = '🌙'
 
@@ -23,10 +22,7 @@ app.config.globalProperties.params = new Proxy(new URLSearchParams(window.locati
   get: (searchParams, prop) => searchParams.get(prop)
 })
 app.config.globalProperties.settings = {
-  player: app.config.globalProperties.params.player || KEEBORD_PLAYER_TYPE,
-  theme: 'light',
-  wafTone: '_tone_0000_Aspirin_sf2_file',
-  // wafTone: '_tone_0250_SoundBlasterOld_sf2',
+  theme: 'light'
 }
 
 app.mount('#app')

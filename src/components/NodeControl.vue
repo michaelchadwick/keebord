@@ -13,7 +13,11 @@ const emit = defineEmits([
 <template>
   <fieldset
     class="node-control control-column"
-    :class="(props.controlData.isVertical) ? 'vertical-range': 'horizontal-range'"
+    :class="{
+      'vertical-range': props.controlData.isVertical,
+      'horizontal-range': !props.controlData.isVertical,
+      'visible': props.controlData.visible
+    }"
     :id="props.controlKey"
   >
     <legend>
@@ -31,6 +35,7 @@ const emit = defineEmits([
         <select
           :id="props.controlData.selectId"
           :value="props.controlData.currentValue"
+          :disabled="!props.controlData.enabled"
           @change="$emit('selectOptionChanged', props.controlKey, $event.target.value)"
         >
           <option v-for="option in props.controlData.options" v-bind:value="option.value">
@@ -49,6 +54,7 @@ const emit = defineEmits([
           :min="props.controlData.min"
           :max="props.controlData.max"
           :value="props.controlData.currentValue"
+          :disabled="!props.controlData.enabled"
           @change="$emit('controlValueChanged', props.controlKey, $event.target.value)"
         />
 
@@ -118,14 +124,51 @@ const emit = defineEmits([
 <style scoped>
 .node-control {
   background-color: var(--white-mute);
+  display: none;
 }
   body.dark-theme .node-control {
     background-color: var(--black-soft);
   }
+  .node-control {
+    align-items: center;
+    border: 1px solid var(--color-text);
+    border-radius: 0.5rem;
+    flex-direction: column;
+    margin: 0;
+    padding: 5px;
+    text-align: center;
+  }
+    .node-control.visible {
+      display: flex;
+    }
+    .node-control.dropdown-control {
+      padding-bottom: 8px;
+    }
+    .node-control.horizontal-range {
+        padding-bottom: 0;
+      }
+        .node-control.horizontal-range input[type=range] {
+          height: 32px;
+          width: 90px;
+        }
+      .node-control.vertical-range {
+        padding-bottom: 8px;
+      }
+        .node-control.vertical-range input[type=range] {
+          -webkit-appearance: slider-vertical;
+          appearance: slider-vertical;
+          height: 70px;
+          width: 32px;
+          writing-mode: bt-lr;
+        }
+
   .node-control legend {
     color: var(--green-deep);
     font-weight: bold;
-    line-height: 1.5
+    line-height: 1.5;
+    margin: 0 auto;
+    text-align: center;
+    white-space: nowrap;
   }
     body.dark-theme .node-control legend {
       color: var(--green-bright-active);
@@ -138,6 +181,7 @@ const emit = defineEmits([
     .node-control legend label {
       font-weight: bold;
     }
+
   .node-control .value-container {
     display: flex;
     flex-direction: row;
@@ -152,6 +196,16 @@ const emit = defineEmits([
       text-align: left;
       width: 5rem;
       z-index: 1;
+    }
+    .node-control .value-container input[type=checkbox] {
+      margin: 0 4px;
+    }
+    .node-control .value-container input[type=number] {
+      margin: 0 auto;
+    }
+    .node-control .value-container input[type=range] {
+      display: block;
+      margin: 8px auto;
     }
     .node-control .value-container .increase-decrease-container {
       display: flex;
@@ -176,8 +230,8 @@ const emit = defineEmits([
         text-align: center;
         width: 12px;
       }
-        .node-control .value-container .control-value-increase:disabled,
-        .node-control .value-container .control-value-decrease:disabled {
+        .node-control .value-container .increase-decrease-container .control-value-increase:disabled,
+        .node-control .value-container .increase-decrease-container .control-value-decrease:disabled {
           cursor: default;
           filter: invert(100%) sepia(1%) saturate(1895%) hue-rotate(235deg) brightness(111%) contrast(60%);
         }
@@ -198,21 +252,5 @@ const emit = defineEmits([
             filter: invert(63%) sepia(38%) saturate(649%) hue-rotate(99deg) brightness(89%) contrast(86%);
           }
         }
-      .node-control.horizontal-range {
-        padding-bottom: 0;
-      }
-        .node-control.horizontal-range input[type=range] {
-          height: 32px;
-          width: 90px;
-        }
-      .node-control.vertical-range {
-        padding-bottom: 8px;
-      }
-        .node-control.vertical-range input[type=range] {
-          -webkit-appearance: slider-vertical;
-          appearance: slider-vertical;
-          height: 70px;
-          width: 32px;
-          writing-mode: bt-lr;
-        }
+
 </style>
