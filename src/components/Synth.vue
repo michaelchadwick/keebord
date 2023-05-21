@@ -1339,7 +1339,7 @@ const initSF2 = () => {
   nodeControls.wafSource.enabled = false
   nodeControls.wafSource.visible = false
 
-  loadSoundfont(`src/assets/sf2/${nodeControls.sf2Source.currentValue}.sf2`).then((player) => {
+  loadSoundfont(`/assets/sf2/${nodeControls.sf2Source.currentValue}.sf2`).then((player) => {
     console.log('sf2Player', player)
 
     // load SF2 Preset dropdown
@@ -1383,19 +1383,19 @@ const initWAF = async () => {
 
   let script = document.createElement('script')
   script.onload = () => wafPlayer = new WebAudioFontPlayer()
-  // script.setAttribute('src', 'src/assets/js/vendor/WebAudioFontPlayer.js')
+  // script.setAttribute('src', '/assets/js/vendor/WebAudioFontPlayer.js')
   script.setAttribute('src', 'https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js')
   document.head.appendChild(script)
 
   script = document.createElement('script')
   // script.onload = () => res()
-  script.setAttribute('src', 'src/assets/sf2/0000_Aspirin_sf2.js')
+  script.setAttribute('src', '/assets/sf2/0000_Aspirin_sf2.js')
   // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0000_Aspirin_sf2_file.js')
   document.head.appendChild(script)
 
   script = document.createElement('script')
   // script.onload = () => res()
-  script.setAttribute('src', 'src/assets/sf2/0250_SoundBlasterOld_sf2.js')
+  script.setAttribute('src', '/assets/sf2/0250_SoundBlasterOld_sf2.js')
   // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0250_SoundBlasterOld_sf2.js')
   document.head.appendChild(script)
 }
