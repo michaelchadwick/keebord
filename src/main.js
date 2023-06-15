@@ -1,34 +1,17 @@
 // initial VueJS imports
 import { createApp } from 'vue'
+import { kbSettings } from './settings.js'
 import App from './App.vue'
 
 // stylesheets
 import './assets/css/main.css'
 
 // constants
-const KEEBORD_SETTINGS_KEY = 'keebord-settings'
-const KEEBORD_ENV_PROD_URL = [
-  'keebord.neb.host',
-  'piano.neb.host'
-]
 const SUN_EMOJI = '☀️'
 const MOON_EMOJI = '🌙'
 
 // initialize VueJS
 const app = createApp(App)
-
-app.config.globalProperties.env = KEEBORD_ENV_PROD_URL.includes(document.location.hostname) ? 'prod' : 'local'
-app.config.globalProperties.params = new Proxy(new URLSearchParams(window.location.search), {
-  get: (searchParams, prop) => searchParams.get(prop)
-})
-app.config.globalProperties.settings = {
-  input: {
-    keyboard: false,
-    midi: false,
-    mouse: true
-  },
-  theme: 'light'
-}
 
 app.mount('#app')
 
@@ -36,7 +19,7 @@ app.mount('#app')
 // additional localStorage setup and themeTogglerElem init //
 // ******************************************************* //
 
-const lsSettings = JSON.parse(localStorage.getItem(KEEBORD_SETTINGS_KEY))
+const lsSettings = JSON.parse(localStorage.getItem(kbSettings.lsKey))
 const bodyClasses = document.body.classList
 const themeTogglerElem = document.querySelector('#theme-toggler')
 const themeTogglerElemImg = document.querySelector('#theme-toggler span.theme-image')
@@ -49,7 +32,7 @@ if (!lsSettings) {
 
   themeTogglerElemImg.innerHTML = SUN_EMOJI
 
-  app.config.globalProperties.settings.theme = 'light'
+  kbSettings.theme = 'light'
 }
 // return visit
 else {
@@ -59,19 +42,19 @@ else {
 
     themeTogglerElemImg.innerHTML = MOON_EMOJI
 
-    app.config.globalProperties.settings.theme = 'dark'
+    kbSettings.theme = 'dark'
   } else {
     bodyClasses.remove('dark-theme')
     bodyClasses.add('light-theme')
 
     themeTogglerElemImg.innerHTML = SUN_EMOJI
 
-    app.config.globalProperties.settings.theme = 'light'
+    kbSettings.theme = 'light'
   }
 }
 
 // save state
-localStorage.setItem(KEEBORD_SETTINGS_KEY, JSON.stringify(app.config.globalProperties.settings))
+localStorage.setItem(kbSettings.lsKey, JSON.stringify(kbSettings))
 
 // if such a theme toggler DOM element exists, enable it
 if (themeTogglerElem) {
@@ -84,9 +67,10 @@ if (themeTogglerElem) {
     // update text inside toggler
     themeTogglerElemImg.innerHTML = curTheme == 'light' ? SUN_EMOJI : MOON_EMOJI
 
-    app.config.globalProperties.settings.theme = curTheme
+    kbSettings.theme = curTheme
 
-    localStorage.setItem(KEEBORD_SETTINGS_KEY, JSON.stringify(app.config.globalProperties.settings))
+    // save state
+    localStorage.setItem(kbSettings.lsKey, JSON.stringify(kbSettings))
   })
 }
 

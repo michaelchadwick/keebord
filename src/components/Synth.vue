@@ -1,5 +1,6 @@
 <script setup>
-import { getCurrentInstance, onMounted, reactive, ref } from 'vue'
+import { getCurrentInstance, onBeforeMount, onMounted, reactive, ref } from 'vue'
+import { kbSettings } from '../settings.js'
 import NodeControl from './NodeControl.vue'
 import Keyboard from './Keyboard.vue'
 import ADSREnvelope from 'adsr-envelope'
@@ -383,7 +384,7 @@ const nodeControls = reactive({
   }
 })
 
-let Keebord = getCurrentInstance().appContext.config.globalProperties
+let midiAccess = null
 
 let oscillatorType = 0
 let startTime = 0
@@ -1053,20 +1054,32 @@ const updateKeyboardEventHandler = () => {
     document.addEventListener('keydown', keyController)
     document.addEventListener('keyup', keyController)
 
+    kbSettings.input.keyboard = true
+
     console.log('keyboard support enabled')
   } else {
     document.removeEventListener('keydown', keyController)
     document.removeEventListener('keyup', keyController)
 
+    kbSettings.input.keyboard = false
+
     console.log('keyboard support disabled')
   }
+
+  localStorage.setItem(kbSettings.lsKey, JSON.stringify(kbSettings))
 }
 const updateMouseEventHandler = () => {
   if (useMouse) {
+    kbSettings.input.mouse = true
+
     // console.log('mouse/touch support enabled')
   } else {
+    kbSettings.input.mouse = false
+
     console.log('mouse/touch support disabled')
   }
+
+  localStorage.setItem(kbSettings.lsKey, JSON.stringify(kbSettings))
 }
 const updateMidiEventHandler = () => {
   if (useMidi) {
@@ -1074,11 +1087,11 @@ const updateMidiEventHandler = () => {
       navigator.requestMIDIAccess({ sysex: false })
         .then(
           (midi) => {
-            Keebord.midi = midi
+            midiAccess = midi
 
-            console.log('midi support enabled', midi)
+            console.log('midi support enabled', midiAccess)
 
-            Array.from(Keebord.midi.inputs).forEach((input, index) => {
+            Array.from(midiAccess.inputs).forEach((input, index) => {
               input[1].onmidimessage = midiController
 
               console.log(`midi input #${index} detected: ${input[1].name}`)
@@ -1092,17 +1105,23 @@ const updateMidiEventHandler = () => {
       console.error('navigator.requestMIDIAccess() not supported')
     }
   } else {
-    if (Keebord.midi) {
-      Array.from(Keebord.midi.inputs).forEach((input) => {
+    if (midiAccess) {
+      Array.from(midiAccess.inputs).forEach((input) => {
         input[1].onmidimessage = null
       })
-      Keebord.midi = null
+      midiAccess = null
 
-      console.log('midi support disabled', Keebord.midi)
+      kbSettings.input.midi = false
+
+      console.log('midi support disabled')
     } else {
+      kbSettings.input.midi = true
+
       console.log('midi support disabled')
     }
   }
+
+  localStorage.setItem(kbSettings.lsKey, JSON.stringify(kbSettings))
 }
 const updateOutputHandler = (newValue) => {
   switch (newValue) {
@@ -1437,7 +1456,7 @@ onMounted(() => {
   <Keyboard
     :musical-notes="MUSICAL_NOTES"
     :use-keyboard="useKeyboard"
-    :use-mouse="Keebord.env == 'prod' ? true : false"
+    :use-mouse="kbSettings.env == 'prod' ? true : false"
     :use-midi="useMidi" @checked-changed-keyboard="useKeyboardCheckboxChanged"
     @checked-changed-mouse="useMouseCheckboxChanged" @checked-changed-midi="useMidiCheckboxChanged"
     @note-pressed="noteStart" @note-released="noteStop" @note-reset-all="noteResetAll" />
