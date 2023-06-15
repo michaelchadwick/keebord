@@ -1,5 +1,5 @@
 <script setup>
-import { getCurrentInstance, onBeforeMount, onMounted, reactive, ref } from 'vue'
+import { getCurrentInstance, onMounted, reactive, ref } from 'vue'
 import { kbSettings } from '../settings.js'
 import NodeControl from './NodeControl.vue'
 import Keyboard from './Keyboard.vue'
@@ -384,6 +384,8 @@ const nodeControls = reactive({
   }
 })
 
+const globalProps = getCurrentInstance().appContext.config.globalProperties
+
 let midiAccess = null
 
 let oscillatorType = 0
@@ -392,9 +394,10 @@ let pitchBendRange = 2
 let modInterval = null
 let segmentWidth
 
-let useKeyboard
-let useMouse
-let useMidi
+let useKeyboard = false
+let useMidi = false
+let useMouse = true
+
 let wafPlayer = null
 
 if (nodeControls.outputType == 'sf2') {
@@ -690,7 +693,7 @@ const noteStart = function (noteNum, velocity = 64) {
 
     // use OscillatorNodes
     default:
-      console.log(`oscNotes[${noteNum}] noteStart`)
+      // console.log(`oscNotes[${noteNum}] noteStart`)
 
       createOscNode(noteNum, startTime, envelope)
 
@@ -736,7 +739,7 @@ const noteStop = function (noteNum, velocity = 64) {
 
     default:
       if (oscNotes[noteNum]) {
-        console.log(`oscNotes[${noteNum}] noteStop`)
+        // console.log(`oscNotes[${noteNum}] noteStop`)
 
         oscNotes[noteNum][1].gain.cancelScheduledValues(startTime)
 
@@ -850,7 +853,7 @@ const createOscNode = function (noteNum, startTime, envelope) {
     // console.log('osc start', oscNotes)
 
     oscNotes[noteNum][0].onended = function () {
-      console.log(`oscNotes[${noteNum}] ended`)
+      // console.log(`oscNotes[${noteNum}] ended`)
 
       // if (oscNotes[noteNum] &&
       //   oscNotes[noteNum][1] &&
@@ -1038,13 +1041,13 @@ const useKeyboardCheckboxChanged = (isChecked) => {
   useKeyboard = isChecked
   updateKeyboardEventHandler()
 }
-const useMouseCheckboxChanged = (isChecked) => {
-  useMouse = isChecked
-  updateMouseEventHandler()
-}
 const useMidiCheckboxChanged = (isChecked) => {
   useMidi = isChecked
   updateMidiEventHandler()
+}
+const useMouseCheckboxChanged = (isChecked) => {
+  useMouse = isChecked
+  updateMouseEventHandler()
 }
 
 // INPUT HANDLERS
@@ -1054,32 +1057,19 @@ const updateKeyboardEventHandler = () => {
     document.addEventListener('keydown', keyController)
     document.addEventListener('keyup', keyController)
 
-    kbSettings.input.keyboard = true
+    kbSettings.value.input.keyboard = true
 
     console.log('keyboard support enabled')
   } else {
     document.removeEventListener('keydown', keyController)
     document.removeEventListener('keyup', keyController)
 
-    kbSettings.input.keyboard = false
+    kbSettings.value.input.keyboard = false
 
     console.log('keyboard support disabled')
   }
 
-  localStorage.setItem(kbSettings.lsKey, JSON.stringify(kbSettings))
-}
-const updateMouseEventHandler = () => {
-  if (useMouse) {
-    kbSettings.input.mouse = true
-
-    // console.log('mouse/touch support enabled')
-  } else {
-    kbSettings.input.mouse = false
-
-    console.log('mouse/touch support disabled')
-  }
-
-  localStorage.setItem(kbSettings.lsKey, JSON.stringify(kbSettings))
+  localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
 }
 const updateMidiEventHandler = () => {
   if (useMidi) {
@@ -1088,6 +1078,10 @@ const updateMidiEventHandler = () => {
         .then(
           (midi) => {
             midiAccess = midi
+
+            kbSettings.value.input.midi = true
+
+            localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
 
             console.log('midi support enabled', midiAccess)
 
@@ -1098,10 +1092,18 @@ const updateMidiEventHandler = () => {
             })
           },
           (error) => {
+            kbSettings.value.input.midi = false
+
+            localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+
             console.error('Failed to get MIDI access:', error)
           }
         )
     } else {
+      kbSettings.value.input.midi = false
+
+      localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+
       console.error('navigator.requestMIDIAccess() not supported')
     }
   } else {
@@ -1111,17 +1113,30 @@ const updateMidiEventHandler = () => {
       })
       midiAccess = null
 
-      kbSettings.input.midi = false
+      kbSettings.value.input.midi = false
 
       console.log('midi support disabled')
     } else {
-      kbSettings.input.midi = true
+      kbSettings.value.input.midi = false
 
       console.log('midi support disabled')
     }
+
+    localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+  }
+}
+const updateMouseEventHandler = () => {
+  if (useMouse) {
+    kbSettings.value.input.mouse = true
+
+    // console.log('mouse/touch support enabled')
+  } else {
+    kbSettings.value.input.mouse = false
+
+    console.log('mouse/touch support disabled')
   }
 
-  localStorage.setItem(kbSettings.lsKey, JSON.stringify(kbSettings))
+  localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
 }
 const updateOutputHandler = (newValue) => {
   switch (newValue) {
@@ -1456,10 +1471,15 @@ onMounted(() => {
   <Keyboard
     :musical-notes="MUSICAL_NOTES"
     :use-keyboard="useKeyboard"
-    :use-mouse="kbSettings.env == 'prod' ? true : false"
-    :use-midi="useMidi" @checked-changed-keyboard="useKeyboardCheckboxChanged"
-    @checked-changed-mouse="useMouseCheckboxChanged" @checked-changed-midi="useMidiCheckboxChanged"
-    @note-pressed="noteStart" @note-released="noteStop" @note-reset-all="noteResetAll" />
+    :use-midi="useMidi"
+    :use-mouse="useMouse"
+    @checked-changed-keyboard="useKeyboardCheckboxChanged"
+    @checked-changed-midi="useMidiCheckboxChanged"
+    @checked-changed-mouse="useMouseCheckboxChanged"
+    @note-pressed="noteStart"
+    @note-released="noteStop"
+    @note-reset-all="noteResetAll"
+  />
 
   <div id="visualizer-container" style="display: none">
     <canvas ref="canvas" id="visualizer"></canvas>

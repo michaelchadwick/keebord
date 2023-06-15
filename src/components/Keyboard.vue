@@ -7,13 +7,13 @@ const props = defineProps({
     type: Boolean,
     default: () => false
   },
-  useMouse: {
-    type: Boolean,
-    default: () => true
-  },
   useMidi: {
     type: Boolean,
     default: () => false
+  },
+  useMouse: {
+    type: Boolean,
+    default: () => true
   },
   useVisualizer: {
     type: Boolean,
@@ -410,21 +410,21 @@ onMounted(() => {
 
       <input
         type="checkbox"
-        id="use-mouse"
-        name="use-mouse"
-        :checked="props.useMouse"
-        @change="updateMouseFlag($event.target.checked)"
-      />
-      <label for="use-mouse" title="Enable mouse/touch support?">🐭/🖐️</label>
-
-      <input
-        type="checkbox"
         id="use-midi"
         name="use-midi"
         :checked="props.useMidi"
         @change="updateMidiFlag($event.target.checked)"
       />
       <label for="use-midi" title="Enable MIDI keyboard support?">🎹</label>
+
+      <input
+        type="checkbox"
+        id="use-mouse"
+        name="use-mouse"
+        :checked="props.useMouse"
+        @change="updateMouseFlag($event.target.checked)"
+      />
+      <label for="use-mouse" title="Enable mouse/touch support?">🐭/🖐️</label>
     </fieldset>
 
     <label for="root-scale" class="fieldset-label">Scale</label>
