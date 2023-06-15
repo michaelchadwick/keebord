@@ -1065,7 +1065,7 @@ const updateMouseEventHandler = () => {
   if (useMouse) {
     // console.log('mouse/touch support enabled')
   } else {
-    // console.log('mouse/touch support disabled')
+    console.log('mouse/touch support disabled')
   }
 }
 const updateMidiEventHandler = () => {
@@ -1099,6 +1099,8 @@ const updateMidiEventHandler = () => {
       Keebord.midi = null
 
       console.log('midi support disabled', Keebord.midi)
+    } else {
+      console.log('midi support disabled')
     }
   }
 }
@@ -1432,7 +1434,10 @@ onMounted(() => {
 </script>
 
 <template>
-  <Keyboard :musical-notes="MUSICAL_NOTES" :use-keyboard="useKeyboard" :use-mouse="Keebord.env == 'prod' ? true : false"
+  <Keyboard
+    :musical-notes="MUSICAL_NOTES"
+    :use-keyboard="useKeyboard"
+    :use-mouse="Keebord.env == 'prod' ? true : false"
     :use-midi="useMidi" @checked-changed-keyboard="useKeyboardCheckboxChanged"
     @checked-changed-mouse="useMouseCheckboxChanged" @checked-changed-midi="useMidiCheckboxChanged"
     @note-pressed="noteStart" @note-released="noteStop" @note-reset-all="noteResetAll" />

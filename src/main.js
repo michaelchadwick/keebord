@@ -22,6 +22,11 @@ app.config.globalProperties.params = new Proxy(new URLSearchParams(window.locati
   get: (searchParams, prop) => searchParams.get(prop)
 })
 app.config.globalProperties.settings = {
+  input: {
+    keyboard: false,
+    midi: false,
+    mouse: true
+  },
   theme: 'light'
 }
 

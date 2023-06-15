@@ -7,10 +7,13 @@ const props = defineProps({
     type: Boolean,
     default: () => false
   },
-  useMouse: Boolean,
-  useMidi: {
+  useMouse: {
     type: Boolean,
     default: () => true
+  },
+  useMidi: {
+    type: Boolean,
+    default: () => false
   },
   useVisualizer: {
     type: Boolean,
