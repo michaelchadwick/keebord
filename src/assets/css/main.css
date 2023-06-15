@@ -167,7 +167,7 @@ button#theme-toggler {
   text-align: center;
   top: 7px;
   width: 32px;
-  z-index: 10000;
+  z-index: 9997;
 }
   button#theme-toggler span.theme-image {
     bottom: 0;
