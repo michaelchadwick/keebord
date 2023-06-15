@@ -1,28 +1,18 @@
 <script setup>
 import { onMounted, ref } from 'vue'
+import { kbSettings } from '../settings';
 
 const props = defineProps({
   musicalNotes: Array,
-  useKeyboard: {
-    type: Boolean,
-    default: () => false
-  },
-  useMidi: {
-    type: Boolean,
-    default: () => false
-  },
-  useMouse: {
-    type: Boolean,
-    default: () => true
-  },
-  useVisualizer: {
-    type: Boolean,
-    default: () => false
-  }
+  useKeyboard: Boolean,
+  useMidi: Boolean,
+  useMouse: Boolean,
+  useVisualizer: Boolean
 })
 const emit = defineEmits([
   'checkedChangedKeyboard',
   'checkedChangedMidi',
+  'checkedChangedVisualizer',
   'notePressed',
   'noteReleased',
   'noteResetAll'
@@ -135,6 +125,9 @@ const updateKeyFlag = (isChecked) => {
     })
   }
 }
+const updateMidiFlag = (isChecked) => {
+  emit('checkedChangedMidi', isChecked)
+}
 const updateMouseFlag = (isChecked) => {
   emit('checkedChangedMouse', isChecked)
 
@@ -142,9 +135,7 @@ const updateMouseFlag = (isChecked) => {
 
   updateMouseEventHandler()
 }
-const updateMidiFlag = (isChecked) => {
-  emit('checkedChangedMidi', isChecked)
-}
+
 const updateRootNoteValue = (note) => {
   rootNoteSelected = note
 
@@ -159,6 +150,8 @@ const updateVisualizerFlag = (isChecked) => {
   const canvas = document.getElementById('visualizer-container')
 
   isChecked ? canvas.style.display = 'block' : canvas.style.display = 'none'
+
+  emit('checkedChangedVisualizer', isChecked)
 }
 
 // update computer mouse support
@@ -313,6 +306,8 @@ const scaleFilter = () => {
 const displayedNotes = ref(scaleFilter(props.musicalNotes))
 
 onMounted(() => {
+  // console.log('MOUNTED Keyboard.vue', kbSettings.value)
+
   // grab reference to on-screen keyboard
   pianoDiv = document.getElementById('keyboard')
   pianoDiv.scrollLeft = (pianoDiv.scrollWidth / 9) * 3
@@ -337,6 +332,7 @@ onMounted(() => {
 
   updateKeyFlag(props.useKeyboard)
   updateMidiFlag(props.useMidi)
+  updateVisualizerFlag(props.useVisualizer)
 })
 </script>
 
@@ -464,7 +460,7 @@ onMounted(() => {
         type="checkbox"
         id="use-visualizer"
         name="use-visualizer"
-        :checked="useVisualizer"
+        :checked="props.useVisualizer"
         @change="updateVisualizerFlag($event.target.checked)"
       />
       <label for="use-visualizer" title="Enable visualizer?">📈</label>

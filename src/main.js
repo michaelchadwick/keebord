@@ -6,12 +6,12 @@ import App from './App.vue'
 // stylesheets
 import './assets/css/main.css'
 
-console.log('kbSettings', kbSettings.value)
-
 // constants
 const KB_SETTINGS_KEY = 'keebord-settings'
 const SUN_EMOJI = '☀️'
 const MOON_EMOJI = '🌙'
+
+const lsSettings = localStorage.getItem(KB_SETTINGS_KEY) ? JSON.parse(localStorage.getItem(KB_SETTINGS_KEY)) : null
 
 // initialize VueJS
 const app = createApp(App)
@@ -27,26 +27,34 @@ app.mount('#app')
 // additional localStorage setup and themeTogglerElem init //
 // ******************************************************* //
 
-const lsSettings = JSON.parse(localStorage.getItem(KB_SETTINGS_KEY))
 const bodyClasses = document.body.classList
 const themeTogglerElem = document.querySelector('#theme-toggler')
 const themeTogglerElemImg = document.querySelector('#theme-toggler span.theme-image')
 const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)')
 
-console.log('lsSettings', lsSettings)
-
-
 // first visit
 if (!lsSettings) {
+  // console.log('NO localStorage settings found')
+
   bodyClasses.remove('dark-theme')
   bodyClasses.add('light-theme')
 
   themeTogglerElemImg.innerHTML = SUN_EMOJI
 
   kbSettings.value.theme = 'light'
+
+  console.log('kbSettings', kbSettings.value)
 }
 // return visit
 else {
+  // console.log('localStorage settings found')
+
+  if (lsSettings.input) {
+    kbSettings.value.input.keyboard = lsSettings.input.keyboard ? true : false
+    kbSettings.value.input.midi = lsSettings.input.midi ? true : false
+    kbSettings.value.input.mouse = lsSettings.input.mouse ? true : false
+  }
+
   if (lsSettings.theme == 'dark') {
     bodyClasses.remove('light-theme')
     bodyClasses.add('dark-theme')
@@ -62,10 +70,9 @@ else {
 
     kbSettings.value.theme = 'light'
   }
-}
 
-// save state
-localStorage.setItem(KB_SETTINGS_KEY, JSON.stringify(kbSettings.value))
+  // console.log('kbSettings', kbSettings.value)
+}
 
 // if such a theme toggler DOM element exists, enable it
 if (themeTogglerElem) {
@@ -79,11 +86,11 @@ if (themeTogglerElem) {
     themeTogglerElemImg.innerHTML = curTheme == 'light' ? SUN_EMOJI : MOON_EMOJI
 
     kbSettings.value.theme = curTheme
-
-    // save state
-    localStorage.setItem(KB_SETTINGS_KEY, JSON.stringify(kbSettings.value))
   })
 }
+
+// save state
+localStorage.setItem(KB_SETTINGS_KEY, JSON.stringify(kbSettings.value))
 
 // regardless of state, adjust per scheme preference
 if (prefersDarkScheme.matches) {

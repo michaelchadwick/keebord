@@ -1,6 +1,6 @@
 <script setup>
 import { getCurrentInstance, onMounted, reactive, ref } from 'vue'
-import { kbSettings } from '../settings.js'
+import { kbSettings } from '../settings'
 import NodeControl from './NodeControl.vue'
 import Keyboard from './Keyboard.vue'
 import ADSREnvelope from 'adsr-envelope'
@@ -394,9 +394,15 @@ let pitchBendRange = 2
 let modInterval = null
 let segmentWidth
 
-let useKeyboard = false
-let useMidi = false
-let useMouse = true
+let useKeyboard
+let useMidi
+let useMouse
+let useVisualizer
+
+useKeyboard = kbSettings.value.input.keyboard
+useMidi = kbSettings.value.input.midi
+useMouse = kbSettings.value.input.mouse
+useVisualizer = kbSettings.value.output.visualizer
 
 let wafPlayer = null
 
@@ -1049,6 +1055,10 @@ const useMouseCheckboxChanged = (isChecked) => {
   useMouse = isChecked
   updateMouseEventHandler()
 }
+const useVisualizerCheckboxChanged = (isChecked) => {
+  useVisualizer = isChecked
+  updateVisualizerEventHandler()
+}
 
 // INPUT HANDLERS
 
@@ -1138,32 +1148,18 @@ const updateMouseEventHandler = () => {
 
   localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
 }
-const updateOutputHandler = (newValue) => {
-  switch (newValue) {
-    case 'sf2':
-      initSF2()
+const updateVisualizerEventHandler = () => {
+  if (useVisualizer) {
+    kbSettings.value.output.visualizer = true
 
-      break
+    console.log('visualizer enabled')
+  } else {
+    kbSettings.value.output.visualizer = false
 
-    case 'waf':
-      initWAF()
-
-      break
-
-    default:
-      nodeControls.oscType.enabled = true
-      nodeControls.oscType.visible = true
-
-      nodeControls.sf2Source.enabled = false
-      nodeControls.sf2Source.visible = false
-      nodeControls.sf2Preset.enabled = false
-      nodeControls.sf2Preset.visible = false
-
-      nodeControls.wafSource.enabled = false
-      nodeControls.wafSource.visible = false
-
-      break
+    console.log('visualizer disabled')
   }
+
+  localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
 }
 
 // INPUT CONTROLLERS
@@ -1238,6 +1234,36 @@ const midiController = (e) => {
       break
     // all others
     default:
+      break
+  }
+}
+
+// OUTPUT HANDLERS
+
+const updateOutputHandler = (newValue) => {
+  switch (newValue) {
+    case 'sf2':
+      initSF2()
+
+      break
+
+    case 'waf':
+      initWAF()
+
+      break
+
+    default:
+      nodeControls.oscType.enabled = true
+      nodeControls.oscType.visible = true
+
+      nodeControls.sf2Source.enabled = false
+      nodeControls.sf2Source.visible = false
+      nodeControls.sf2Preset.enabled = false
+      nodeControls.sf2Preset.visible = false
+
+      nodeControls.wafSource.enabled = false
+      nodeControls.wafSource.visible = false
+
       break
   }
 }
@@ -1463,6 +1489,8 @@ createMasterChain()
 createSendChain()
 
 onMounted(() => {
+  // console.log('MOUNTED Synth.vue', kbSettings.value)
+
   initVisualizer()
 })
 </script>
@@ -1473,9 +1501,11 @@ onMounted(() => {
     :use-keyboard="useKeyboard"
     :use-midi="useMidi"
     :use-mouse="useMouse"
+    :use-visualizer="useVisualizer"
     @checked-changed-keyboard="useKeyboardCheckboxChanged"
     @checked-changed-midi="useMidiCheckboxChanged"
     @checked-changed-mouse="useMouseCheckboxChanged"
+    @checked-changed-visualizer="useVisualizerCheckboxChanged"
     @note-pressed="noteStart"
     @note-released="noteStop"
     @note-reset-all="noteResetAll"
