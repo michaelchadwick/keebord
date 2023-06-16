@@ -464,8 +464,8 @@ onMounted(() => {
       </select>
     </fieldset>
 
-    <label for="output-types" class="fieldset-label">Output</label>
-    <fieldset id="output-types">
+    <label for="visualizer-types" class="fieldset-label">Visualizer</label>
+    <fieldset id="visualizer-types">
       <input
         type="checkbox"
         id="use-visualizer"
