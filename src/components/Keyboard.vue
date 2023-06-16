@@ -498,7 +498,7 @@ onMounted(() => {
     color: var(--color-text);
     display: flex;
     font-size: 1.5rem;
-    height: 40px;
+    height: 32px;
     user-select: none;
     -webkit-user-select: none;
     -moz-user-select: none;

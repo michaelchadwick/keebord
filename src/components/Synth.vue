@@ -1582,6 +1582,8 @@ onMounted(() => {
     border: 2px solid var(--color-border);
     color: var(--color-text);
     font-size: 1.5rem;
+    height: 36px;
+    padding: 0.65rem;
   }
     @media (hover: hover) {
       #synth-controls-header button:hover {
@@ -1596,38 +1598,38 @@ onMounted(() => {
     }
 
     body.dark-theme #synth-controls-header img {
-  filter: invert(100%) sepia(100%) saturate(13%) hue-rotate(237deg) brightness(104%) contrast(104%);
-}
-
-#note-recognition {
-  background-color: var(--green-bright-active);
-  border: 1px solid var(--gray-dark);
-  border-radius: 4px;
-  box-shadow: inset 0 0 5px 1px var(--green);
-  color: var(--black);
-  font-weight: bold;
-  height: 35px;
-  margin-left: 1rem;
-  padding: 0.4rem 0.75rem;
-  width: 100%;
-}
-  @media (min-width: 768px) {
-    #note-recognition {
-      max-width: 150px;
+      filter: invert(100%) sepia(100%) saturate(13%) hue-rotate(237deg) brightness(104%) contrast(104%);
     }
+
+  #synth-controls-header #note-recognition {
+    background-color: var(--green-bright-active);
+    border: 1px solid var(--gray-dark);
+    border-radius: 4px;
+    box-shadow: inset 0 0 5px 1px var(--green);
+    color: var(--black);
+    font-weight: bold;
+    height: 36px;
+    margin-left: 1rem;
+    padding: 0.4rem 0.75rem;
+    width: 100%;
   }
-  #note-recognition.empty {
-    background-color: var(--gray-light);
-    box-shadow: inset 0 0 5px 1px var(--gray);
-    color: var(--gray);
-    font-weight: normal;
-  }
+    @media (min-width: 768px) {
+      #synth-controls-header #note-recognition {
+        max-width: 150px;
+      }
+    }
+    #synth-controls-header #note-recognition.empty {
+      background-color: var(--gray-light);
+      box-shadow: inset 0 0 5px 1px var(--gray);
+      color: var(--gray);
+      font-weight: normal;
+    }
 
 #synth-controls-container {
   background-color: var(--white-soft);
   border: 2px solid var(--gray-light);
   flex-direction: column;
-  height: 150px;
+  height: 144px;
   margin: 5px 3px;
   overflow-y: auto;
   padding: 5px;
@@ -1637,41 +1639,37 @@ onMounted(() => {
       margin: 5px 20px;
     }
   }
-
-body.dark-theme #synth-controls-container {
-  background-color: var(--black-mute);
-}
-
-
+  body.dark-theme #synth-controls-container {
+    background-color: var(--black-mute);
+  }
 
 @media (min-width: 600px) {
   #synth-controls-container {
     align-items: normal;
     flex-wrap: wrap;
+    padding: 0 5px;
   }
-
-  #synth-controls-container fieldset.control-column {
-    margin-left: 0;
-    margin-right: 8px;
-  }
-
-  #synth-controls-container fieldset.control-column:last-child {
-    margin-right: 0;
-  }
+    #synth-controls-container fieldset.control-column {
+      margin-left: 0;
+      margin-right: 8px;
+      padding-top: 0;
+    }
+      #synth-controls-container fieldset.control-column:last-child {
+        margin-right: 0;
+      }
 }
 
 #visualizer-container {
   margin: 5px auto 0;
   width: 50%;
 }
-
-#visualizer {
-  border: 2px solid var(--black);
-  border-radius: 4px;
-  height: 50px;
-  margin: 0;
-  padding: 0;
-  position: relative;
-  width: 100%;
-}
+  #visualizer {
+    border: 2px solid var(--black);
+    border-radius: 4px;
+    height: 50px;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    width: 100%;
+  }
 </style>
