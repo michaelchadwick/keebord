@@ -4,25 +4,29 @@ import { kbSettings } from '../settings';
 
 const props = defineProps({
   musicalNotes: Array,
+  rootNote: String,
+  scaleType: String,
   useKeyboard: Boolean,
   useMidi: Boolean,
   useMouse: Boolean,
   useVisualizer: Boolean
 })
 const emit = defineEmits([
-  'checkedChangedKeyboard',
-  'checkedChangedMidi',
-  'checkedChangedVisualizer',
   'notePressed',
   'noteReleased',
-  'noteResetAll'
+  'noteResetAll',
+  'rootNoteChanged',
+  'scaleTypeChanged',
+  'useKeyboardChanged',
+  'useMidiChanged',
+  'useVisualizerChanged'
 ])
 
 let pianoDiv = null
 let useMouse = props.useMouse
 
-let rootNoteSelected = 'C'
-let scaleTypeSelected = 'chromatic'
+let rootNoteSelected = props.rootNote
+let scaleTypeSelected = props.scaleType
 
 let mousedown = false
 let hasTouch = 'ontouchstart' in window
@@ -110,8 +114,8 @@ const handleNoteResetAll = () => {
 }
 
 // show/hide computer keyboard key labels depending on checkbox
-const updateKeyFlag = (isChecked) => {
-  emit('checkedChangedKeyboard', isChecked)
+const updateUseKeyboardFlag = (isChecked) => {
+  emit('useKeyboardChanged', isChecked)
 
   const keyLabels = document.querySelectorAll('.key-label')
 
@@ -125,8 +129,8 @@ const updateKeyFlag = (isChecked) => {
     })
   }
 }
-const updateMidiFlag = (isChecked) => {
-  emit('checkedChangedMidi', isChecked)
+const updateUseMidiFlag = (isChecked) => {
+  emit('useMidiChanged', isChecked)
 }
 const updateMouseFlag = (isChecked) => {
   emit('checkedChangedMouse', isChecked)
@@ -140,18 +144,22 @@ const updateRootNoteValue = (note) => {
   rootNoteSelected = note
 
   displayedNotes.value = scaleFilter(props.musicalNotes)
+
+  emit('rootNoteChanged', rootNoteSelected)
 }
 const updateScaleTypeValue = (scale) => {
   scaleTypeSelected = scale
 
   displayedNotes.value = scaleFilter(props.musicalNotes)
+
+  emit('scaleTypeChanged', scaleTypeSelected)
 }
-const updateVisualizerFlag = (isChecked) => {
+const updateUseVisualizerFlag = (isChecked) => {
   const canvas = document.getElementById('visualizer-container')
 
   isChecked ? canvas.style.display = 'block' : canvas.style.display = 'none'
 
-  emit('checkedChangedVisualizer', isChecked)
+  emit('useVisualizerChanged', isChecked)
 }
 
 // update computer mouse support
@@ -256,7 +264,7 @@ const scales = {
 }
 
 const scaleFilter = () => {
-  // console.log(`scaleFilter updated: ${rootNoteSelected} ${scaleTypeSelected}`)
+  console.log(`scaleFilter updated: ${rootNoteSelected} ${scaleTypeSelected}`)
 
   let filteredNotes = []
 
@@ -276,7 +284,7 @@ const scaleFilter = () => {
 
     // cycle through other notes in each octave
     for (let oct = 0; oct < octaveCount; oct++) {
-      console.log('filtering octave:', oct)
+      // console.log('filtering octave:', oct)
 
       const scaleSteps = scales[scaleTypeSelected]
       const octIndex = (oct * 12) + 12
@@ -284,9 +292,9 @@ const scaleFilter = () => {
       let scaleStepIndex = 0
 
       while (noteIndex < octIndex) {
-        console.log('checking noteIndex:', noteIndex)
-        console.log('checking scaleStepIndex:', scaleStepIndex)
-        console.log('scaleSteps[scaleStepIndex]', scaleSteps[scaleStepIndex])
+        // console.log('checking noteIndex:', noteIndex)
+        // console.log('checking scaleStepIndex:', scaleStepIndex)
+        // console.log('scaleSteps[scaleStepIndex]', scaleSteps[scaleStepIndex])
 
         if (notes[noteIndex]) {
           filteredNotes.push(notes[noteIndex])
@@ -330,9 +338,11 @@ onMounted(() => {
     }
   })
 
-  updateKeyFlag(props.useKeyboard)
-  updateMidiFlag(props.useMidi)
-  updateVisualizerFlag(props.useVisualizer)
+  // updateRootNoteValue(props.rootNote)
+  // updateScaleTypeValue(props.scaleType)
+  updateUseKeyboardFlag(props.useKeyboard)
+  updateUseMidiFlag(props.useMidi)
+  updateUseVisualizerFlag(props.useVisualizer)
 })
 </script>
 
@@ -400,7 +410,7 @@ onMounted(() => {
         id="use-keyboard"
         name="use-keyboard"
         :checked="props.useKeyboard"
-        @change="updateKeyFlag($event.target.checked)"
+        @change="updateUseKeyboardFlag($event.target.checked)"
       />
       <label for="use-keyboard" title="Enable keyboard support?">⌨️</label>
 
@@ -409,7 +419,7 @@ onMounted(() => {
         id="use-midi"
         name="use-midi"
         :checked="props.useMidi"
-        @change="updateMidiFlag($event.target.checked)"
+        @change="updateUseMidiFlag($event.target.checked)"
       />
       <label for="use-midi" title="Enable MIDI keyboard support?">🎹</label>
 
@@ -461,7 +471,7 @@ onMounted(() => {
         id="use-visualizer"
         name="use-visualizer"
         :checked="props.useVisualizer"
-        @change="updateVisualizerFlag($event.target.checked)"
+        @change="updateUseVisualizerFlag($event.target.checked)"
       />
       <label for="use-visualizer" title="Enable visualizer?">📈</label>
     </fieldset>

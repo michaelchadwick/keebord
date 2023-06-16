@@ -1,10 +1,13 @@
 <script setup>
 import { getCurrentInstance, onMounted, reactive, ref } from 'vue'
 import { kbSettings } from '../settings'
+
+import { loadSoundfont, startPresetNote } from 'sfumato'
+
 import NodeControl from './NodeControl.vue'
 import Keyboard from './Keyboard.vue'
 import ADSREnvelope from 'adsr-envelope'
-import { loadSoundfont, startPresetNote } from 'sfumato'
+
 // import webAudioFontLoader from '../assets/js/app/wafLoader.js'
 // import webAudioFontTonesLoader from '../assets/js/app/wafTonesLoader.js'
 
@@ -145,8 +148,7 @@ const sf2Notes = reactive([])
 const sf2Presets = reactive([])
 const wafNotes = reactive([])
 
-// holds current notes being played
-// used to get chord recognition
+// holds current notes being played; for chord recognition
 const currentNotes = ref([])
 
 const nodeControls = reactive({
@@ -394,24 +396,21 @@ let pitchBendRange = 2
 let modInterval = null
 let segmentWidth
 
-let useKeyboard
-let useMidi
-let useMouse
-let useVisualizer
-
-useKeyboard = kbSettings.value.input.keyboard
-useMidi = kbSettings.value.input.midi
-useMouse = kbSettings.value.input.mouse
-useVisualizer = kbSettings.value.output.visualizer
+let rootNote = kbSettings.value.filter.rootNote
+let scaleType = kbSettings.value.filter.scaleType
+let useKeyboard = kbSettings.value.input.keyboard
+let useMidi = kbSettings.value.input.midi
+let useMouse = kbSettings.value.input.mouse
+let useVisualizer = kbSettings.value.output.visualizer
 
 let wafPlayer = null
 
 if (nodeControls.outputType == 'sf2') {
-  initSF2()
+  _initSF2()
 }
 
 if (nodeControls.outputType == 'waf') {
-  initWAF()
+  _initWAF()
 }
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)()
@@ -626,7 +625,7 @@ const selectOptionChanged = function (controlName, newValue) {
 
     case 'sf2Source':
       noteResetAll()
-      initSF2()
+      _initSF2()
 
       break
 
@@ -683,7 +682,7 @@ const noteStart = function (noteNum, velocity = 64) {
 
       createSF2Node(noteNum, startTime)
 
-      currentNotes.value = getChord(Object.keys(sf2Notes))
+      currentNotes.value = _getChord(Object.keys(sf2Notes))
 
       break
 
@@ -693,7 +692,7 @@ const noteStart = function (noteNum, velocity = 64) {
 
       createWafNode(noteNum, startTime)
 
-      currentNotes.value = getChord(Object.keys(wafNotes))
+      currentNotes.value = _getChord(Object.keys(wafNotes))
 
       break
 
@@ -703,7 +702,7 @@ const noteStart = function (noteNum, velocity = 64) {
 
       createOscNode(noteNum, startTime, envelope)
 
-      currentNotes.value = getChord(Object.keys(oscNotes))
+      currentNotes.value = _getChord(Object.keys(oscNotes))
 
       break
   }
@@ -729,7 +728,7 @@ const noteStop = function (noteNum, velocity = 64) {
       }
 
       // update chord recognition display
-      currentNotes.value = getChord(Object.keys(sf2Notes))
+      currentNotes.value = _getChord(Object.keys(sf2Notes))
 
       break
 
@@ -739,7 +738,7 @@ const noteStop = function (noteNum, velocity = 64) {
       delete wafNotes[noteNum]
 
       // update chord recognition display
-      currentNotes.value = getChord(Object.keys(wafNotes))
+      currentNotes.value = _getChord(Object.keys(wafNotes))
 
       break
 
@@ -772,7 +771,7 @@ const noteStop = function (noteNum, velocity = 64) {
       }
 
       // update chord recognition display
-      currentNotes.value = getChord(Object.keys(oscNotes))
+      currentNotes.value = _getChord(Object.keys(oscNotes))
 
       break
   }
@@ -1238,17 +1237,45 @@ const midiController = (e) => {
   }
 }
 
+// FILTER CHANGES
+
+const rootNoteChanged = (note) => {
+  rootNote = note
+  updateRootNoteHandler()
+}
+const scaleTypeChanged = (type) => {
+  scaleType = type
+  updateScaleTypeHandler()
+}
+
+// FILTER HANDLERS
+
+const updateRootNoteHandler = () => {
+  kbSettings.value.filter.rootNote = rootNote
+
+  console.log('root note changed', rootNote)
+
+  localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+}
+const updateScaleTypeHandler = () => {
+  kbSettings.value.filter.scaleType = scaleType
+
+  console.log('scale type changed', scaleType)
+
+  localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+}
+
 // OUTPUT HANDLERS
 
 const updateOutputHandler = (newValue) => {
   switch (newValue) {
     case 'sf2':
-      initSF2()
+      _initSF2()
 
       break
 
     case 'waf':
-      initWAF()
+      _initWAF()
 
       break
 
@@ -1268,9 +1295,125 @@ const updateOutputHandler = (newValue) => {
   }
 }
 
+
+const _initVisualizer = () => {
+  const canvas = document.getElementById('visualizer')
+  const c = canvas.getContext('2d')
+
+  // make canvas take up limited box size
+  canvas.width = 640
+  canvas.height = 100
+
+  // make initial line
+  c.fillStyle = "#f8f8f8"
+  c.fillRect(0, 0, canvas.width, canvas.height)
+  c.strokeStyle = "#09714b"
+  c.beginPath()
+  c.moveTo(0, canvas.height / 2)
+  c.lineTo(canvas.width, canvas.height / 2)
+  c.stroke()
+
+  // define function to update canvas
+  const drawToCanvas = function () {
+    analyzerNode.getByteTimeDomainData(dataArray)
+    segmentWidth = canvas.width / analyzerNode.frequencyBinCount
+
+    c.fillRect(0, 0, canvas.width, canvas.height)
+    c.beginPath()
+    c.moveTo(-100, canvas.height / 2)
+
+    if (currentNotes.value.length) {
+      for (let i = 1; i < analyzerNode.frequencyBinCount; i += 1) {
+        let x = i * segmentWidth
+        let v = dataArray[i] / 128.0
+        let y = (v * canvas.height) / 2
+        c.lineTo(x, y)
+      }
+    }
+
+    c.lineTo(canvas.width + 100, canvas.height / 2)
+    c.stroke()
+    requestAnimationFrame(drawToCanvas)
+  }
+
+  drawToCanvas()
+}
+const _initSF2 = () => {
+  nodeControls.oscType.enabled = false
+  nodeControls.oscType.visible = false
+
+  nodeControls.sf2Source.enabled = true
+  nodeControls.sf2Source.visible = true
+  nodeControls.sf2Preset.enabled = true
+  nodeControls.sf2Preset.visible = true
+
+  nodeControls.wafSource.enabled = false
+  nodeControls.wafSource.visible = false
+
+  loadSoundfont(`/assets/sf2/${nodeControls.sf2Source.currentValue}.sf2`).then((player) => {
+    console.log('sf2Player', player)
+
+    // load SF2 Preset dropdown
+    let options = []
+
+    player.presets.map(preset => options.push({
+      text: preset.header.name,
+      value: preset.header.name
+    }))
+
+    nodeControls.sf2Preset.options = options
+
+    if (nodeControls.sf2Source.currentValue == 'super_mario_world') {
+      nodeControls.sf2Preset.currentValue = options[8].text
+    } else {
+      nodeControls.sf2Preset.currentValue = options[0].text
+    }
+
+    sf2Presets.value = player.presets
+
+    console.log('nodeControls.sf2Source', nodeControls.sf2Source.currentValue)
+    console.log('nodeControls.sf2Preset', nodeControls.sf2Preset.currentValue)
+  })
+}
+const _initWAF = async () => {
+  nodeControls.oscType.enabled = false
+  nodeControls.oscType.visible = false
+
+  nodeControls.sf2Source.enabled = false
+  nodeControls.sf2Source.visible = false
+  nodeControls.sf2Preset.enabled = false
+  nodeControls.sf2Preset.visible = false
+
+  nodeControls.wafSource.enabled = true
+  nodeControls.wafSource.visible = true
+
+  // load main file, and then tone files
+  // webAudioFontLoader.then(() => webAudioFontTonesLoader).then(() => {
+  //   wafPlayer = new WebAudioFontPlayer()
+  // })
+
+  let script = document.createElement('script')
+  script.onload = () => wafPlayer = new WebAudioFontPlayer()
+  // script.setAttribute('src', '/assets/js/vendor/WebAudioFontPlayer.js')
+  script.setAttribute('src', 'https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js')
+  document.head.appendChild(script)
+
+  script = document.createElement('script')
+  // script.onload = () => res()
+  script.setAttribute('src', '/assets/sf2/0000_Aspirin_sf2.js')
+  // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0000_Aspirin_sf2_file.js')
+  document.head.appendChild(script)
+
+  script = document.createElement('script')
+  // script.onload = () => res()
+  script.setAttribute('src', '/assets/sf2/0250_SoundBlasterOld_sf2.js')
+  // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0250_SoundBlasterOld_sf2.js')
+  document.head.appendChild(script)
+}
+
 // convert midi note numbers into chords, if applicable
-const getChord = (midiNums) => {
-  // console.log('getChord notes', midiNums)
+const _getChord = (midiNums) => {
+  // console.log('_getChord notes', midiNums)
 
   if (midiNums.length > 2) {
     const noteCount = midiNums.length
@@ -1346,122 +1489,6 @@ const getChord = (midiNums) => {
     return letters.join(',')
   }
 }
-
-const initVisualizer = () => {
-  const canvas = document.getElementById('visualizer')
-  const c = canvas.getContext('2d')
-
-  // make canvas take up limited box size
-  canvas.width = 640
-  canvas.height = 100
-
-  // make initial line
-  c.fillStyle = "#f8f8f8"
-  c.fillRect(0, 0, canvas.width, canvas.height)
-  c.strokeStyle = "#09714b"
-  c.beginPath()
-  c.moveTo(0, canvas.height / 2)
-  c.lineTo(canvas.width, canvas.height / 2)
-  c.stroke()
-
-  // define function to update canvas
-  const drawToCanvas = function () {
-    analyzerNode.getByteTimeDomainData(dataArray)
-    segmentWidth = canvas.width / analyzerNode.frequencyBinCount
-
-    c.fillRect(0, 0, canvas.width, canvas.height)
-    c.beginPath()
-    c.moveTo(-100, canvas.height / 2)
-
-    if (currentNotes.value.length) {
-      for (let i = 1; i < analyzerNode.frequencyBinCount; i += 1) {
-        let x = i * segmentWidth
-        let v = dataArray[i] / 128.0
-        let y = (v * canvas.height) / 2
-        c.lineTo(x, y)
-      }
-    }
-
-    c.lineTo(canvas.width + 100, canvas.height / 2)
-    c.stroke()
-    requestAnimationFrame(drawToCanvas)
-  }
-
-  drawToCanvas()
-}
-const initSF2 = () => {
-  nodeControls.oscType.enabled = false
-  nodeControls.oscType.visible = false
-
-  nodeControls.sf2Source.enabled = true
-  nodeControls.sf2Source.visible = true
-  nodeControls.sf2Preset.enabled = true
-  nodeControls.sf2Preset.visible = true
-
-  nodeControls.wafSource.enabled = false
-  nodeControls.wafSource.visible = false
-
-  loadSoundfont(`/assets/sf2/${nodeControls.sf2Source.currentValue}.sf2`).then((player) => {
-    console.log('sf2Player', player)
-
-    // load SF2 Preset dropdown
-    let options = []
-
-    player.presets.map(preset => options.push({
-      text: preset.header.name,
-      value: preset.header.name
-    }))
-
-    nodeControls.sf2Preset.options = options
-
-    if (nodeControls.sf2Source.currentValue == 'super_mario_world') {
-      nodeControls.sf2Preset.currentValue = options[8].text
-    } else {
-      nodeControls.sf2Preset.currentValue = options[0].text
-    }
-
-    sf2Presets.value = player.presets
-
-    console.log('nodeControls.sf2Source', nodeControls.sf2Source.currentValue)
-    console.log('nodeControls.sf2Preset', nodeControls.sf2Preset.currentValue)
-  })
-}
-const initWAF = async () => {
-  nodeControls.oscType.enabled = false
-  nodeControls.oscType.visible = false
-
-  nodeControls.sf2Source.enabled = false
-  nodeControls.sf2Source.visible = false
-  nodeControls.sf2Preset.enabled = false
-  nodeControls.sf2Preset.visible = false
-
-  nodeControls.wafSource.enabled = true
-  nodeControls.wafSource.visible = true
-
-  // load main file, and then tone files
-  // webAudioFontLoader.then(() => webAudioFontTonesLoader).then(() => {
-  //   wafPlayer = new WebAudioFontPlayer()
-  // })
-
-  let script = document.createElement('script')
-  script.onload = () => wafPlayer = new WebAudioFontPlayer()
-  // script.setAttribute('src', '/assets/js/vendor/WebAudioFontPlayer.js')
-  script.setAttribute('src', 'https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js')
-  document.head.appendChild(script)
-
-  script = document.createElement('script')
-  // script.onload = () => res()
-  script.setAttribute('src', '/assets/sf2/0000_Aspirin_sf2.js')
-  // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0000_Aspirin_sf2_file.js')
-  document.head.appendChild(script)
-
-  script = document.createElement('script')
-  // script.onload = () => res()
-  script.setAttribute('src', '/assets/sf2/0250_SoundBlasterOld_sf2.js')
-  // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0250_SoundBlasterOld_sf2.js')
-  document.head.appendChild(script)
-}
-
 const _arraysAreEqual = (arr1, arr2) => {
   return arr1.join() == arr2.join()
 }
@@ -1470,8 +1497,9 @@ const _midi2Name = (midiNumber) => {
 
   return name[2] == 'b' ? `${name[0]}${name[1]}` : `${name[0]}`
 }
-// https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createWaveShaper
 const _makeDistortionCurve = (amount) => {
+  // https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createWaveShaper
+
   const k = typeof amount === "number" ? amount : 50
   const n_samples = 44100
   const curve = new Float32Array(n_samples)
@@ -1491,21 +1519,25 @@ createSendChain()
 onMounted(() => {
   // console.log('MOUNTED Synth.vue', kbSettings.value)
 
-  initVisualizer()
+  _initVisualizer()
 })
 </script>
 
 <template>
   <Keyboard
     :musical-notes="MUSICAL_NOTES"
+    :root-note="rootNote"
+    :scale-type="scaleType"
     :use-keyboard="useKeyboard"
     :use-midi="useMidi"
     :use-mouse="useMouse"
     :use-visualizer="useVisualizer"
-    @checked-changed-keyboard="useKeyboardCheckboxChanged"
-    @checked-changed-midi="useMidiCheckboxChanged"
-    @checked-changed-mouse="useMouseCheckboxChanged"
-    @checked-changed-visualizer="useVisualizerCheckboxChanged"
+    @root-note-changed="rootNoteChanged"
+    @scale-type-changed="scaleTypeChanged"
+    @use-keyboard-changed="useKeyboardCheckboxChanged"
+    @use-midi-changed="useMidiCheckboxChanged"
+    @use-mouse-changed="useMouseCheckboxChanged"
+    @use-visualizer-changed="useVisualizerCheckboxChanged"
     @note-pressed="noteStart"
     @note-released="noteStop"
     @note-reset-all="noteResetAll"

@@ -49,10 +49,19 @@ if (!lsSettings) {
 else {
   // console.log('localStorage settings found')
 
+  if (lsSettings.filter) {
+    kbSettings.value.filter.rootNote = lsSettings.filter.rootNote
+    kbSettings.value.filter.scaleType = lsSettings.filter.scaleType
+  }
+
   if (lsSettings.input) {
     kbSettings.value.input.keyboard = lsSettings.input.keyboard ? true : false
     kbSettings.value.input.midi = lsSettings.input.midi ? true : false
     kbSettings.value.input.mouse = lsSettings.input.mouse ? true : false
+  }
+
+  if (lsSettings.output) {
+    kbSettings.value.output.visualizer = lsSettings.output.visualizer ? true : false
   }
 
   if (lsSettings.theme == 'dark') {
