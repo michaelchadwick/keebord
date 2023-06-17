@@ -161,7 +161,7 @@ const nodeControls = reactive({
       { text: 'Soundfont', value: 'sf2' },
       { text: 'WebAudioFont', value: 'waf' }
     ],
-    currentValue: 'osc',
+    currentValue: kbSettings.value.controls.outputType,
     audioNode: '',
     parameter: 'type',
     visible: true,
@@ -178,7 +178,7 @@ const nodeControls = reactive({
       { text: 'Square', value: 'square' },
       { text: 'Triangle', value: 'triangle' }
     ],
-    currentValue: 'sine',
+    currentValue: kbSettings.value.controls.oscType,
     audioNode: '',
     parameter: 'type',
     visible: true,
@@ -390,12 +390,13 @@ const globalProps = getCurrentInstance().appContext.config.globalProperties
 
 let midiAccess = null
 
-let oscillatorType = 0
 let startTime = 0
 let pitchBendRange = 2
 let modInterval = null
 let segmentWidth
 
+let oscType = kbSettings.value.controls.oscType
+let outputType = kbSettings.value.controls.outputType
 let rootNote = kbSettings.value.filter.rootNote
 let scaleType = kbSettings.value.filter.scaleType
 let useKeyboard = kbSettings.value.input.keyboard
@@ -618,8 +619,13 @@ const selectOptionChanged = function (controlName, newValue) {
   console.log('selectOptionChanged', controlName, newValue)
 
   switch (controlName) {
+    case 'oscType':
+      updateOscTypeHandler(newValue)
+
+      break
+
     case 'outputType':
-      updateOutputHandler(newValue)
+      updateOutputTypeHandler(newValue)
 
       break
 
@@ -829,10 +835,10 @@ const createOscNode = function (noteNum, startTime, envelope) {
     const noteFreq = parseFloat(MUSICAL_NOTES[noteNum].frequency)
 
     // set oscillator wave type
-    oscillatorType = document.getElementById('osc-type')
+    oscType = document.getElementById('osc-type')
       .options[document.getElementById('osc-type').selectedIndex]
       .value
-    oscNode.type = oscillatorType
+    oscNode.type = oscType
 
     // set oscillator frequency
     oscNode.frequency.value = parseFloat(noteFreq)
@@ -1265,9 +1271,22 @@ const updateScaleTypeHandler = () => {
   localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
 }
 
-// OUTPUT HANDLERS
+// CONTROL HANDLERS
 
-const updateOutputHandler = (newValue) => {
+const updateOscTypeHandler = (type) => {
+  oscType = type
+
+  kbSettings.value.controls.oscType = oscType
+
+  console.log('osc type changed', oscType)
+
+  localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+}
+const updateOutputTypeHandler = (type) => {
+  outputType = type
+
+  kbSettings.value.controls.outputType = outputType
+
   switch (newValue) {
     case 'sf2':
       _initSF2()
@@ -1293,8 +1312,11 @@ const updateOutputHandler = (newValue) => {
 
       break
   }
-}
 
+  console.log('output type changed', outputType)
+
+  localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+}
 
 const _initVisualizer = () => {
   const canvas = document.getElementById('visualizer')

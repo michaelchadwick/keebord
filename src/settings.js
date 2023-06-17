@@ -5,6 +5,10 @@ const KB_SETTINGS_KEY = 'keebord-settings'
 const lsSettings = localStorage.getItem(KB_SETTINGS_KEY) ? JSON.parse(localStorage.getItem(KB_SETTINGS_KEY)) : null
 
 export const kbSettings = ref({
+  controls: {
+    oscType: lsSettings ? (lsSettings.filter ? lsSettings.controls.oscType : 'sine') : 'sine',
+    outputType: lsSettings ? (lsSettings.filter ? lsSettings.controls.outputType : 'osc') : 'osc'
+  },
   filter: {
     rootNote: lsSettings ? (lsSettings.filter ? lsSettings.filter.rootNote : 'C') : 'C',
     scaleType: lsSettings ? (lsSettings.filter ? lsSettings.filter.scaleType : 'chromatic') : 'chromatic',
