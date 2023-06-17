@@ -132,8 +132,8 @@ const updateUseKeyboardFlag = (isChecked) => {
 const updateUseMidiFlag = (isChecked) => {
   emit('useMidiChanged', isChecked)
 }
-const updateMouseFlag = (isChecked) => {
-  emit('checkedChangedMouse', isChecked)
+const updateUseMouseFlag = (isChecked) => {
+  emit('useMouseChanged', isChecked)
 
   useMouse = isChecked
 
@@ -428,7 +428,7 @@ onMounted(() => {
         id="use-mouse"
         name="use-mouse"
         :checked="props.useMouse"
-        @change="updateMouseFlag($event.target.checked)"
+        @change="updateUseMouseFlag($event.target.checked)"
       />
       <label for="use-mouse" title="Enable mouse/touch support?">🐭/🖐️</label>
     </fieldset>
