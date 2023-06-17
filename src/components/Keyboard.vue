@@ -633,6 +633,9 @@ onMounted(() => {
         body.dark-theme #keyboard button.key-white {
           border-top: 1px solid var(--color-border);
         }
+        body.dark-theme #keyboard button.key-white.root-note {
+          background-color: var(--color-background-light);
+        }
         @media (hover: hover) {
           #keyboard button.key-white.enabled-mouse:hover {
             background-color: var(--green-bright);
@@ -743,7 +746,7 @@ onMounted(() => {
   }
   #other-controls-container fieldset {
     align-items: center;
-    background-color: #fafafa;
+    background-color: var(--color-background-soft);
     border: 1px solid #aaaaaa;
     border-radius: 4px;
     border-bottom-left-radius: 4px;
@@ -770,21 +773,19 @@ onMounted(() => {
       }
     }
     #other-controls-container label.fieldset-label {
-      background-color: var(--white-mute);
+      background-color: var(--color-background-mute);
       border: 1px solid #aaaaaa;
       border-radius: 4px;
       border-bottom-right-radius: 0;
       border-top-right-radius: 0;
       border-right: none;
+      color: var(--color-text);
       display: none;
       font-size: 1.4rem;
       font-weight: bold;
       height: 30px;
       padding: 0 5px;
       text-transform: uppercase;
-    }
-    body.dark-theme #other-controls-container label.fieldset-label {
-      color: #000000;
     }
     @media (min-width: 667px) {
       #other-controls-container label.fieldset-label {

@@ -4,6 +4,7 @@
   --white-mute: #f2f2f2;
 
   --gray: #888888;
+  --gray-soft: #555555;
   --gray-light: #d8d8d8;
   --gray-dark: #333333;
 
@@ -46,6 +47,7 @@
 
 body.dark-theme {
   --color-background: var(--black);
+  --color-background-light: var(--gray-soft);
   --color-background-soft: var(--black-soft);
   --color-background-mute: var(--black-mute);
   --color-button-black-background: var(--black);
@@ -64,6 +66,7 @@ body.dark-theme {
 @media (prefers-color-scheme: dark) {
   :root {
     --color-background: var(--black);
+    --color-background-light: var(--gray-soft);
     --color-background-soft: var(--black-soft);
     --color-background-mute: var(--black-mute);
     --color-button-black-background: var(--black);

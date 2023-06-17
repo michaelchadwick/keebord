@@ -1635,6 +1635,11 @@ onMounted(() => {
     padding: 0.4rem 0.75rem;
     width: 100%;
   }
+    body.dark-theme #synth-controls-header #note-recognition {
+      background-color: var(--green-deep-active);
+      border: 1px solid var(--gray-bright-active);
+      color: var(--green-bright-active);
+    }
     @media (min-width: 768px) {
       #synth-controls-header #note-recognition {
         max-width: 150px;
@@ -1646,6 +1651,11 @@ onMounted(() => {
       color: var(--gray);
       font-weight: normal;
     }
+      body.dark-theme #synth-controls-header #note-recognition.empty {
+        background-color: var(--color-background-mute);
+        box-shadow: inset 0 0 5px 1px var(--color-text);
+        color: var(--color-text);
+      }
 
 #synth-controls-container {
   background-color: var(--white-soft);
