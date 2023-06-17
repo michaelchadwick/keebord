@@ -83,6 +83,9 @@ else {
   // console.log('kbSettings', kbSettings.value)
 }
 
+// save state
+localStorage.setItem(KB_SETTINGS_KEY, JSON.stringify(kbSettings.value))
+
 // if such a theme toggler DOM element exists, enable it
 if (themeTogglerElem) {
   themeTogglerElem.addEventListener('click', function() {
@@ -95,11 +98,10 @@ if (themeTogglerElem) {
     themeTogglerElemImg.innerHTML = curTheme == 'light' ? SUN_EMOJI : MOON_EMOJI
 
     kbSettings.value.theme = curTheme
+
+    localStorage.setItem(KB_SETTINGS_KEY, JSON.stringify(kbSettings.value))
   })
 }
-
-// save state
-localStorage.setItem(KB_SETTINGS_KEY, JSON.stringify(kbSettings.value))
 
 // regardless of state, adjust per scheme preference
 if (prefersDarkScheme.matches) {
