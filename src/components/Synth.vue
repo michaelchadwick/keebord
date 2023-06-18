@@ -640,6 +640,13 @@ const selectOptionChanged = function (controlName, newValue) {
         noteResetAll()
 
         break
+
+      case 'wafSource':
+        kbSettings.value.controls.wafSource = newValue
+
+        noteResetAll()
+
+        break
     }
 
     _saveToLocalStorage()
