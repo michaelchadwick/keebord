@@ -6,8 +6,11 @@ const lsSettings = localStorage.getItem(KB_SETTINGS_KEY) ? JSON.parse(localStora
 
 export const kbSettings = ref({
   controls: {
+    outputType: lsSettings ? (lsSettings.filter ? lsSettings.controls.outputType : 'osc') : 'osc',
     oscType: lsSettings ? (lsSettings.filter ? lsSettings.controls.oscType : 'sine') : 'sine',
-    outputType: lsSettings ? (lsSettings.filter ? lsSettings.controls.outputType : 'osc') : 'osc'
+    sf2Source: lsSettings ? (lsSettings.filter ? lsSettings.controls.sf2Source : 'super_mario_world') : 'super_mario_world',
+    sf2Preset: lsSettings ? (lsSettings.filter ? lsSettings.controls.sf2Preset : 'SMW Piano') : 'SMW Piano',
+    wafSource: lsSettings ? (lsSettings.filter ? lsSettings.controls.wafSource : '_tone_0000_Aspirin_sf2') : '_tone_0000_Aspirin_sf2'
   },
   filter: {
     rootNote: lsSettings ? (lsSettings.filter ? lsSettings.filter.rootNote : 'C') : 'C',

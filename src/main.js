@@ -49,6 +49,14 @@ if (!lsSettings) {
 else {
   // console.log('localStorage settings found')
 
+  if (lsSettings.controls) {
+    kbSettings.value.controls.outputType = lsSettings.controls.outputType
+    kbSettings.value.controls.oscType = lsSettings.controls.oscType
+    kbSettings.value.controls.sf2Source = lsSettings.controls.sf2Source
+    kbSettings.value.controls.sf2Preset = lsSettings.controls.sf2Preset
+    kbSettings.value.controls.wafSource = lsSettings.controls.wafSource
+  }
+
   if (lsSettings.filter) {
     kbSettings.value.filter.rootNote = lsSettings.filter.rootNote
     kbSettings.value.filter.scaleType = lsSettings.filter.scaleType

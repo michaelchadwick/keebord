@@ -196,7 +196,7 @@ const nodeControls = reactive({
       { text: 'Super Mario World', value: 'super_mario_world' },
       { text: 'Vintage Dreams', value: 'vintage_dreams_waves_v2' }
     ],
-    currentValue: 'super_mario_world',
+    currentValue: kbSettings.value.controls.sf2Source,
     audioNode: '',
     parameter: 'type',
     visible: false,
@@ -208,7 +208,7 @@ const nodeControls = reactive({
     type: 'select',
     selectId: 'sf2-preset',
     options: sf2Presets.value,
-    currentValue: '',
+    currentValue: kbSettings.value.controls.sf2Preset,
     audioNode: '',
     parameter: 'type',
     visible: false,
@@ -223,8 +223,7 @@ const nodeControls = reactive({
       { text: 'Aspirin', value: '_tone_0000_Aspirin_sf2' },
       { text: 'SoundBlasterOld', value: '_tone_0250_SoundBlasterOld_sf2' }
     ],
-    currentValue: '_tone_0000_Aspirin_sf2',
-    // currentValue: '_tone_0250_SoundBlasterOld_sf2',
+    currentValue: kbSettings.value.controls.wafSource,
     audioNode: '',
     parameter: 'type',
     visible: false,
@@ -405,14 +404,6 @@ let useMouse = kbSettings.value.input.mouse
 let useVisualizer = kbSettings.value.output.visualizer
 
 let wafPlayer = null
-
-if (nodeControls.outputType == 'sf2') {
-  _initSF2()
-}
-
-if (nodeControls.outputType == 'waf') {
-  _initWAF()
-}
 
 const audioContext = new (window.AudioContext || window.webkitAudioContext)()
 
@@ -652,6 +643,25 @@ const selectOptionChanged = function (controlName, newValue) {
   }
 }
 
+const controlIncreaseValue = function(controlKey) {
+  controlValueChanged(
+    controlKey,
+    (parseFloat(
+      nodeControls[controlKey].currentValue) + parseFloat(nodeControls[controlKey].step
+    ))
+    .toFixed(1)
+  )
+}
+const controlDecreaseValue = function(controlKey) {
+  controlValueChanged(
+    controlKey,
+    (parseFloat(
+      nodeControls[controlKey].currentValue) - parseFloat(nodeControls[controlKey].step
+    ))
+    .toFixed(1)
+  )
+}
+
 // expand/collapse Synth Controls section
 const toggleSynthControls = function () {
   let toggleSynthControl = document.getElementById('synth-controls-container')
@@ -684,7 +694,7 @@ const noteStart = function (noteNum, velocity = 64) {
   switch (nodeControls.outputType.currentValue) {
     // use sfumato
     case 'sf2':
-      console.log(`sf2Notes[${noteNum}] noteStart`)
+      // console.log(`sf2Notes[${noteNum}] noteStart`)
 
       createSF2Node(noteNum, startTime)
 
@@ -694,7 +704,7 @@ const noteStart = function (noteNum, velocity = 64) {
 
     // use WebAudioFont
     case 'waf':
-      console.log(`wafNotes[${noteNum}] noteStart`)
+      // console.log(`wafNotes[${noteNum}] noteStart`)
 
       createWafNode(noteNum, startTime)
 
@@ -726,7 +736,7 @@ const noteStop = function (noteNum, velocity = 64) {
   switch (nodeControls.outputType.currentValue) {
     case 'sf2':
       if (sf2Notes[noteNum]) {
-        console.log(`sf2Notes[${noteNum}] noteStop`)
+        // console.log(`sf2Notes[${noteNum}] noteStop`)
 
         // sf2Notes[noteNum].stopHandle()
         sf2Notes[noteNum] = null
@@ -1084,7 +1094,7 @@ const updateKeyboardEventHandler = () => {
     console.log('keyboard support disabled')
   }
 
-  localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+  _saveToLocalStorage()
 }
 const updateMidiEventHandler = () => {
   if (useMidi) {
@@ -1096,7 +1106,7 @@ const updateMidiEventHandler = () => {
 
             kbSettings.value.input.midi = true
 
-            localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+            _saveToLocalStorage()
 
             console.log('midi support enabled', midiAccess)
 
@@ -1109,7 +1119,7 @@ const updateMidiEventHandler = () => {
           (error) => {
             kbSettings.value.input.midi = false
 
-            localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+            _saveToLocalStorage()
 
             console.error('Failed to get MIDI access:', error)
           }
@@ -1117,7 +1127,7 @@ const updateMidiEventHandler = () => {
     } else {
       kbSettings.value.input.midi = false
 
-      localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+      _saveToLocalStorage()
 
       console.error('navigator.requestMIDIAccess() not supported')
     }
@@ -1137,7 +1147,7 @@ const updateMidiEventHandler = () => {
       console.log('midi support disabled')
     }
 
-    localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+    _saveToLocalStorage()
   }
 }
 const updateMouseEventHandler = () => {
@@ -1151,7 +1161,7 @@ const updateMouseEventHandler = () => {
     console.log('mouse/touch support disabled')
   }
 
-  localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+  _saveToLocalStorage()
 }
 const updateVisualizerEventHandler = () => {
   if (useVisualizer) {
@@ -1164,7 +1174,7 @@ const updateVisualizerEventHandler = () => {
     console.log('visualizer disabled')
   }
 
-  localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+  _saveToLocalStorage()
 }
 
 // INPUT CONTROLLERS
@@ -1261,14 +1271,14 @@ const updateRootNoteHandler = () => {
 
   console.log('root note changed', rootNote)
 
-  localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+  _saveToLocalStorage()
 }
 const updateScaleTypeHandler = () => {
   kbSettings.value.filter.scaleType = scaleType
 
   console.log('scale type changed', scaleType)
 
-  localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+  _saveToLocalStorage()
 }
 
 // CONTROL HANDLERS
@@ -1280,14 +1290,16 @@ const updateOscTypeHandler = (type) => {
 
   console.log('osc type changed', oscType)
 
-  localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+  _saveToLocalStorage()
 }
 const updateOutputTypeHandler = (type) => {
+  console.log('updating outputType', type)
+
   outputType = type
 
   kbSettings.value.controls.outputType = outputType
 
-  switch (newValue) {
+  switch (type) {
     case 'sf2':
       _initSF2()
 
@@ -1313,9 +1325,7 @@ const updateOutputTypeHandler = (type) => {
       break
   }
 
-  console.log('output type changed', outputType)
-
-  localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+  _saveToLocalStorage()
 }
 
 const _initVisualizer = () => {
@@ -1373,7 +1383,7 @@ const _initSF2 = () => {
   nodeControls.wafSource.visible = false
 
   loadSoundfont(`/assets/sf2/${nodeControls.sf2Source.currentValue}.sf2`).then((player) => {
-    console.log('sf2Player', player)
+    // console.log('sf2Player', player)
 
     // load SF2 Preset dropdown
     let options = []
@@ -1385,16 +1395,19 @@ const _initSF2 = () => {
 
     nodeControls.sf2Preset.options = options
 
+    // if loading SMW, load the Piano by default
     if (nodeControls.sf2Source.currentValue == 'super_mario_world') {
       nodeControls.sf2Preset.currentValue = options[8].text
     } else {
       nodeControls.sf2Preset.currentValue = options[0].text
     }
 
+    kbSettings.value.controls.sf2Preset = nodeControls.sf2Preset.currentValue
+
     sf2Presets.value = player.presets
 
-    console.log('nodeControls.sf2Source', nodeControls.sf2Source.currentValue)
-    console.log('nodeControls.sf2Preset', nodeControls.sf2Preset.currentValue)
+    // console.log('nodeControls.sf2Source', nodeControls.sf2Source.currentValue)
+    // console.log('nodeControls.sf2Preset', nodeControls.sf2Preset.currentValue)
   })
 }
 const _initWAF = async () => {
@@ -1534,14 +1547,25 @@ const _makeDistortionCurve = (amount) => {
 
   return curve
 }
+const _saveToLocalStorage = () => {
+  localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+}
 
 createMasterChain()
 createSendChain()
 
 onMounted(() => {
-  // console.log('MOUNTED Synth.vue', kbSettings.value)
+  // console.log('MOUNTED Synth.vue', nodeControls.outputType)
 
   _initVisualizer()
+
+  if (nodeControls.outputType.currentValue == 'sf2') {
+    _initSF2()
+  }
+
+  if (nodeControls.outputType.currentValue == 'waf') {
+    _initWAF()
+  }
 })
 </script>
 
@@ -1580,11 +1604,13 @@ onMounted(() => {
     </span>
   </div>
   <div id="synth-controls-container" style="display: flex">
-    <NodeControl v-for="(control, key) in nodeControls" :control-key="key" :control-data="control"
-      @check-enabled-changed="checkEnabledChanged" @control-value-changed="controlValueChanged"
+    <NodeControl v-for="(control, key) in nodeControls" :control-key="key"
+      :control-data="control"
+      @check-enabled-changed="checkEnabledChanged"
+      @control-value-changed="controlValueChanged"
       @select-option-changed="selectOptionChanged"
-      @increase-value="(controlKey) => controlValueChanged(controlKey, (parseFloat(nodeControls[controlKey].currentValue) + parseFloat(nodeControls[controlKey].step)).toFixed(1))"
-      @decrease-value="(controlKey) => controlValueChanged(controlKey, (parseFloat(nodeControls[controlKey].currentValue) - parseFloat(nodeControls[controlKey].step)).toFixed(1))" />
+      @increase-value="controlIncreaseValue"
+      @decrease-value="controlDecreaseValue" />
   </div>
 </template>
 
