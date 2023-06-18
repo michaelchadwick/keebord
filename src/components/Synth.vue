@@ -609,33 +609,40 @@ const controlValueChanged = function (controlName, newValue) {
 const selectOptionChanged = function (controlName, newValue) {
   console.log('selectOptionChanged', controlName, newValue)
 
-  switch (controlName) {
-    case 'oscType':
-      updateOscTypeHandler(newValue)
-
-      break
-
-    case 'outputType':
-      updateOutputTypeHandler(newValue)
-
-      break
-
-    case 'sf2Source':
-      noteResetAll()
-      _initSF2()
-
-      break
-
-    case 'sf2Preset':
-      noteResetAll()
-
-      break
-  }
-
   const control = nodeControls[controlName]
 
   if (control) {
     nodeControls[controlName].currentValue = newValue
+
+    switch (controlName) {
+      case 'oscType':
+        updateOscTypeHandler(newValue)
+
+        break
+
+      case 'outputType':
+        updateOutputTypeHandler(newValue)
+
+        break
+
+      case 'sf2Source':
+        noteResetAll()
+
+        kbSettings.value.controls.sf2Source = newValue
+
+        _initSF2()
+
+        break
+
+      case 'sf2Preset':
+        kbSettings.value.controls.sf2Preset = newValue
+
+        noteResetAll()
+
+        break
+    }
+
+    _saveToLocalStorage()
 
     console.log('control has been updated', control)
   } else {
@@ -1395,14 +1402,11 @@ const _initSF2 = () => {
 
     nodeControls.sf2Preset.options = options
 
-    // if loading SMW, load the Piano by default
-    if (nodeControls.sf2Source.currentValue == 'super_mario_world') {
-      nodeControls.sf2Preset.currentValue = options[8].text
+    if (Object.values(options).find(preset => preset.text == kbSettings.value.controls.sf2Preset)) {
+      nodeControls.sf2Preset.currentValue = kbSettings.value.controls.sf2Preset
     } else {
       nodeControls.sf2Preset.currentValue = options[0].text
     }
-
-    kbSettings.value.controls.sf2Preset = nodeControls.sf2Preset.currentValue
 
     sf2Presets.value = player.presets
 
