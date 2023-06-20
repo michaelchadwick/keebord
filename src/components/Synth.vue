@@ -305,7 +305,7 @@ const nodeControls = reactive({
     max: '6.0',
     parameter: 'delayTime',
     visible: true,
-    enabled: false,
+    enabled: kbSettings.value.controls.delayCheck,
     isVertical: true
   },
   eqLow: {
@@ -564,14 +564,22 @@ const createPanNode = (value) => {
 }
 
 const checkEnabledChanged = function (controlName, isChecked) {
+  console.log(`checkEnabledChanged for nodeControls['${controlName}']`, nodeControls, isChecked)
+
   nodeControls[controlName].enabled = isChecked
+
+  kbSettings.value.controls.delayCheck = isChecked
+
+  _saveToLocalStorage()
+
+  // re-created send and master fx chains
   createSendChain()
   createMasterChain()
 }
 const controlValueChanged = function (controlName, newValue) {
   const control = nodeControls[controlName]
 
-  console.log(`updating controlValue for nodeControls['${controlName}']`, nodeControls, newValue)
+  console.log(`controlValueChanged for nodeControls['${controlName}']`, nodeControls, newValue)
 
   if (controlName == 'pitchBend') {
     const semitones = parseInt(newValue)

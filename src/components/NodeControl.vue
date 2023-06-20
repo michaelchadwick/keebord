@@ -25,6 +25,7 @@ const emit = defineEmits([
         v-if="props.controlData.controlEnabledCheckId"
         type="checkbox"
         :id="props.controlData.controlEnabledCheckId"
+        :checked="props.controlData.enabled"
         @change="$emit('checkEnabledChanged', props.controlKey, $event.target.checked)"
       /><label :for="props.controlData.controlEnabledCheckId">{{ props.controlData.title }}</label>
     </legend>

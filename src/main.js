@@ -58,6 +58,7 @@ else {
 
     kbSettings.value.controls.pan = lsSettings.controls.pan
     kbSettings.value.controls.pitchBend = lsSettings.controls.pitchBend
+    kbSettings.value.controls.delayCheck = lsSettings.controls.delayCheck
     kbSettings.value.controls.delay = lsSettings.controls.delay
     kbSettings.value.controls.eqLow = lsSettings.controls.eqLow
     kbSettings.value.controls.eqMid = lsSettings.controls.eqMid
