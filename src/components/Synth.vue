@@ -360,9 +360,9 @@ const nodeControls = reactive({
     rangeInputId: 'eq-compressor-range',
     currentValue: kbSettings.value.controls.eqCompressor,
     audioNode: '',
-    step: '1',
-    min: '1',
-    max: '20',
+    step: '1.0',
+    min: '1.0',
+    max: '20.0',
     parameter: 'ratio',
     visible: true,
     enabled: true,
@@ -598,6 +598,8 @@ const controlValueChanged = function (controlName, newValue) {
           control.currentValue,
           audioContext.currentTime
         )
+
+        kbSettings.value.controls[controlName] = parseFloat(newValue).toFixed(1)
       }
     } else {
       control.currentValue = parseFloat(newValue).toFixed(1)
@@ -605,9 +607,9 @@ const controlValueChanged = function (controlName, newValue) {
         control.currentValue,
         audioContext.currentTime
       )
-    }
 
-    kbSettings.value.controls[controlName] = parseFloat(newValue).toFixed(1)
+      kbSettings.value.controls[controlName] = parseFloat(newValue).toFixed(1)
+    }
 
     _saveToLocalStorage()
   } else {
