@@ -55,6 +55,15 @@ else {
     kbSettings.value.controls.sf2Source = lsSettings.controls.sf2Source
     kbSettings.value.controls.sf2Preset = lsSettings.controls.sf2Preset
     kbSettings.value.controls.wafSource = lsSettings.controls.wafSource
+
+    kbSettings.value.controls.pan = lsSettings.controls.pan
+    kbSettings.value.controls.pitchBend = lsSettings.controls.pitchBend
+    kbSettings.value.controls.delay = lsSettings.controls.delay
+    kbSettings.value.controls.eqLow = lsSettings.controls.eqLow
+    kbSettings.value.controls.eqMid = lsSettings.controls.eqMid
+    kbSettings.value.controls.eqHigh = lsSettings.controls.eqHigh
+    kbSettings.value.controls.eqCompressor = lsSettings.controls.eqCompressor
+    kbSettings.value.controls.masterGain = lsSettings.controls.masterGain
   }
 
   if (lsSettings.filter) {

@@ -235,7 +235,7 @@ const nodeControls = reactive({
     type: 'range',
     numberInputId: 'eq-pan-value',
     rangeInputId: 'eq-pan-range',
-    currentValue: '0.0',
+    currentValue: kbSettings.value.controls.pan,
     audioNode: '',
     step: '0.1',
     min: '-1.0',
@@ -250,7 +250,7 @@ const nodeControls = reactive({
     type: 'range',
     numberInputId: 'pitchbend-value',
     rangeInputId: 'pitchbend-range',
-    currentValue: '2',
+    currentValue: kbSettings.value.controls.pitchBend,
     audioNode: '',
     step: '1',
     min: '1',
@@ -298,7 +298,7 @@ const nodeControls = reactive({
     controlEnabledCheckId: 'send-effect-delay-check',
     numberInputId: 'delay-value',
     rangeInputId: 'delay-range',
-    currentValue: '1.0',
+    currentValue: kbSettings.value.controls.delay,
     audioNode: '',
     step: '0.1',
     min: '0.0',
@@ -313,7 +313,7 @@ const nodeControls = reactive({
     type: 'range',
     numberInputId: 'eq-low-value',
     rangeInputId: 'eq-low-range',
-    currentValue: '0.5',
+    currentValue: kbSettings.value.controls.eqLow,
     audioNode: '',
     step: '0.1',
     min: '0.0',
@@ -328,7 +328,7 @@ const nodeControls = reactive({
     type: 'range',
     numberInputId: 'eq-mid-value',
     rangeInputId: 'eq-mid-range',
-    currentValue: '0.5',
+    currentValue: kbSettings.value.controls.eqMid,
     audioNode: '',
     step: '0.1',
     min: '0.0',
@@ -343,7 +343,7 @@ const nodeControls = reactive({
     type: 'range',
     numberInputId: 'eq-high-value',
     rangeInputId: 'eq-high-range',
-    currentValue: '0.5',
+    currentValue: kbSettings.value.controls.eqHigh,
     audioNode: '',
     step: '0.1',
     min: '0.0',
@@ -358,7 +358,7 @@ const nodeControls = reactive({
     type: 'range',
     numberInputId: 'eq-compressor-value',
     rangeInputId: 'eq-compressor-range',
-    currentValue: '3.0',
+    currentValue: kbSettings.value.controls.eqCompressor,
     audioNode: '',
     step: '1',
     min: '1',
@@ -373,7 +373,7 @@ const nodeControls = reactive({
     type: 'range',
     numberInputId: 'master-gain-value',
     rangeInputId: 'master-gain-range',
-    currentValue: '0.8',
+    currentValue: kbSettings.value.controls.masterGain,
     audioNode: '',
     step: '0.1',
     min: '0.0',
@@ -579,6 +579,10 @@ const controlValueChanged = function (controlName, newValue) {
     if (semitones <= control.max && semitones >= control.min) {
       control.currentValue = semitones
       pitchBendRange = parseInt(semitones)
+
+      kbSettings.value.controls.pitchBend = semitones
+
+      _saveToLocalStorage()
     }
   }
   // otherwise, it's a gain modifier, most likely
@@ -602,6 +606,10 @@ const controlValueChanged = function (controlName, newValue) {
         audioContext.currentTime
       )
     }
+
+    kbSettings.value.controls[controlName] = parseFloat(newValue).toFixed(1)
+
+    _saveToLocalStorage()
   } else {
     console.error(`nodeControls['${controlName}'] not found, value could not be updated.`)
   }
@@ -1615,13 +1623,15 @@ onMounted(() => {
     </span>
   </div>
   <div id="synth-controls-container" style="display: flex">
-    <NodeControl v-for="(control, key) in nodeControls" :control-key="key"
+    <NodeControl v-for="(control, key) in nodeControls"
+      :control-key="key"
       :control-data="control"
       @check-enabled-changed="checkEnabledChanged"
       @control-value-changed="controlValueChanged"
       @select-option-changed="selectOptionChanged"
       @increase-value="controlIncreaseValue"
-      @decrease-value="controlDecreaseValue" />
+      @decrease-value="controlDecreaseValue"
+    />
   </div>
 </template>
 
