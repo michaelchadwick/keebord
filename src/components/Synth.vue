@@ -1559,7 +1559,7 @@ const _arraysAreEqual = (arr1, arr2) => {
 const _midi2Name = (midiNumber) => {
   const name = MUSICAL_NOTES.filter(mNote => mNote.midi == midiNumber)[0].name
 
-  return name[2] == 'b' ? `${name[0]}${name[1]}` : `${name[0]}`
+  return name[1] == 'b' ? `${name[0]}${name[1]}` : `${name[0]}`
 }
 const _makeDistortionCurve = (amount) => {
   // https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createWaveShaper
