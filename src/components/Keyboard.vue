@@ -265,7 +265,7 @@ const scales = {
 }
 
 const scaleFilter = () => {
-  console.log(`scaleFilter updated: ${rootNoteSelected} ${scaleTypeSelected}`)
+  console.log(`scaleFilter changed: ${rootNoteSelected} ${scaleTypeSelected}`)
 
   let filteredNotes = []
 

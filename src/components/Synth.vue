@@ -579,7 +579,7 @@ const checkEnabledChanged = function (controlName, isChecked) {
 const controlValueChanged = function (controlName, newValue) {
   const control = nodeControls[controlName]
 
-  console.log(`controlValueChanged for nodeControls['${controlName}']`, nodeControls, newValue)
+  console.log(`nodeControls['${controlName}'] changed:`, nodeControls, newValue)
 
   if (controlName == 'pitchBend') {
     const semitones = parseInt(newValue)
@@ -625,7 +625,7 @@ const controlValueChanged = function (controlName, newValue) {
   }
 }
 const selectOptionChanged = function (controlName, newValue) {
-  console.log('selectOptionChanged', controlName, newValue)
+  // console.log('selectOptionChanged', controlName, newValue)
 
   const control = nodeControls[controlName]
 
@@ -1297,14 +1297,14 @@ const scaleTypeChanged = (type) => {
 const updateRootNoteHandler = () => {
   kbSettings.value.filter.rootNote = rootNote
 
-  console.log('root note changed', rootNote)
+  console.log('root note changed:', rootNote)
 
   _saveToLocalStorage()
 }
 const updateScaleTypeHandler = () => {
   kbSettings.value.filter.scaleType = scaleType
 
-  console.log('scale type changed', scaleType)
+  // console.log('scale type changed', scaleType)
 
   _saveToLocalStorage()
 }
@@ -1316,12 +1316,12 @@ const updateOscTypeHandler = (type) => {
 
   kbSettings.value.controls.oscType = oscType
 
-  console.log('osc type changed', oscType)
+  console.log('oscType changed:', oscType)
 
   _saveToLocalStorage()
 }
 const updateOutputTypeHandler = (type) => {
-  console.log('updating outputType', type)
+  console.log('outputType changed:', type)
 
   outputType = type
 
