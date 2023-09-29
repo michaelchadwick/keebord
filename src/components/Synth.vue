@@ -1116,14 +1116,14 @@ const updateKeyboardEventHandler = () => {
 
     kbSettings.value.input.keyboard = true
 
-    console.log('keyboard support enabled')
+    console.log('⌨️ enabled')
   } else {
     document.removeEventListener('keydown', keyController)
     document.removeEventListener('keyup', keyController)
 
     kbSettings.value.input.keyboard = false
 
-    console.log('keyboard support disabled')
+    console.log('⌨️ disabled')
   }
 
   _saveToLocalStorage()
@@ -1140,7 +1140,7 @@ const updateMidiEventHandler = () => {
 
             _saveToLocalStorage()
 
-            console.log('midi support enabled', midiAccess)
+            console.log('🎹 enabled', midiAccess)
 
             Array.from(midiAccess.inputs).forEach((input, index) => {
               input[1].onmidimessage = midiController
@@ -1172,11 +1172,11 @@ const updateMidiEventHandler = () => {
 
       kbSettings.value.input.midi = false
 
-      console.log('midi support disabled')
+      console.log('🎹 disabled')
     } else {
       kbSettings.value.input.midi = false
 
-      console.log('midi support disabled')
+      console.log('🎹 disabled')
     }
 
     _saveToLocalStorage()
@@ -1186,11 +1186,10 @@ const updateMouseEventHandler = () => {
   if (useMouse) {
     kbSettings.value.input.mouse = true
 
-    // console.log('mouse/touch support enabled')
   } else {
     kbSettings.value.input.mouse = false
 
-    console.log('mouse/touch support disabled')
+    console.log('🐭/🖐️ disabled')
   }
 
   _saveToLocalStorage()
@@ -1199,11 +1198,11 @@ const updateVisualizerEventHandler = () => {
   if (useVisualizer) {
     kbSettings.value.output.visualizer = true
 
-    console.log('visualizer enabled')
+    console.log('📈 enabled')
   } else {
     kbSettings.value.output.visualizer = false
 
-    console.log('visualizer disabled')
+    console.log('📈 disabled')
   }
 
   _saveToLocalStorage()

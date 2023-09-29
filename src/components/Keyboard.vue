@@ -174,7 +174,7 @@ const updateMouseEventHandler = () => {
 
     buttons.forEach(button => button.classList.add('enabled-mouse'))
 
-    console.log('mouse/touch support enabled')
+    console.log('🐭/🖐️ enabled')
   } else {
     document.body.removeEventListener('mousedown', mouseController)
     document.body.removeEventListener('mouseup', mouseController)
@@ -183,7 +183,7 @@ const updateMouseEventHandler = () => {
 
     buttons.forEach(button => button.classList.remove('enabled-mouse'))
 
-    console.log('mouse/touch support disabled')
+    console.log('🐭/🖐️ disabled')
   }
 }
 const mouseController = (e) => {
