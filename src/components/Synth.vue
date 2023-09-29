@@ -1185,11 +1185,8 @@ const updateMidiEventHandler = () => {
 const updateMouseEventHandler = () => {
   if (useMouse) {
     kbSettings.value.input.mouse = true
-
   } else {
     kbSettings.value.input.mouse = false
-
-    console.log('🐭/🖐️ disabled')
   }
 
   _saveToLocalStorage()

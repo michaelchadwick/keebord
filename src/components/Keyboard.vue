@@ -19,6 +19,7 @@ const emit = defineEmits([
   'scaleTypeChanged',
   'useKeyboardChanged',
   'useMidiChanged',
+  'useMouseChanged',
   'useVisualizerChanged'
 ])
 
