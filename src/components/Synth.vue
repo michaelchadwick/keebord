@@ -1757,4 +1757,14 @@ onMounted(() => {
     position: relative;
     width: 100%;
   }
+
+@media (min-width: 992px) {
+  #visualizer-container {
+    margin: 5px 20px;
+    width: auto;
+  }
+    #visualizer {
+      height: 80px;
+    }
+}
 </style>
