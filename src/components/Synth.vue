@@ -245,6 +245,66 @@ const nodeControls = reactive({
     enabled: true,
     isVertical: false
   },
+  attackTime: {
+    title: 'Attack',
+    type: 'range',
+    numberInputId: 'eq-attack-value',
+    rangeInputId: 'eq-attack-range',
+    currentValue: kbSettings.value.controls.attackTime,
+    audioNode: '',
+    step: '0.1',
+    min: '0.0',
+    max: '5.0',
+    parameter: 'adsr',
+    visible: true,
+    enabled: true,
+    isVertical: true
+  },
+  decayTime: {
+    title: 'Decay',
+    type: 'range',
+    numberInputId: 'eq-decay-value',
+    rangeInputId: 'eq-decay-range',
+    currentValue: kbSettings.value.controls.decayTime,
+    audioNode: '',
+    step: '0.1',
+    min: '0.0',
+    max: '5.0',
+    parameter: 'adsr',
+    visible: true,
+    enabled: true,
+    isVertical: true
+  },
+  sustainLevel: {
+    title: 'Sustain',
+    type: 'range',
+    numberInputId: 'eq-sustain-value',
+    rangeInputId: 'eq-sustain-range',
+    currentValue: kbSettings.value.controls.sustainLevel,
+    audioNode: '',
+    step: '0.1',
+    min: '0.0',
+    max: '5.0',
+    parameter: 'adsr',
+    visible: true,
+    enabled: true,
+    isVertical: true
+  },
+  releaseTime: {
+    title: 'Release',
+    type: 'range',
+    numberInputId: 'eq-release-value',
+    rangeInputId: 'eq-release-range',
+    currentValue: kbSettings.value.controls.releaseTime,
+    audioNode: '',
+    step: '0.1',
+    min: '0.0',
+    max: '5.0',
+    parameter: 'adsr',
+    visible: true,
+    enabled: true,
+    isVertical: true
+  },
   pitchBend: {
     title: 'Pitch Bend',
     type: 'range',
@@ -408,10 +468,10 @@ let wafPlayer = null
 const audioContext = new (window.AudioContext || window.webkitAudioContext)()
 
 const adsr = new ADSREnvelope({
-  attackTime: 0.1,
-  decayTime: 0.5,
-  sustainLevel: 0.1,
-  releaseTime: 0.5,
+  attackTime: parseFloat(nodeControls.attackTime.currentValue).toFixed(1) || 0.1,
+  decayTime: parseFloat(nodeControls.decayTime.currentValue).toFixed(1) || 0.5,
+  sustainLevel: parseFloat(nodeControls.sustainLevel.currentValue).toFixed(1) || 0.1,
+  releaseTime: parseFloat(nodeControls.releaseTime.currentValue).toFixed(1) || 0.5,
   gateTime: 1,
   peakLevel: 0.5,
   attackCurve: 'exp',
@@ -564,7 +624,7 @@ const createPanNode = (value) => {
 }
 
 const checkEnabledChanged = function (controlName, isChecked) {
-  console.log(`checkEnabledChanged for nodeControls['${controlName}']`, nodeControls, isChecked)
+  // console.log(`checkEnabledChanged for nodeControls['${controlName}']`, nodeControls, isChecked)
 
   nodeControls[controlName].enabled = isChecked
 
@@ -577,15 +637,15 @@ const checkEnabledChanged = function (controlName, isChecked) {
   createMasterChain()
 }
 const controlValueChanged = function (controlName, newValue) {
-  const control = nodeControls[controlName]
+  const nodeControl = nodeControls[controlName]
 
-  console.log(`nodeControls['${controlName}'] changed:`, nodeControls, newValue)
+  // console.log(`nodeControls['${controlName}'] changed:`, nodeControl, newValue)
 
   if (controlName == 'pitchBend') {
     const semitones = parseInt(newValue)
 
-    if (semitones <= control.max && semitones >= control.min) {
-      control.currentValue = semitones
+    if (semitones <= nodeControl.max && semitones >= nodeControl.min) {
+      nodeControl.currentValue = semitones
       pitchBendRange = parseInt(semitones)
 
       kbSettings.value.controls.pitchBend = semitones
@@ -593,26 +653,39 @@ const controlValueChanged = function (controlName, newValue) {
       _saveToLocalStorage()
     }
   }
-  // otherwise, it's a gain modifier, most likely
-  else if (control && control.audioNode[control.parameter]) {
-    // console.log('control.parameter', control.parameter)
-    // console.log('control.audioNode', control.audioNode)
-    // console.log('control.audioNode[control.parameter]', control.audioNode[control.parameter])
+  else if (nodeControl.parameter == 'adsr') {
+    const newFloatValue = parseFloat(newValue).toFixed(1)
 
-    if (control.type == 'range') {
-      if (newValue <= parseFloat(control.max) && newValue >= parseFloat(control.min)) {
-        control.currentValue = parseFloat(newValue).toFixed(1)
-        control.audioNode[control.parameter].setValueAtTime(
-          control.currentValue,
+    if (newFloatValue <= nodeControl.max && newFloatValue >= nodeControl.min) {
+      nodeControl.currentValue = newFloatValue
+
+      adsr[controlName] = parseFloat(newValue).toFixed(1)
+
+      kbSettings.value.controls[controlName] = parseFloat(newValue).toFixed(1)
+
+      _saveToLocalStorage()
+    }
+  }
+  // otherwise, it's a gain modifier, most likely
+  else if (nodeControl && nodeControl.audioNode[nodeControl.parameter]) {
+    // console.log('nodeControl.parameter', nodeControl.parameter)
+    // console.log('nodeControl.audioNode', nodeControl.audioNode)
+    // console.log('nodeControl.audioNode[nodeControl.parameter]', nodeControl.audioNode[nodeControl.parameter])
+
+    if (nodeControl.type == 'range') {
+      if (newValue <= parseFloat(nodeControl.max) && newValue >= parseFloat(nodeControl.min)) {
+        nodeControl.currentValue = parseFloat(newValue).toFixed(1)
+        nodeControl.audioNode[nodeControl.parameter].setValueAtTime(
+          nodeControl.currentValue,
           audioContext.currentTime
         )
 
         kbSettings.value.controls[controlName] = parseFloat(newValue).toFixed(1)
       }
     } else {
-      control.currentValue = parseFloat(newValue).toFixed(1)
-      control.audioNode[control.parameter].setValueAtTime(
-        control.currentValue,
+      nodeControl.currentValue = parseFloat(newValue).toFixed(1)
+      nodeControl.audioNode[control.parameter].setValueAtTime(
+        nodeControl.currentValue,
         audioContext.currentTime
       )
 
@@ -676,21 +749,21 @@ const selectOptionChanged = function (controlName, newValue) {
 }
 
 const controlIncreaseValue = function(controlKey) {
-  controlValueChanged(
-    controlKey,
+  // console.log(`controlIncreaseValue(${controlKey})`)
+
+  controlValueChanged(controlKey,
     (parseFloat(
       nodeControls[controlKey].currentValue) + parseFloat(nodeControls[controlKey].step
-    ))
-    .toFixed(1)
+    )).toFixed(1)
   )
 }
 const controlDecreaseValue = function(controlKey) {
-  controlValueChanged(
-    controlKey,
+  // console.log(`controlDecreaseValue(${controlKey})`)
+
+  controlValueChanged(controlKey,
     (parseFloat(
       nodeControls[controlKey].currentValue) - parseFloat(nodeControls[controlKey].step
-    ))
-    .toFixed(1)
+    )).toFixed(1)
   )
 }
 
@@ -720,8 +793,11 @@ const noteStart = function (noteNum, velocity = 64) {
   startTime = audioContext.currentTime
 
   // set note's volume envelope
+  // const envelope = adsr.clone()
   const envelope = adsr.clone()
   envelope.peakLevel = (velocity / 127) * parseFloat(nodeControls.masterGain.currentValue)
+
+  console.log('noteStart envelope', envelope.attackTime, envelope.decayTime, envelope.sustainLevel, envelope.releaseTime)
 
   switch (nodeControls.outputType.currentValue) {
     // use sfumato
@@ -1362,7 +1438,7 @@ const _initVisualizer = () => {
 
   // make canvas take up limited box size
   canvas.width = 640
-  canvas.height = 100
+  canvas.height = 80
 
   // make initial line
   c.fillStyle = "#f8f8f8"
@@ -1384,9 +1460,11 @@ const _initVisualizer = () => {
 
     if (currentNotes.value.length) {
       for (let i = 1; i < analyzerNode.frequencyBinCount; i += 1) {
+        let m = 128.0
         let x = i * segmentWidth
-        let v = dataArray[i] / 128.0
+        let v = dataArray[i] / m
         let y = (v * canvas.height) / 2
+
         c.lineTo(x, y)
       }
     }
@@ -1739,6 +1817,9 @@ onMounted(() => {
       margin-right: 8px;
       padding-top: 0;
     }
+      #synth-controls-container fieldset.control-column#pan {
+        min-height: 132px;
+      }
       #synth-controls-container fieldset.control-column:last-child {
         margin-right: 0;
       }
@@ -1764,7 +1845,7 @@ onMounted(() => {
     width: auto;
   }
     #visualizer {
-      height: 80px;
+      height: 100px;
     }
 }
 </style>
