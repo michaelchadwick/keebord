@@ -468,11 +468,17 @@ let wafPlayer = null
 const audioContext = new (window.AudioContext || window.webkitAudioContext)()
 
 const adsr = new ADSREnvelope({
+  // how long from silence to peakLevel
   attackTime: parseFloat(nodeControls.attackTime.currentValue).toFixed(1) || 0.1,
+  // how long from peakLevel to sustainLevel
   decayTime: parseFloat(nodeControls.decayTime.currentValue).toFixed(1) || 0.5,
+  // how loud to keep it once sustaining
   sustainLevel: parseFloat(nodeControls.sustainLevel.currentValue).toFixed(1) || 0.1,
+  // how long to go from sustainLevel to silence
   releaseTime: parseFloat(nodeControls.releaseTime.currentValue).toFixed(1) || 0.5,
-  gateTime: 1,
+  // how long to keep it at sustainLevel (dynamic due to player)
+  gateTime: Infinity,
+  // how loud should sound be (dynamic due to player)
   peakLevel: 0.5,
   attackCurve: 'exp',
   decayCurve: 'exp',
@@ -793,16 +799,16 @@ const noteStart = function (noteNum, velocity = 64) {
   startTime = audioContext.currentTime
 
   // set note's volume envelope
-  // const envelope = adsr.clone()
   const envelope = adsr.clone()
   envelope.peakLevel = (velocity / 127) * parseFloat(nodeControls.masterGain.currentValue)
 
-  console.log('noteStart envelope', envelope.attackTime, envelope.decayTime, envelope.sustainLevel, envelope.releaseTime)
+  // console.log('noteStart env:', envelope)
+  // console.log(`A ${envelope.attackTime} / D ${envelope.decayTime} / S ${ envelope.sustainLevel} / R ${envelope.releaseTime}`)
 
   switch (nodeControls.outputType.currentValue) {
     // use sfumato
     case 'sf2':
-      // console.log(`sf2Notes[${noteNum}] noteStart`)
+      // console.log(`sf2Notes[${noteNum}] noteStart`, sf2Notes[noteNum])
 
       createSF2Node(noteNum, startTime)
 
@@ -844,9 +850,12 @@ const noteStop = function (noteNum, velocity = 64) {
   switch (nodeControls.outputType.currentValue) {
     case 'sf2':
       if (sf2Notes[noteNum]) {
-        // console.log(`sf2Notes[${noteNum}] noteStop`)
+        // console.log(`sf2Notes[${noteNum}] noteStop`, sf2Notes[noteNum])
 
-        // sf2Notes[noteNum].stopHandle()
+        // this below looks crazy, but it just runs a function stored at that index
+        sf2Notes[noteNum]()
+
+        // need to remove it from the array so currentNotes updates properly
         sf2Notes[noteNum] = null
         delete sf2Notes[noteNum]
       }
@@ -962,7 +971,7 @@ const createOscNode = function (noteNum, startTime, envelope) {
     oscNode.frequency.value = parseFloat(noteFreq)
 
     // create oscillator gain
-    var gainNode = audioContext.createGain()
+    const gainNode = audioContext.createGain()
     gainNode.gain.value = nodeControls.masterGain.currentValue
 
     // apply ADSR to gain
@@ -982,7 +991,7 @@ const createOscNode = function (noteNum, startTime, envelope) {
     // console.log('osc start', oscNotes)
 
     oscNotes[noteNum][0].onended = function () {
-      // console.log(`oscNotes[${noteNum}] ended`)
+      console.log(`oscNotes[${noteNum}] ended`)
 
       // if (oscNotes[noteNum] &&
       //   oscNotes[noteNum][1] &&
@@ -1001,14 +1010,11 @@ const createOscNode = function (noteNum, startTime, envelope) {
 }
 const createSF2Node = function (noteNum, startTime) {
   const curPresetValue = nodeControls.sf2Preset.currentValue
-
-  console.log('curPresetValue', curPresetValue)
-
-  console.log('sf2Presets', sf2Presets)
-
   const presetObj = sf2Presets.value.filter(preset => preset.header.name == curPresetValue)[0]
 
-  console.log('presetObj', presetObj)
+  // console.log('curPresetValue', curPresetValue)
+  // console.log('sf2Presets', sf2Presets)
+  // console.log('presetObj', presetObj)
 
   const stopHandle = startPresetNote(
     audioContext,
@@ -1018,6 +1024,8 @@ const createSF2Node = function (noteNum, startTime) {
   )
 
   sf2Notes[noteNum] = stopHandle
+
+  // console.log('sf2Notes', sf2Notes)
 }
 const createWafNode = function (noteNum, startTime) {
   const wafTone = nodeControls.wafSource.currentValue
@@ -1451,6 +1459,8 @@ const _initVisualizer = () => {
 
   // define function to update canvas
   const drawToCanvas = function () {
+    requestAnimationFrame(drawToCanvas)
+
     analyzerNode.getByteTimeDomainData(dataArray)
     segmentWidth = canvas.width / analyzerNode.frequencyBinCount
 
@@ -1471,7 +1481,6 @@ const _initVisualizer = () => {
 
     c.lineTo(canvas.width + 100, canvas.height / 2)
     c.stroke()
-    requestAnimationFrame(drawToCanvas)
   }
 
   drawToCanvas()
