@@ -752,11 +752,10 @@ onMounted(() => {
   align-items: center;
   display: flex;
   flex-direction: column;
-  height: 60px;
+  height: 90px;
   margin: 5px 0;
-  overflow-y: auto;
 }
-  @media (min-width: 667px) {
+  @media (min-width: 768px) {
     #other-controls-container {
       flex-direction: row;
       height: 40px;
@@ -787,7 +786,7 @@ onMounted(() => {
     margin-right: 0.2em;
     min-width: 20px;
   }
-    @media (min-width: 667px) {
+    @media (min-width: 768px) {
       #other-controls-container fieldset {
         border-bottom-left-radius: 0;
         border-top-left-radius: 0;
@@ -811,7 +810,7 @@ onMounted(() => {
       padding: 0 5px;
       text-transform: uppercase;
     }
-    @media (min-width: 667px) {
+    @media (min-width: 768px) {
       #other-controls-container label.fieldset-label {
         align-items: center;
         display: flex;
