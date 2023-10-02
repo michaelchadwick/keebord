@@ -23,6 +23,10 @@
 
   --green-flat: #3eb67c;
   --green-flat-active: #2c9d4e;
+
+  --group-adsr: #dcffe3;
+  --group-filters: #e0dcff;
+  --group-output: #ffdcf8;
 }
 
 /* default theme: light */

@@ -151,284 +151,102 @@ const wafNotes = reactive([])
 // holds current notes being played; for chord recognition
 const currentNotes = ref([])
 
-const nodeControls = reactive({
-  outputType: {
-    title: 'Output Type',
-    type: 'select',
-    selectId: 'output-type',
-    options: [
-      { text: 'Oscillator', value: 'osc' },
-      { text: 'Soundfont', value: 'sf2' },
-      { text: 'WebAudioFont', value: 'waf' }
-    ],
-    currentValue: kbSettings.value.controls.outputType,
-    audioNode: '',
-    parameter: 'type',
-    visible: true,
-    enabled: true,
-    isVertical: true
-  },
-  oscType: {
-    title: 'Osc Type',
-    type: 'select',
-    selectId: 'osc-type',
-    options: [
-      { text: 'Sine', value: 'sine' },
-      { text: 'Sawtooth', value: 'sawtooth' },
-      { text: 'Square', value: 'square' },
-      { text: 'Triangle', value: 'triangle' }
-    ],
-    currentValue: kbSettings.value.controls.oscType,
-    audioNode: '',
-    parameter: 'type',
-    visible: true,
-    enabled: true,
-    isVertical: false
-  },
-  sf2Source: {
-    title: 'SF2 Source',
-    type: 'select',
-    selectId: 'sf2-source',
-    options: [
-      { text: 'Default', value: '_default' },
-      { text: 'Donkey Kong Country', value: 'donkey_kong_country' },
-      { text: 'Earthbound', value: 'earthbound' },
-      { text: 'Super Mario World', value: 'super_mario_world' },
-      { text: 'Vintage Dreams', value: 'vintage_dreams_waves_v2' }
-    ],
-    currentValue: kbSettings.value.controls.sf2Source,
-    audioNode: '',
-    parameter: 'type',
-    visible: false,
-    enabled: false,
-    isVertical: false
-  },
-  sf2Preset: {
-    title: 'SF2 Instrument',
-    type: 'select',
-    selectId: 'sf2-preset',
-    options: sf2Presets.value,
-    currentValue: kbSettings.value.controls.sf2Preset,
-    audioNode: '',
-    parameter: 'type',
-    visible: false,
-    enabled: false,
-    isVertical: false
-  },
-  wafSource: {
-    title: 'WAF Source',
-    type: 'select',
-    selectId: 'waf-source',
-    options: [
-      { text: 'Aspirin', value: '_tone_0000_Aspirin_sf2' },
-      { text: 'SoundBlasterOld', value: '_tone_0250_SoundBlasterOld_sf2' }
-    ],
-    currentValue: kbSettings.value.controls.wafSource,
-    audioNode: '',
-    parameter: 'type',
-    visible: false,
-    enabled: false,
-    isVertical: false
-  },
-  pan: {
-    title: 'Pan',
-    type: 'range',
-    numberInputId: 'eq-pan-value',
-    rangeInputId: 'eq-pan-range',
-    currentValue: kbSettings.value.controls.pan,
-    audioNode: '',
-    step: '0.1',
-    min: '-1.0',
-    max: '1.0',
-    parameter: 'pan',
-    visible: true,
-    enabled: true,
-    isVertical: false
-  },
-  attackTime: {
-    title: 'Attack',
-    type: 'range',
-    numberInputId: 'eq-attack-value',
-    rangeInputId: 'eq-attack-range',
-    currentValue: kbSettings.value.controls.attackTime,
-    audioNode: '',
-    step: '0.1',
-    min: '0.0',
-    max: '5.0',
-    parameter: 'adsr',
-    visible: true,
-    enabled: true,
-    isVertical: true
-  },
-  decayTime: {
-    title: 'Decay',
-    type: 'range',
-    numberInputId: 'eq-decay-value',
-    rangeInputId: 'eq-decay-range',
-    currentValue: kbSettings.value.controls.decayTime,
-    audioNode: '',
-    step: '0.1',
-    min: '0.0',
-    max: '5.0',
-    parameter: 'adsr',
-    visible: true,
-    enabled: true,
-    isVertical: true
-  },
-  sustainLevel: {
-    title: 'Sustain',
-    type: 'range',
-    numberInputId: 'eq-sustain-value',
-    rangeInputId: 'eq-sustain-range',
-    currentValue: kbSettings.value.controls.sustainLevel,
-    audioNode: '',
-    step: '0.1',
-    min: '0.0',
-    max: '5.0',
-    parameter: 'adsr',
-    visible: true,
-    enabled: true,
-    isVertical: true
-  },
-  releaseTime: {
-    title: 'Release',
-    type: 'range',
-    numberInputId: 'eq-release-value',
-    rangeInputId: 'eq-release-range',
-    currentValue: kbSettings.value.controls.releaseTime,
-    audioNode: '',
-    step: '0.1',
-    min: '0.0',
-    max: '5.0',
-    parameter: 'adsr',
-    visible: true,
-    enabled: true,
-    isVertical: true
-  },
-  pitchBend: {
-    title: 'Pitch Bend',
-    type: 'range',
-    numberInputId: 'pitchbend-value',
-    rangeInputId: 'pitchbend-range',
-    currentValue: kbSettings.value.controls.pitchBend,
-    audioNode: '',
-    step: '1',
-    min: '1',
-    max: '12',
-    parameter: 'pitch',
-    visible: true,
-    enabled: true,
-    isVertical: true
-  },
-  // distortion: {
-  //   title: 'Distortion',
-  //   type: 'range',
-  //   controlEnabledCheckId: 'send-effect-distortion-check',
-  //   numberInputId: 'distortion-value',
-  //   rangeInputId: 'distortion-range',
-  //   currentValue: '0.0',
-  //   audioNode: '',
-  //   step: '0.1',
-  //   min: '0.0',
-  //   max: '1.0',
-  //   parameter: 'gain',
-  //   visible: true,
-  //   enabled: false,
-  //   isVertical: true
-  // },
-  // reverb: {
-  //   title: 'Reverb',
-  //   type: 'range',
-  //   controlEnabledCheckId: 'send-effect-reverb-check',
-  //   numberInputId: 'reverb-value',
-  //   rangeInputId: 'reverb-range',
-  //   currentValue: '0.8',
-  //   audioNode: '',
-  //   step: '0.1',
-  //   min: '0.0',
-  //   max: '1.0',
-  //   parameter: 'gain',
-  //   visible: true,
-  //   enabled: false,
-  //   isVertical: true
-  // },
-  delay: {
-    title: 'Delay',
-    type: 'range',
-    controlEnabledCheckId: 'send-effect-delay-check',
-    numberInputId: 'delay-value',
-    rangeInputId: 'delay-range',
-    currentValue: kbSettings.value.controls.delay,
-    audioNode: '',
-    step: '0.1',
-    min: '0.0',
-    max: '6.0',
-    parameter: 'delayTime',
-    visible: true,
-    enabled: kbSettings.value.controls.delayCheck,
-    isVertical: true
-  },
-  eqLow: {
-    title: 'EQ Low',
-    type: 'range',
-    numberInputId: 'eq-low-value',
-    rangeInputId: 'eq-low-range',
-    currentValue: kbSettings.value.controls.eqLow,
-    audioNode: '',
-    step: '0.1',
-    min: '0.0',
-    max: '1.0',
-    parameter: 'gain',
-    visible: true,
-    enabled: true,
-    isVertical: true
-  },
-  eqMid: {
-    title: 'EQ Mid',
-    type: 'range',
-    numberInputId: 'eq-mid-value',
-    rangeInputId: 'eq-mid-range',
-    currentValue: kbSettings.value.controls.eqMid,
-    audioNode: '',
-    step: '0.1',
-    min: '0.0',
-    max: '1.0',
-    parameter: 'gain',
-    visible: true,
-    enabled: true,
-    isVertical: true
-  },
-  eqHigh: {
-    title: 'EQ High',
-    type: 'range',
-    numberInputId: 'eq-high-value',
-    rangeInputId: 'eq-high-range',
-    currentValue: kbSettings.value.controls.eqHigh,
-    audioNode: '',
-    step: '0.1',
-    min: '0.0',
-    max: '1.0',
-    parameter: 'gain',
-    visible: true,
-    enabled: true,
-    isVertical: true
-  },
-  compressor: {
-    title: 'Compressor',
-    type: 'range',
-    numberInputId: 'eq-compressor-value',
-    rangeInputId: 'eq-compressor-range',
-    currentValue: kbSettings.value.controls.eqCompressor,
-    audioNode: '',
-    step: '1.0',
-    min: '1.0',
-    max: '20.0',
-    parameter: 'ratio',
-    visible: true,
-    enabled: true,
-    isVertical: true
-  },
-  masterGain: {
+const nodeGroups = reactive({
+  output: {
+    outputType: {
+      title: 'Output Type',
+      type: 'select',
+      selectId: 'output-type',
+      options: [
+        { text: 'Oscillator', value: 'osc' },
+        { text: 'Soundfont', value: 'sf2' },
+        { text: 'WebAudioFont', value: 'waf' }
+      ],
+      currentValue: kbSettings.value.controls.outputType,
+      audioNode: '',
+      parameter: 'type',
+      visible: true,
+      enabled: true,
+      isVertical: true
+    },
+    oscType: {
+      title: 'Osc Type',
+      type: 'select',
+      selectId: 'osc-type',
+      options: [
+        { text: 'Sine', value: 'sine' },
+        { text: 'Sawtooth', value: 'sawtooth' },
+        { text: 'Square', value: 'square' },
+        { text: 'Triangle', value: 'triangle' }
+      ],
+      currentValue: kbSettings.value.controls.oscType,
+      audioNode: '',
+      parameter: 'type',
+      visible: true,
+      enabled: true,
+      isVertical: false
+    },
+    sf2Source: {
+      title: 'SF2 Source',
+      type: 'select',
+      selectId: 'sf2-source',
+      options: [
+        { text: 'Default', value: '_default' },
+        { text: 'Donkey Kong Country', value: 'donkey_kong_country' },
+        { text: 'Earthbound', value: 'earthbound' },
+        { text: 'Super Mario World', value: 'super_mario_world' },
+        { text: 'Vintage Dreams', value: 'vintage_dreams_waves_v2' }
+      ],
+      currentValue: kbSettings.value.controls.sf2Source,
+      audioNode: '',
+      parameter: 'type',
+      visible: false,
+      enabled: false,
+      isVertical: false
+    },
+    sf2Preset: {
+      title: 'SF2 Instrument',
+      type: 'select',
+      selectId: 'sf2-preset',
+      options: sf2Presets.value,
+      currentValue: kbSettings.value.controls.sf2Preset,
+      audioNode: '',
+      parameter: 'type',
+      visible: false,
+      enabled: false,
+      isVertical: false
+    },
+    wafSource: {
+      title: 'WAF Source',
+      type: 'select',
+      selectId: 'waf-source',
+      options: [
+        { text: 'Aspirin', value: '_tone_0000_Aspirin_sf2' },
+        { text: 'SoundBlasterOld', value: '_tone_0250_SoundBlasterOld_sf2' }
+      ],
+      currentValue: kbSettings.value.controls.wafSource,
+      audioNode: '',
+      parameter: 'type',
+      visible: false,
+      enabled: false,
+      isVertical: false
+    },
+    pan: {
+      title: 'Pan',
+      type: 'range',
+      numberInputId: 'eq-pan-value',
+      rangeInputId: 'eq-pan-range',
+      currentValue: kbSettings.value.controls.pan,
+      audioNode: '',
+      step: '0.1',
+      min: '-1.0',
+      max: '1.0',
+      parameter: 'pan',
+      visible: true,
+      enabled: true,
+      isVertical: false
+    },
+    masterGain: {
     title: 'Volume',
     type: 'range',
     numberInputId: 'master-gain-value',
@@ -441,7 +259,195 @@ const nodeControls = reactive({
     parameter: 'gain',
     visible: true,
     enabled: true,
-    isVertical: true
+    isVertical: false
+    }
+  },
+  adsr: {
+    attackTime: {
+      title: 'Attack',
+      type: 'range',
+      numberInputId: 'eq-attack-value',
+      rangeInputId: 'eq-attack-range',
+      currentValue: kbSettings.value.controls.attackTime,
+      audioNode: '',
+      step: '0.1',
+      min: '0.0',
+      max: '5.0',
+      parameter: 'adsr',
+      visible: true,
+      enabled: true,
+      isVertical: false
+    },
+    decayTime: {
+      title: 'Decay',
+      type: 'range',
+      numberInputId: 'eq-decay-value',
+      rangeInputId: 'eq-decay-range',
+      currentValue: kbSettings.value.controls.decayTime,
+      audioNode: '',
+      step: '0.1',
+      min: '0.0',
+      max: '5.0',
+      parameter: 'adsr',
+      visible: true,
+      enabled: true,
+      isVertical: false
+    },
+    sustainLevel: {
+      title: 'Sustain',
+      type: 'range',
+      numberInputId: 'eq-sustain-value',
+      rangeInputId: 'eq-sustain-range',
+      currentValue: kbSettings.value.controls.sustainLevel,
+      audioNode: '',
+      step: '0.1',
+      min: '0.0',
+      max: '1.0',
+      parameter: 'adsr',
+      visible: true,
+      enabled: true,
+      isVertical: false
+    },
+    releaseTime: {
+      title: 'Release',
+      type: 'range',
+      numberInputId: 'eq-release-value',
+      rangeInputId: 'eq-release-range',
+      currentValue: kbSettings.value.controls.releaseTime,
+      audioNode: '',
+      step: '0.1',
+      min: '0.0',
+      max: '5.0',
+      parameter: 'adsr',
+      visible: true,
+      enabled: true,
+      isVertical: false
+    }
+  },
+  filters: {
+    eqLow: {
+        title: 'EQ Low',
+        type: 'range',
+        numberInputId: 'eq-low-value',
+        rangeInputId: 'eq-low-range',
+        currentValue: kbSettings.value.controls.eqLow,
+        audioNode: '',
+        step: '0.1',
+        min: '0.0',
+        max: '1.0',
+        parameter: 'gain',
+        visible: true,
+        enabled: true,
+        isVertical: true
+    },
+    eqMid: {
+      title: 'EQ Mid',
+      type: 'range',
+      numberInputId: 'eq-mid-value',
+      rangeInputId: 'eq-mid-range',
+      currentValue: kbSettings.value.controls.eqMid,
+      audioNode: '',
+      step: '0.1',
+      min: '0.0',
+      max: '1.0',
+      parameter: 'gain',
+      visible: true,
+      enabled: true,
+      isVertical: true
+    },
+    eqHigh: {
+      title: 'EQ High',
+      type: 'range',
+      numberInputId: 'eq-high-value',
+      rangeInputId: 'eq-high-range',
+      currentValue: kbSettings.value.controls.eqHigh,
+      audioNode: '',
+      step: '0.1',
+      min: '0.0',
+      max: '1.0',
+      parameter: 'gain',
+      visible: true,
+      enabled: true,
+      isVertical: true
+    },
+    compressor: {
+      title: 'Compressor',
+      type: 'range',
+      numberInputId: 'eq-compressor-value',
+      rangeInputId: 'eq-compressor-range',
+      currentValue: kbSettings.value.controls.eqCompressor,
+      audioNode: '',
+      step: '1.0',
+      min: '1.0',
+      max: '20.0',
+      parameter: 'ratio',
+      visible: true,
+      enabled: true,
+      isVertical: true
+    },
+    pitchBend: {
+      title: 'Pitch Bend',
+      type: 'range',
+      numberInputId: 'pitchbend-value',
+      rangeInputId: 'pitchbend-range',
+      currentValue: kbSettings.value.controls.pitchBend,
+      audioNode: '',
+      step: '1',
+      min: '1',
+      max: '12',
+      parameter: 'pitch',
+      visible: true,
+      enabled: true,
+      isVertical: true
+    },
+    // distortion: {
+    //   title: 'Distortion',
+    //   type: 'range',
+    //   controlEnabledCheckId: 'send-effect-distortion-check',
+    //   numberInputId: 'distortion-value',
+    //   rangeInputId: 'distortion-range',
+    //   currentValue: '0.0',
+    //   audioNode: '',
+    //   step: '0.1',
+    //   min: '0.0',
+    //   max: '1.0',
+    //   parameter: 'gain',
+    //   visible: true,
+    //   enabled: false,
+    //   isVertical: true
+    // },
+    // reverb: {
+    //   title: 'Reverb',
+    //   type: 'range',
+    //   controlEnabledCheckId: 'send-effect-reverb-check',
+    //   numberInputId: 'reverb-value',
+    //   rangeInputId: 'reverb-range',
+    //   currentValue: '0.8',
+    //   audioNode: '',
+    //   step: '0.1',
+    //   min: '0.0',
+    //   max: '1.0',
+    //   parameter: 'gain',
+    //   visible: true,
+    //   enabled: false,
+    //   isVertical: true
+    // }
+    delay: {
+      title: 'Delay',
+      type: 'range',
+      controlEnabledCheckId: 'send-effect-delay-check',
+      numberInputId: 'delay-value',
+      rangeInputId: 'delay-range',
+      currentValue: kbSettings.value.controls.delay,
+      audioNode: '',
+      step: '0.1',
+      min: '0.0',
+      max: '6.0',
+      parameter: 'delayTime',
+      visible: true,
+      enabled: kbSettings.value.controls.delayCheck,
+      isVertical: true
+    }
   }
 })
 
@@ -471,13 +477,13 @@ const audioContext = new (window.AudioContext || window.webkitAudioContext)()
 
 const adsr = new ADSREnvelope({
   // how long from silence to peakLevel
-  attackTime: parseFloat(nodeControls.attackTime.currentValue).toFixed(1) || 0.1,
+  attackTime: parseFloat(nodeGroups.adsr.attackTime.currentValue).toFixed(1) || 0.1,
   // how long from peakLevel to sustainLevel
-  decayTime: parseFloat(nodeControls.decayTime.currentValue).toFixed(1) || 0.5,
+  decayTime: parseFloat(nodeGroups.adsr.decayTime.currentValue).toFixed(1) || 0.5,
   // how loud to keep it once sustaining
-  sustainLevel: parseFloat(nodeControls.sustainLevel.currentValue).toFixed(1) || 0.1,
+  sustainLevel: parseFloat(nodeGroups.adsr.sustainLevel.currentValue).toFixed(1) || 0.1,
   // how long to go from sustainLevel to silence
-  releaseTime: parseFloat(nodeControls.releaseTime.currentValue).toFixed(1) || 0.5,
+  releaseTime: parseFloat(nodeGroups.adsr.releaseTime.currentValue).toFixed(1) || 0.5,
   // how long to keep it at sustainLevel (dynamic due to player)
   gateTime: Infinity,
   // how loud should sound be (dynamic due to player)
@@ -492,10 +498,10 @@ const analyzerNode = new AnalyserNode(audioContext, {
 })
 
 const masterGainNode = audioContext.createGain()
-masterGainNode.gain.value = parseFloat(nodeControls.masterGain.currentValue)
+masterGainNode.gain.value = parseFloat(nodeGroups.output.masterGain.currentValue)
 
-nodeControls.masterGain.audioNode = audioContext.createGain()
-nodeControls.masterGain.audioNode.gain.value = parseFloat(nodeControls.masterGain.currentValue)
+nodeGroups.output.masterGain.audioNode = audioContext.createGain()
+nodeGroups.output.masterGain.audioNode.gain.value = parseFloat(nodeGroups.output.masterGain.currentValue)
 
 const destinationMaster = audioContext.destination
 
@@ -508,41 +514,41 @@ const createSendChain = function () {
   // masterGain->distortion
   // const distortionNode = createDistNode('4x')
 
-  // nodeControls.distortion.audioNode = distortionNode
-  // nodeControls.masterGain.audioNode.connect(nodeControls.distortion.audioNode)
+  // nodeGroups.filters.distortion.audioNode = distortionNode
+  // nodeGroups.output.masterGain.audioNode.connect(nodeGroups.filters.distortion.audioNode)
 
   // TODO: distortion->reverb
   // const reverbNode = createReverbNode()
 
   // delay
   // masterGain->delay->eqLow
-  if (nodeControls.delay.enabled !== false && !nodeControls.delay.audioNode) {
-    const delayNode = createDelayNode(nodeControls.delay.max)
-    nodeControls.delay.audioNode = delayNode
+  if (nodeGroups.filters.delay.enabled !== false && !nodeGroups.filters.delay.audioNode) {
+    const delayNode = createDelayNode(nodeGroups.filters.delay.max)
+    nodeGroups.filters.delay.audioNode = delayNode
 
     const delayGainNode = audioContext.createGain()
-    delayGainNode.gain.value = (parseFloat(nodeControls.masterGain.currentValue) * 0.75).toFixed(1)
+    delayGainNode.gain.value = (parseFloat(nodeGroups.output.masterGain.currentValue) * 0.75).toFixed(1)
 
     // TODO: distortion
-    // nodeControls.distortion.audioNode.connect(delayGainNode)
-    nodeControls.masterGain.audioNode.connect(delayGainNode)
-    delayGainNode.connect(nodeControls.delay.audioNode)
+    // nodeGroups.filters.distortion.audioNode.connect(delayGainNode)
+    nodeGroups.output.masterGain.audioNode.connect(delayGainNode)
+    delayGainNode.connect(nodeGroups.filters.delay.audioNode)
 
-    nodeControls.delay.audioNode.connect(nodeControls.eqLow.audioNode)
+    nodeGroups.filters.delay.audioNode.connect(nodeGroups.filters.eqLow.audioNode)
   }
   // masterGain->eqLow
-  else if (nodeControls.delay.audioNode && !nodeControls.delay.enabled) {
-    nodeControls.delay.audioNode.disconnect()
+  else if (nodeGroups.filters.delay.audioNode && !nodeGroups.filters.delay.enabled) {
+    nodeGroups.filters.delay.audioNode.disconnect()
 
     // TODO: distortion
-    // nodeControls.distortion.audioNode.connect(nodeControls.eqLow.audioNode)
-    nodeControls.masterGain.audioNode.connect(nodeControls.eqLow.audioNode)
+    // nodeGroups.filters.distortion.audioNode.connect(nodeGroups.filters.eqLow.audioNode)
+    nodeGroups.output.masterGain.audioNode.connect(nodeGroups.filters.eqLow.audioNode)
   }
   // masterGain->eqLow
   else {
     // TODO: distortion
-    // nodeControls.distortion.audioNode.connect(nodeControls.eqLow.audioNode)
-    nodeControls.masterGain.audioNode.connect(nodeControls.eqLow.audioNode)
+    // nodeGroups.filters.distortion.audioNode.connect(nodeGroups.filters.eqLow.audioNode)
+    nodeGroups.output.masterGain.audioNode.connect(nodeGroups.filters.eqLow.audioNode)
   }
 }
 // creates a connection of nodes
@@ -551,29 +557,29 @@ const createMasterChain = function () {
   // console.log('creating master chain')
 
   // 3-band EQ
-  nodeControls.eqLow.audioNode = createEQNode('lowshelf', 35, 0, 0.5)
-  nodeControls.eqMid.audioNode = createEQNode('peaking', 440, 0, 0)
-  nodeControls.eqHigh.audioNode = createEQNode('highshelf', 4700, 0, 0.5)
+  nodeGroups.filters.eqLow.audioNode = createEQNode('lowshelf', 35, 0, 0.5)
+  nodeGroups.filters.eqMid.audioNode = createEQNode('peaking', 440, 0, 0)
+  nodeGroups.filters.eqHigh.audioNode = createEQNode('highshelf', 4700, 0, 0.5)
 
   // compressor
-  nodeControls.compressor.audioNode = createCompNode(-50, 40, nodeControls.compressor.currentValue, 0, 0.25)
+  nodeGroups.filters.compressor.audioNode = createCompNode(-50, 40, nodeGroups.filters.compressor.currentValue, 0, 0.25)
 
   // eqLow->eqMid->eqHigh->compressor
-  nodeControls.eqLow.audioNode.connect(nodeControls.eqMid.audioNode)
-  nodeControls.eqMid.audioNode.connect(nodeControls.eqHigh.audioNode)
-  nodeControls.eqHigh.audioNode.connect(nodeControls.compressor.audioNode)
+  nodeGroups.filters.eqLow.audioNode.connect(nodeGroups.filters.eqMid.audioNode)
+  nodeGroups.filters.eqMid.audioNode.connect(nodeGroups.filters.eqHigh.audioNode)
+  nodeGroups.filters.eqHigh.audioNode.connect(nodeGroups.filters.compressor.audioNode)
 
   // if panning, then compressor->pan->destination
-  if (audioContext.createStereoPanner && nodeControls.pan) {
-    nodeControls.pan.audioNode = createPanNode(0)
+  if (audioContext.createStereoPanner && nodeGroups.output.pan) {
+    nodeGroups.output.pan.audioNode = createPanNode(0)
 
-    nodeControls.compressor.audioNode.connect(nodeControls.pan.audioNode)
-    nodeControls.pan.audioNode.connect(analyzerNode)
+    nodeGroups.filters.compressor.audioNode.connect(nodeGroups.output.pan.audioNode)
+    nodeGroups.output.pan.audioNode.connect(analyzerNode)
     analyzerNode.connect(destinationMaster)
   }
   // if no panning, compressor->destination
   else {
-    nodeControls.compressor.audioNode.connect(analyzerNode)
+    nodeGroups.filters.compressor.audioNode.connect(analyzerNode)
     analyzerNode.connect(destinationMaster)
   }
 }
@@ -584,7 +590,7 @@ const createDistNode = (oversample) => {
   const audioNode = audioContext.createWaveShaper()
 
   // 0-100 optimal
-  audioNode.curve = _makeDistortionCurve(nodeControls.distortion.currentValue * 100)
+  audioNode.curve = _makeDistortionCurve(nodeGroups.filters.distortion.currentValue * 100)
   audioNode.oversample = oversample
 
   return audioNode
@@ -597,7 +603,7 @@ const createReverbNode = () => {
 const createDelayNode = (max) => {
   const audioNode = audioContext.createDelay(max)
 
-  audioNode.delayTime.setValueAtTime(nodeControls.delay.currentValue, audioContext.currentTime)
+  audioNode.delayTime.setValueAtTime(nodeGroups.filters.delay.currentValue, audioContext.currentTime)
 
   return audioNode
 }
@@ -630,10 +636,10 @@ const createPanNode = (value) => {
   return audioNode
 }
 
-const checkEnabledChanged = function (controlName, isChecked) {
-  // console.log(`checkEnabledChanged for nodeControls['${controlName}']`, nodeControls, isChecked)
+const checkEnabledChanged = function (controlGroup, controlName, isChecked) {
+  console.log(`checkEnabledChanged for nodeGroups['${controlGroup}']['${controlName}']`, isChecked)
 
-  nodeControls[controlName].enabled = isChecked
+  nodeGroups[controlGroup][controlName].enabled = isChecked
 
   kbSettings.value.controls.delayCheck = isChecked
 
@@ -643,10 +649,10 @@ const checkEnabledChanged = function (controlName, isChecked) {
   createSendChain()
   createMasterChain()
 }
-const controlValueChanged = function (controlName, newValue) {
-  const nodeControl = nodeControls[controlName]
+const controlValueChanged = function (controlGroup, controlName, newValue) {
+  const nodeControl = nodeGroups[controlGroup][controlName]
 
-  // console.log(`nodeControls['${controlName}'] changed:`, nodeControl, newValue)
+  console.log(`nodeGroups['${controlGroup}']['${controlName}'] changed:`, controlGroup, controlName, newValue)
 
   if (controlName == 'pitchBend') {
     const semitones = parseInt(newValue)
@@ -701,16 +707,16 @@ const controlValueChanged = function (controlName, newValue) {
 
     _saveToLocalStorage()
   } else {
-    console.error(`nodeControls['${controlName}'] not found, value could not be updated.`)
+    console.error(`nodeGrouos['${controlGroup}']['${controlName}'] not found, value could not be updated.`)
   }
 }
-const selectOptionChanged = function (controlName, newValue) {
-  // console.log('selectOptionChanged', controlName, newValue)
+const selectOptionChanged = function (controlGroup, controlName, newValue) {
+  console.log('selectOptionChanged', controlGroup, controlName, newValue)
 
-  const control = nodeControls[controlName]
+  const control = nodeGroups[controlGroup][controlName]
 
   if (control) {
-    nodeControls[controlName].currentValue = newValue
+    nodeGroups[controlGroup][controlName].currentValue = newValue
 
     switch (controlName) {
       case 'oscType':
@@ -755,21 +761,25 @@ const selectOptionChanged = function (controlName, newValue) {
   }
 }
 
-const controlIncreaseValue = function(controlKey) {
-  // console.log(`controlIncreaseValue(${controlKey})`)
+const controlIncreaseValue = function(controlGroup, controlKey) {
+  console.log(`controlIncreaseValue(${controlGroup},${controlKey})`)
 
-  controlValueChanged(controlKey,
+  controlValueChanged(
+    controlGroup,
+    controlKey,
     (parseFloat(
-      nodeControls[controlKey].currentValue) + parseFloat(nodeControls[controlKey].step
+      nodeGroups[controlGroup][controlKey].currentValue) + parseFloat(nodeGroups[controlGroup][controlKey].step
     )).toFixed(1)
   )
 }
-const controlDecreaseValue = function(controlKey) {
+const controlDecreaseValue = function(controlGroup, controlKey) {
   // console.log(`controlDecreaseValue(${controlKey})`)
 
-  controlValueChanged(controlKey,
+  controlValueChanged(
+    controlGroup,
+    controlKey,
     (parseFloat(
-      nodeControls[controlKey].currentValue) - parseFloat(nodeControls[controlKey].step
+      nodeGroups[controlGroup][controlKey].currentValue) - parseFloat(nodeGroups[controlGroup][controlKey].step
     )).toFixed(1)
   )
 }
@@ -801,12 +811,12 @@ const noteStart = function (noteNum, velocity = 64) {
 
   // set note's volume envelope
   const envelope = adsr.clone()
-  envelope.peakLevel = (velocity / 127) * parseFloat(nodeControls.masterGain.currentValue)
+  envelope.peakLevel = (velocity / 127) * parseFloat(nodeGroups.output.masterGain.currentValue)
 
   // console.log('noteStart env:', envelope)
   // console.log(`A ${envelope.attackTime} / D ${envelope.decayTime} / S ${ envelope.sustainLevel} / R ${envelope.releaseTime}`)
 
-  switch (nodeControls.outputType.currentValue) {
+  switch (nodeGroups.output.outputType.currentValue) {
     // use sfumato
     case 'sf2':
       // console.log(`sf2Notes[${noteNum}] noteStart`, sf2Notes[noteNum])
@@ -848,7 +858,7 @@ const noteStop = function (noteNum, velocity = 64) {
   const playbackTime = audioContext.currentTime
 
   // if the note being stopped is in the array of notes, kill it
-  switch (nodeControls.outputType.currentValue) {
+  switch (nodeGroups.output.outputType.currentValue) {
     case 'sf2':
       if (sf2Notes[noteNum]) {
         // console.log(`sf2Notes[${noteNum}] noteStop`, sf2Notes[noteNum])
@@ -890,7 +900,7 @@ const noteStop = function (noteNum, velocity = 64) {
 
         // set note's volume envelope
         const envelope = adsr.clone()
-        envelope.peakLevel = (velocity / 127) * parseFloat(nodeControls.masterGain.currentValue)
+        envelope.peakLevel = (velocity / 127) * parseFloat(nodeGroups.output.masterGain.currentValue)
         envelope.gateTime = playbackTime - startTime
         envelope.applyTo(oscNotes[noteNum][1].gain, startTime)
 
@@ -911,7 +921,7 @@ const noteStop = function (noteNum, velocity = 64) {
   }
 }
 const noteResetAll = () => {
-  switch (nodeControls.outputType.currentValue) {
+  switch (nodeGroups.output.outputType.currentValue) {
     case 'sf2':
       sf2Notes.map(noteNum => {
         sf2Notes[noteNum] = null
@@ -973,7 +983,7 @@ const createOscNode = function (noteNum, startTime, envelope) {
 
     // create oscillator gain
     const gainNode = audioContext.createGain()
-    gainNode.gain.value = nodeControls.masterGain.currentValue
+    gainNode.gain.value = nodeGroups.output.masterGain.currentValue
 
     // apply ADSR to gain
     envelope.gateTime = Infinity
@@ -981,7 +991,7 @@ const createOscNode = function (noteNum, startTime, envelope) {
 
     // connect oscillator to master gain node
     oscNode.connect(gainNode)
-    gainNode.connect(nodeControls.masterGain.audioNode)
+    gainNode.connect(nodeGroups.output.masterGain.audioNode)
 
     // add oscillator to list of oscNotes
     oscNotes[noteNum] = [oscNode, gainNode]
@@ -1010,7 +1020,7 @@ const createOscNode = function (noteNum, startTime, envelope) {
   }
 }
 const createSF2Node = function (noteNum, startTime) {
-  const curPresetValue = nodeControls.sf2Preset.currentValue
+  const curPresetValue = nodeGroups.output.sf2Preset.currentValue
   const presetObj = sf2Presets.value.filter(preset => preset.header.name == curPresetValue)[0]
 
   // console.log('curPresetValue', curPresetValue)
@@ -1029,15 +1039,15 @@ const createSF2Node = function (noteNum, startTime) {
   // console.log('sf2Notes', sf2Notes)
 }
 const createWafNode = function (noteNum, startTime) {
-  const wafTone = nodeControls.wafSource.currentValue
+  const wafTone = nodeGroups.output.wafSource.currentValue
   // get _tone_####_Name_sf2 object from string
   const wafToneObj = eval(wafTone)
 
   wafPlayer.loader.decodeAfterLoading(audioContext, wafToneObj)
 
   const wafDuration = adsr.attackTime + adsr.decayTime
-  const wafGain = nodeControls.masterGain.currentValue
-  const wafDestination = nodeControls.masterGain.audioNode
+  const wafGain = nodeGroups.output.masterGain.currentValue
+  const wafDestination = nodeGroups.output.masterGain.audioNode
 
   const wafEnvelope = wafPlayer.queueWaveTable(
     audioContext,       // AudioContext
@@ -1441,16 +1451,16 @@ const updateOutputTypeHandler = (type) => {
       break
 
     default:
-      nodeControls.oscType.enabled = true
-      nodeControls.oscType.visible = true
+      nodeGroups.output.oscType.enabled = true
+      nodeGroups.output.oscType.visible = true
 
-      nodeControls.sf2Source.enabled = false
-      nodeControls.sf2Source.visible = false
-      nodeControls.sf2Preset.enabled = false
-      nodeControls.sf2Preset.visible = false
+      nodeGroups.output.sf2Source.enabled = false
+      nodeGroups.output.sf2Source.visible = false
+      nodeGroups.output.sf2Preset.enabled = false
+      nodeGroups.output.sf2Preset.visible = false
 
-      nodeControls.wafSource.enabled = false
-      nodeControls.wafSource.visible = false
+      nodeGroups.output.wafSource.enabled = false
+      nodeGroups.output.wafSource.visible = false
 
       break
   }
@@ -1560,18 +1570,18 @@ const _initVisualizer = () => {
   }
 }
 const _initSF2 = () => {
-  nodeControls.oscType.enabled = false
-  nodeControls.oscType.visible = false
+  nodeGroups.output.oscType.enabled = false
+  nodeGroups.output.oscType.visible = false
 
-  nodeControls.sf2Source.enabled = true
-  nodeControls.sf2Source.visible = true
-  nodeControls.sf2Preset.enabled = true
-  nodeControls.sf2Preset.visible = true
+  nodeGroups.output.sf2Source.enabled = true
+  nodeGroups.output.sf2Source.visible = true
+  nodeGroups.output.sf2Preset.enabled = true
+  nodeGroups.output.sf2Preset.visible = true
 
-  nodeControls.wafSource.enabled = false
-  nodeControls.wafSource.visible = false
+  nodeGroups.output.wafSource.enabled = false
+  nodeGroups.output.wafSource.visible = false
 
-  loadSoundfont(`/assets/sf2/${nodeControls.sf2Source.currentValue}.sf2`).then((player) => {
+  loadSoundfont(`/assets/sf2/${nodeGroups.output.sf2Source.currentValue}.sf2`).then((player) => {
     // console.log('sf2Player', player)
 
     // load SF2 Preset dropdown
@@ -1582,31 +1592,31 @@ const _initSF2 = () => {
       value: preset.header.name
     }))
 
-    nodeControls.sf2Preset.options = options
+    nodeGroups.output.sf2Preset.options = options
 
     if (Object.values(options).find(preset => preset.text == kbSettings.value.controls.sf2Preset)) {
-      nodeControls.sf2Preset.currentValue = kbSettings.value.controls.sf2Preset
+      nodeGroups.output.sf2Preset.currentValue = kbSettings.value.controls.sf2Preset
     } else {
-      nodeControls.sf2Preset.currentValue = options[0].text
+      nodeGroups.output.sf2Preset.currentValue = options[0].text
     }
 
     sf2Presets.value = player.presets
 
-    // console.log('nodeControls.sf2Source', nodeControls.sf2Source.currentValue)
-    // console.log('nodeControls.sf2Preset', nodeControls.sf2Preset.currentValue)
+    // console.log('nodeGroups.output.sf2Source', nodeGroups.output.sf2Source.currentValue)
+    // console.log('nodeGroups.output.sf2Preset', nodeGroups.output.sf2Preset.currentValue)
   })
 }
 const _initWAF = async () => {
-  nodeControls.oscType.enabled = false
-  nodeControls.oscType.visible = false
+  nodeGroups.output.oscType.enabled = false
+  nodeGroups.output.oscType.visible = false
 
-  nodeControls.sf2Source.enabled = false
-  nodeControls.sf2Source.visible = false
-  nodeControls.sf2Preset.enabled = false
-  nodeControls.sf2Preset.visible = false
+  nodeGroups.output.sf2Source.enabled = false
+  nodeGroups.output.sf2Source.visible = false
+  nodeGroups.output.sf2Preset.enabled = false
+  nodeGroups.output.sf2Preset.visible = false
 
-  nodeControls.wafSource.enabled = true
-  nodeControls.wafSource.visible = true
+  nodeGroups.output.wafSource.enabled = true
+  nodeGroups.output.wafSource.visible = true
 
   // load main file, and then tone files
   // webAudioFontLoader.then(() => webAudioFontTonesLoader).then(() => {
@@ -1741,15 +1751,15 @@ createMasterChain()
 createSendChain()
 
 onMounted(() => {
-  // console.log('MOUNTED Synth.vue', nodeControls.outputType)
+  // console.log('MOUNTED Synth.vue', nodeGroups.output.outputType)
 
   _initVisualizer()
 
-  if (nodeControls.outputType.currentValue == 'sf2') {
+  if (nodeGroups.output.outputType.currentValue == 'sf2') {
     _initSF2()
   }
 
-  if (nodeControls.outputType.currentValue == 'waf') {
+  if (nodeGroups.output.outputType.currentValue == 'waf') {
     _initWAF()
   }
 })
@@ -1792,16 +1802,21 @@ onMounted(() => {
     </span>
   </div>
 
-  <div id="synth-controls-container" style="display: flex">
-    <NodeControl v-for="(control, key) in nodeControls"
-      :control-key="key"
-      :control-data="control"
-      @check-enabled-changed="checkEnabledChanged"
-      @control-value-changed="controlValueChanged"
-      @select-option-changed="selectOptionChanged"
-      @increase-value="controlIncreaseValue"
-      @decrease-value="controlDecreaseValue"
-    />
+  <div id="synth-controls-container">
+    <div class="node-group" v-for="(group, name) in nodeGroups"
+      :group="name"
+    >
+      <NodeControl v-for="(control, key) in group"
+        :control-group="name"
+        :control-key="key"
+        :control-data="control"
+        @check-enabled-changed="checkEnabledChanged"
+        @control-value-changed="controlValueChanged"
+        @select-option-changed="selectOptionChanged"
+        @increase-value="controlIncreaseValue"
+        @decrease-value="controlDecreaseValue"
+      />
+    </div>
   </div>
 </template>
 
@@ -1877,46 +1892,70 @@ onMounted(() => {
 #synth-controls-container {
   background-color: var(--white-soft);
   border: 2px solid var(--gray-light);
+  display: flex;
   flex-direction: column;
-  height: 144px;
+  height: auto;
   margin: 5px 3px;
   overflow-y: auto;
   padding: 5px;
 }
+  @media (min-width: 600px) {
+    #synth-controls-container {
+      align-items: normal;
+      flex-wrap: nowrap;
+      padding: 0 5px;
+    }
+  }
   @media (min-width: 1024px) {
     #synth-controls-container {
       margin: 5px 20px;
     }
   }
+  #synth-controls-container .node-group {
+    display: flex;
+    flex-direction: column;
+  }
+    #synth-controls-container .node-group:first-of-type legend {
+      line-height: 1;
+    }
+    @media (min-width: 600px) {
+      #synth-controls-container .node-group {
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+      }
+    }
+
+      @media (min-width: 375px) {
+        #synth-controls-container .node-group[group=adsr] {
+          flex-flow: wrap;
+        }
+          #synth-controls-container .node-group[group=adsr] .node-control {
+            padding: 0 0 5px;
+            width: 50%;
+          }
+      }
+      @media (min-width: 600px) {
+        #synth-controls-container .node-group[group=adsr] {
+          flex-flow: nowrap;
+          width: 100%;
+        }
+          #synth-controls-container .node-group[group=adsr] .node-control {
+            padding: 5px;
+            width: 100%;
+          }
+      }
+
   body.dark-theme #synth-controls-container {
     background-color: var(--black-mute);
   }
-
-@media (min-width: 600px) {
-  #synth-controls-container {
-    align-items: normal;
-    flex-wrap: wrap;
-    padding: 0 5px;
-  }
-    #synth-controls-container fieldset.control-column {
-      margin-left: 0;
-      margin-right: 8px;
-      padding-top: 0;
-    }
-      #synth-controls-container fieldset.control-column#pan {
-        min-height: 132px;
-      }
-      #synth-controls-container fieldset.control-column:last-child {
-        margin-right: 0;
-      }
-}
 
 #visualizer-container {
   margin: 5px auto 0;
   width: 50%;
 }
   #visualizer {
-    border: 2px solid var(--black);
+    border: 1px solid var(--black);
     border-radius: 4px;
     height: 50px;
     margin: 0;
@@ -1925,9 +1964,9 @@ onMounted(() => {
     width: 100%;
   }
 
-@media (min-width: 992px) {
+@media (min-width: 768px) {
   #visualizer-container {
-    margin: 5px 20px;
+    margin: 0 2px;
     width: auto;
   }
     #visualizer {
