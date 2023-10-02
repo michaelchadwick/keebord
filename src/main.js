@@ -80,6 +80,7 @@ else {
 
   if (lsSettings.output) {
     kbSettings.value.output.visualizer = lsSettings.output.visualizer ? true : false
+    kbSettings.value.output.visualizerType = lsSettings.output.visualizerType
   }
 
   if (lsSettings.theme == 'dark') {

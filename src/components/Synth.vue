@@ -452,6 +452,7 @@ let midiAccess = null
 let startTime = 0
 let pitchBendRange = 2
 let modInterval = null
+let drawVisual = null
 let segmentWidth
 
 let oscType = kbSettings.value.controls.oscType
@@ -462,6 +463,7 @@ let useKeyboard = kbSettings.value.input.keyboard
 let useMidi = kbSettings.value.input.midi
 let useMouse = kbSettings.value.input.mouse
 let useVisualizer = kbSettings.value.output.visualizer
+let visualizerType = kbSettings.value.output.visualizerType
 
 let wafPlayer = null
 
@@ -488,7 +490,6 @@ const analyzerNode = new AnalyserNode(audioContext, {
   fftSize: 2048,
   smoothingTimeConstant: 1
 })
-const dataArray = new Uint8Array(analyzerNode.frequencyBinCount)
 
 const masterGainNode = audioContext.createGain()
 masterGainNode.gain.value = parseFloat(nodeControls.masterGain.currentValue)
@@ -988,7 +989,7 @@ const createOscNode = function (noteNum, startTime, envelope) {
     // start playing oscillator
     oscNotes[noteNum][0].start(startTime)
 
-    // console.log('osc start', oscNotes)
+    console.log(`oscNotes[${noteNum}] started`)
 
     oscNotes[noteNum][0].onended = function () {
       console.log(`oscNotes[${noteNum}] ended`)
@@ -1289,6 +1290,23 @@ const updateVisualizerEventHandler = () => {
   _saveToLocalStorage()
 }
 
+// OUTPUT HANDLERS
+
+const visualizerTypeChanged = (type) => {
+  visualizerType = type
+  updateVisualizerTypeEventHandler()
+}
+
+const updateVisualizerTypeEventHandler = () => {
+  kbSettings.value.output.visualizerType = visualizerType
+
+  window.cancelAnimationFrame(drawVisual)
+
+  _initVisualizer()
+
+  _saveToLocalStorage()
+}
+
 // INPUT CONTROLLERS
 
 const keyController = (e) => {
@@ -1440,50 +1458,106 @@ const updateOutputTypeHandler = (type) => {
   _saveToLocalStorage()
 }
 
+// //////////////// //
+// _PRIVATE METHODS //
+// //////////////// //
+
 const _initVisualizer = () => {
   const canvas = document.getElementById('visualizer')
-  const c = canvas.getContext('2d')
+  const canvasCtx = canvas.getContext('2d')
 
   // make canvas take up limited box size
   canvas.width = 640
-  canvas.height = 80
+  canvas.height = 100
 
-  // make initial line
-  c.fillStyle = "#f8f8f8"
-  c.fillRect(0, 0, canvas.width, canvas.height)
-  c.strokeStyle = "#09714b"
-  c.beginPath()
-  c.moveTo(0, canvas.height / 2)
-  c.lineTo(canvas.width, canvas.height / 2)
-  c.stroke()
+  const WIDTH = canvas.width
+  const HEIGHT = canvas.height
 
-  // define function to update canvas
-  const drawToCanvas = function () {
-    requestAnimationFrame(drawToCanvas)
+  if (useVisualizer) {
+    if (visualizerType === 'waves') {
+      analyzerNode.fftSize = 2048
+      const bufferLengthWaves = analyzerNode.fftSize
 
-    analyzerNode.getByteTimeDomainData(dataArray)
-    segmentWidth = canvas.width / analyzerNode.frequencyBinCount
+      // initialize background and line styles
+      canvasCtx.fillStyle = 'rgb(248, 248, 248)'
+      canvasCtx.lineWidth = 2
+      canvasCtx.strokeStyle = 'rgb(9, 113, 75)'
 
-    c.fillRect(0, 0, canvas.width, canvas.height)
-    c.beginPath()
-    c.moveTo(-100, canvas.height / 2)
+      canvasCtx.clearRect(0, 0, WIDTH, HEIGHT)
 
-    if (currentNotes.value.length) {
-      for (let i = 1; i < analyzerNode.frequencyBinCount; i += 1) {
-        let m = 128.0
-        let x = i * segmentWidth
-        let v = dataArray[i] / m
-        let y = (v * canvas.height) / 2
+      const dataArrayWaves = new Uint8Array(analyzerNode.frequencyBinCount)
 
-        c.lineTo(x, y)
+      // define function to update canvas
+      const drawWaves = function () {
+        drawVisual = requestAnimationFrame(drawWaves)
+
+        analyzerNode.getByteTimeDomainData(dataArrayWaves)
+
+        segmentWidth = WIDTH / analyzerNode.frequencyBinCount
+
+        canvasCtx.fillRect(0, 0, WIDTH, HEIGHT)
+        canvasCtx.moveTo(-100, HEIGHT / 2)
+
+        canvasCtx.beginPath()
+
+        for (let i = 0; i < bufferLengthWaves; i++) {
+          let x = i * segmentWidth
+          let v = dataArrayWaves[i] / 128.0
+          let y = (v * HEIGHT) / 2
+
+          canvasCtx.lineTo(x, y)
+        }
+
+        canvasCtx.lineTo(canvas.width + 100, canvas.height / 2)
+        canvasCtx.stroke()
       }
+
+      drawWaves()
+    } else if (visualizerType == 'bars') {
+      analyzerNode.fftSize = 256
+      const bufferLengthBars = analyzerNode.frequencyBinCount
+
+      const dataArrayBars = new Uint8Array(bufferLengthBars)
+
+      // initialize background and line styles
+      canvasCtx.fillStyle = 'rgb(0, 0, 0)'
+
+      canvasCtx.clearRect(0, 0, WIDTH, HEIGHT)
+
+      const drawBars = function () {
+        drawVisual = requestAnimationFrame(drawBars)
+
+        analyzerNode.getByteFrequencyData(dataArrayBars)
+
+        canvasCtx.fillRect(0, 0, WIDTH, HEIGHT)
+        canvasCtx.moveTo(-100, HEIGHT / 2)
+
+        const barWidth = (WIDTH / bufferLengthBars) * 2.5
+        let barHeight
+        let x = 0
+
+        for (let i = 0; i < bufferLengthBars; i++) {
+          barHeight = dataArrayBars[i]
+
+          canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)'
+          canvasCtx.fillRect(
+            x,
+            HEIGHT - barHeight / 2,
+            barWidth,
+            barHeight / 2
+          )
+
+          x += barWidth + 1
+        }
+      }
+
+      drawBars()
+    } else {
+      canvasCtx.clearRect(0, 0, WIDTH, HEIGHT)
+      canvasCtx.fillStyle = '#ff0000'
+      canvasCtx.fillRect(0, 0, WIDTH, HEIGHT)
     }
-
-    c.lineTo(canvas.width + 100, canvas.height / 2)
-    c.stroke()
   }
-
-  drawToCanvas()
 }
 const _initSF2 = () => {
   nodeControls.oscType.enabled = false
@@ -1690,12 +1764,14 @@ onMounted(() => {
     :use-midi="useMidi"
     :use-mouse="useMouse"
     :use-visualizer="useVisualizer"
+    :visualizer-type="visualizerType"
     @root-note-changed="rootNoteChanged"
     @scale-type-changed="scaleTypeChanged"
     @use-keyboard-changed="useKeyboardCheckboxChanged"
     @use-midi-changed="useMidiCheckboxChanged"
     @use-mouse-changed="useMouseCheckboxChanged"
     @use-visualizer-changed="useVisualizerCheckboxChanged"
+    @visualizer-type-changed="visualizerTypeChanged"
     @note-pressed="noteStart"
     @note-released="noteStop"
     @note-reset-all="noteResetAll"
@@ -1715,6 +1791,7 @@ onMounted(() => {
       {{ currentNotes.length ? currentNotes : 'No notes.' }}
     </span>
   </div>
+
   <div id="synth-controls-container" style="display: flex">
     <NodeControl v-for="(control, key) in nodeControls"
       :control-key="key"

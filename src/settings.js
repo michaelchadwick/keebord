@@ -36,7 +36,8 @@ export const kbSettings = ref({
     mouse: lsSettings ? (lsSettings.input.mouse ? true : false) : false
   },
   output: {
-    visualizer: lsSettings ? (lsSettings.output.visualizer ? true : false) : false
+    visualizer: lsSettings ? (lsSettings.output.visualizer ? true : false) : false,
+    visualizerType: lsSettings ? (lsSettings.output.visualizerType ? lsSettings.output.visualizerType : 'waves') : 'waves'
   },
   theme: 'light'
 })

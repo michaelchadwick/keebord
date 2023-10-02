@@ -6,6 +6,7 @@ const props = defineProps({
   musicalNotes: Array,
   rootNote: String,
   scaleType: String,
+  visualizerType: String,
   useKeyboard: Boolean,
   useMidi: Boolean,
   useMouse: Boolean,
@@ -17,6 +18,7 @@ const emit = defineEmits([
   'noteResetAll',
   'rootNoteChanged',
   'scaleTypeChanged',
+  'visualizerTypeChanged',
   'useKeyboardChanged',
   'useMidiChanged',
   'useMouseChanged',
@@ -28,6 +30,7 @@ let useMouse = props.useMouse
 
 let rootNoteSelected = props.rootNote
 let scaleTypeSelected = props.scaleType
+let visualizerTypeSelected = props.visualizerType
 
 let mousedown = false
 let hasTouch = 'ontouchstart' in window
@@ -155,6 +158,11 @@ const updateScaleTypeValue = (scale) => {
 
   emit('scaleTypeChanged', scaleTypeSelected)
 }
+const updateVisualuzerTypeValue = (type) => {
+  visualizerTypeSelected = type
+
+  emit('visualizerTypeChanged', visualizerTypeSelected)
+}
 const updateUseVisualizerFlag = (isChecked) => {
   const canvas = document.getElementById('visualizer-container')
 
@@ -263,6 +271,7 @@ const scales = {
   'tritone':            [1,3,2,1,3,2],
   'whole-tone':         [2,2,2,2,2,2,2],
 }
+const vizTypes = ['waves', 'bars']
 
 const scaleFilter = () => {
   console.log(`scaleFilter changed: ${rootNoteSelected} ${scaleTypeSelected}`)
@@ -475,6 +484,20 @@ onMounted(() => {
         @change="updateUseVisualizerFlag($event.target.checked)"
       />
       <label for="use-visualizer" title="Enable visualizer?">📈</label>
+
+      <select
+        class="small"
+        id="visualizer-type"
+        name="visualizer-type"
+        v-model="visualizerTypeSelected"
+        @change="updateVisualuzerTypeValue($event.target.value)"
+      >
+        <option disabled value="">- Type -</option>
+        <option
+          v-for="val in vizTypes"
+          :value="val"
+        >{{ val }}</option>
+      </select>
     </fieldset>
   </div>
 
