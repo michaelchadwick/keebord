@@ -637,7 +637,7 @@ const createPanNode = (value) => {
 }
 
 const checkEnabledChanged = function (controlGroup, controlName, isChecked) {
-  console.log(`checkEnabledChanged for nodeGroups['${controlGroup}']['${controlName}']`, isChecked)
+  // console.log(`checkEnabledChanged for nodeGroups['${controlGroup}']['${controlName}']`, isChecked)
 
   nodeGroups[controlGroup][controlName].enabled = isChecked
 
@@ -652,7 +652,7 @@ const checkEnabledChanged = function (controlGroup, controlName, isChecked) {
 const controlValueChanged = function (controlGroup, controlName, newValue) {
   const nodeControl = nodeGroups[controlGroup][controlName]
 
-  console.log(`nodeGroups['${controlGroup}']['${controlName}'] changed:`, controlGroup, controlName, newValue)
+  // console.log(`nodeGroups['${controlGroup}']['${controlName}'] changed:`, controlGroup, controlName, newValue)
 
   if (controlName == 'pitchBend') {
     const semitones = parseInt(newValue)
@@ -711,7 +711,7 @@ const controlValueChanged = function (controlGroup, controlName, newValue) {
   }
 }
 const selectOptionChanged = function (controlGroup, controlName, newValue) {
-  console.log('selectOptionChanged', controlGroup, controlName, newValue)
+  // console.log('selectOptionChanged', controlGroup, controlName, newValue)
 
   const control = nodeGroups[controlGroup][controlName]
 
@@ -755,14 +755,14 @@ const selectOptionChanged = function (controlGroup, controlName, newValue) {
 
     _saveToLocalStorage()
 
-    console.log('control has been updated', control)
+    // console.log('control has been updated', control)
   } else {
     console.error('control could not be found', controlName)
   }
 }
 
 const controlIncreaseValue = function(controlGroup, controlKey) {
-  console.log(`controlIncreaseValue(${controlGroup},${controlKey})`)
+  // console.log(`controlIncreaseValue(${controlGroup},${controlKey})`)
 
   controlValueChanged(
     controlGroup,
@@ -928,7 +928,7 @@ const noteResetAll = () => {
         delete sf2Notes[noteNum]
       })
 
-      console.log('sf2Notes stopped', sf2Notes)
+      // console.log('sf2Notes stopped', sf2Notes)
 
       break
 
@@ -938,29 +938,35 @@ const noteResetAll = () => {
         delete wafNotes[noteNum]
       })
 
-      console.log('wafNotes stopped', wafNotes)
+      // console.log('wafNotes stopped', wafNotes)
 
       break
 
     default:
-      oscNotes.map(osc => {
+      // console.log('oscNotes existing', oscNotes)
+
+      Object.values(oscNotes).map(osc => {
+        // console.log('osc', osc)
+
         const playbackTime = audioContext.currentTime
-        const stopTime = playbackTime + 0.08
+        const stopTime = playbackTime + 0.01
 
-        osc[1].gain.cancelScheduledValues(audioContext.currentTime)
+        osc[0].stop(stopTime)
 
-        osc[1].gain.setValueAtTime(osc[1].gain.value, playbackTime)
-        osc[1].gain.exponentialRampToValueAtTime(0.0001, stopTime)
+        // osc[1].gain.cancelScheduledValues(audioContext.currentTime)
+
+        // osc[1].gain.setValueAtTime(osc[1].gain.value, playbackTime)
+        // osc[1].gain.exponentialRampToValueAtTime(0.0001, stopTime)
 
         // osc[1].gain.disconnect()
-        osc[1].disconnect()
+        // osc[1].disconnect()
 
-        osc[0].stop(stopTime + 0.1)
+        // osc[0].stop(stopTime + 0.1)
 
-        osc = null
+        // osc = null
       })
 
-      console.log('oscNotes stopped', oscNotes)
+      // console.log('oscNotes stopped', oscNotes)
 
       break
   }
@@ -999,10 +1005,10 @@ const createOscNode = function (noteNum, startTime, envelope) {
     // start playing oscillator
     oscNotes[noteNum][0].start(startTime)
 
-    console.log(`oscNotes[${noteNum}] started`)
+    // console.log(`oscNotes[${noteNum}] started`)
 
     oscNotes[noteNum][0].onended = function () {
-      console.log(`oscNotes[${noteNum}] ended`)
+      // console.log(`oscNotes[${noteNum}] ended`)
 
       // if (oscNotes[noteNum] &&
       //   oscNotes[noteNum][1] &&
@@ -1059,7 +1065,7 @@ const createWafNode = function (noteNum, startTime) {
     wafGain             // volume (0..1)
   )
 
-  console.log('wafEnvelope', wafEnvelope)
+  // console.log('wafEnvelope', wafEnvelope)
 
   wafNotes[noteNum] = wafEnvelope
 
@@ -1124,7 +1130,7 @@ const pitchMod = function (velocity) {
   let pmCents = (pmRaw - inMin) * (outMax - outMin) / (inMax - inMin) + outMin
   pmCents = Math.round(pmCents * calcScale) / calcScale
 
-  console.log('pmCents', pmCents)
+  // console.log('pmCents', pmCents)
 
   let xspacing = 16
   let height = 16
@@ -1171,11 +1177,11 @@ const pitchMod = function (velocity) {
       }, 1)
     })
   } else {
-    console.log('no pitchmod applied', velocity)
+    // console.log('no pitchmod applied', velocity)
 
     if (modInterval) {
       clearInterval(modInterval)
-      console.log('cleared modInterval', modInterval)
+      // console.log('cleared modInterval', modInterval)
 
       // reset all oscNotes' detune value
       oscNotes.forEach(osc => osc[0].detune.setValueAtTime(0, audioContext.currentTime))
@@ -1409,7 +1415,7 @@ const scaleTypeChanged = (type) => {
 const updateRootNoteHandler = () => {
   kbSettings.value.filter.rootNote = rootNote
 
-  console.log('root note changed:', rootNote)
+  // console.log('root note changed:', rootNote)
 
   _saveToLocalStorage()
 }
@@ -1424,16 +1430,16 @@ const updateScaleTypeHandler = () => {
 // CONTROL HANDLERS
 
 const updateOscTypeHandler = (type) => {
+  // console.log('oscType changed:', type)
+
   oscType = type
 
   kbSettings.value.controls.oscType = oscType
 
-  console.log('oscType changed:', oscType)
-
   _saveToLocalStorage()
 }
 const updateOutputTypeHandler = (type) => {
-  console.log('outputType changed:', type)
+  // console.log('outputType changed:', type)
 
   outputType = type
 

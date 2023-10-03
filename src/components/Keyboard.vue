@@ -274,7 +274,7 @@ const scales = {
 const vizTypes = ['waves', 'bars']
 
 const scaleFilter = () => {
-  console.log(`scaleFilter changed: ${rootNoteSelected} ${scaleTypeSelected}`)
+  // console.log(`scaleFilter changed: ${rootNoteSelected} ${scaleTypeSelected}`)
 
   let filteredNotes = []
 
