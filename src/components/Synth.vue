@@ -1979,4 +1979,10 @@ onMounted(() => {
       height: 100px;
     }
 }
+
+@media (min-width: 1024px) {
+  #visualizer-container {
+    margin: 0 1.25em;
+  }
+}
 </style>
