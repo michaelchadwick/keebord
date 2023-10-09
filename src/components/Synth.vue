@@ -724,6 +724,8 @@ const selectOptionChanged = function (controlGroup, controlName, newValue) {
       case 'oscType':
         updateOscTypeHandler(newValue)
 
+        _initOsc()
+
         break
 
       case 'outputType':
@@ -1579,6 +1581,9 @@ const _initVisualizer = () => {
     }
   }
 }
+const _initOsc = () => {
+  __removeWafScripts()
+}
 const _initSF2 = () => {
   nodeGroups.output.oscType.enabled = false
   nodeGroups.output.oscType.visible = false
@@ -1590,6 +1595,8 @@ const _initSF2 = () => {
 
   nodeGroups.output.wafSource.enabled = false
   nodeGroups.output.wafSource.visible = false
+
+  __removeWafScripts()
 
   loadSoundfont(`/assets/sf2/${nodeGroups.output.sf2Source.currentValue}.sf2`).then((player) => {
     // console.log('sf2Player', player)
@@ -1633,10 +1640,24 @@ const _initWAF = async () => {
   //   wafPlayer = new WebAudioFontPlayer()
   // })
 
-  let script = document.createElement('script')
-  script.onload = () => wafPlayer = new WebAudioFontPlayer()
-  // script.setAttribute('src', '/assets/js/vendor/WebAudioFontPlayer.js')
-  script.setAttribute('src', 'https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js')
+  // if we don't have WAF main file loaded, load it
+  const srcs = Array.from(document.querySelectorAll('script')).map(script => script.getAttribute('src'))
+
+  let script = null
+
+  if (!srcs.some(src => src.includes('WebAudioFontPlayer.js'))) {
+    script = document.createElement('script')
+    script.onload = () => wafPlayer = new WebAudioFontPlayer()
+    // script.setAttribute('src', '/assets/js/vendor/WebAudioFontPlayer.js')
+    script.setAttribute('src', 'https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js')
+    document.head.appendChild(script)
+  }
+
+  // load all the Soundfont tones
+  script = document.createElement('script')
+  // script.onload = () => res()
+  script.setAttribute('src', '/assets/waf/0000_Aspirin_sf2.js')
+  // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0000_Aspirin_sf2_file.js')
   document.head.appendChild(script)
 
   script = document.createElement('script')
@@ -1650,14 +1671,6 @@ const _initWAF = async () => {
   script.setAttribute('src', '/assets/waf/0000_GeneralUserGS_sf2.js')
   // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0000_GeneralUserGS_sf2_file.js')
   document.head.appendChild(script)
-
-  script = document.createElement('script')
-  // script.onload = () => res()
-  script.setAttribute('src', '/assets/waf/0000_Aspirin_sf2.js')
-  // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0000_Aspirin_sf2_file.js')
-  document.head.appendChild(script)
-
-  https://raw.githubusercontent.com/surikov/webaudiofontdata/master/sound/0000_FluidR3_GM_sf2_file.js
 
   script = document.createElement('script')
   // script.onload = () => res()
@@ -1769,6 +1782,22 @@ const _makeDistortionCurve = (amount) => {
 }
 const _saveToLocalStorage = () => {
   localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
+}
+
+// ///////////////////////// //
+// __PRIVATE _HELPER METHODS //
+// ///////////////////////// //
+
+const __removeWafScripts = () => {
+  const scripts = document.querySelectorAll('script')
+
+  Array.from(scripts).forEach(script => {
+    if (script.hasAttribute('src')) {
+      if (script.getAttribute('src').includes('assets/waf')) {
+        document.head.removeChild(script)
+      }
+    }
+  })
 }
 
 createMasterChain()
