@@ -222,6 +222,8 @@ const nodeGroups = reactive({
       selectId: 'waf-source',
       options: [
         { text: 'Aspirin', value: '_tone_0000_Aspirin_sf2' },
+        { text: 'FluidR3_GM', value: '_tone_0000_FluidR3_GM_sf2' },
+        { text: 'GeneralUserGS', value: '_tone_0000_GeneralUserGS_sf2' },
         { text: 'SoundBlasterOld', value: '_tone_0250_SoundBlasterOld_sf2' }
       ],
       currentValue: kbSettings.value.controls.wafSource,
@@ -650,9 +652,9 @@ const checkEnabledChanged = function (controlGroup, controlName, isChecked) {
   createMasterChain()
 }
 const controlValueChanged = function (controlGroup, controlName, newValue) {
-  const nodeControl = nodeGroups[controlGroup][controlName]
+  // console.log(`nodeGroups['${controlGroup}']['${controlName}'] changed:`, nodeGroups[controlGroup][controlName], controlName, newValue)
 
-  // console.log(`nodeGroups['${controlGroup}']['${controlName}'] changed:`, controlGroup, controlName, newValue)
+  const nodeControl = nodeGroups[controlGroup][controlName]
 
   if (controlName == 'pitchBend') {
     const semitones = parseInt(newValue)
@@ -746,9 +748,11 @@ const selectOptionChanged = function (controlGroup, controlName, newValue) {
         break
 
       case 'wafSource':
+        noteResetAll()
+
         kbSettings.value.controls.wafSource = newValue
 
-        noteResetAll()
+        _initWAF()
 
         break
     }
@@ -1637,13 +1641,27 @@ const _initWAF = async () => {
 
   script = document.createElement('script')
   // script.onload = () => res()
-  script.setAttribute('src', '/assets/sf2/0000_Aspirin_sf2.js')
-  // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0000_Aspirin_sf2_file.js')
+  script.setAttribute('src', '/assets/waf/0000_FluidR3_GM_sf2.js')
+  // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0000_FluidR3_GM_sf2_file.js')
   document.head.appendChild(script)
 
   script = document.createElement('script')
   // script.onload = () => res()
-  script.setAttribute('src', '/assets/sf2/0250_SoundBlasterOld_sf2.js')
+  script.setAttribute('src', '/assets/waf/0000_GeneralUserGS_sf2.js')
+  // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0000_GeneralUserGS_sf2_file.js')
+  document.head.appendChild(script)
+
+  script = document.createElement('script')
+  // script.onload = () => res()
+  script.setAttribute('src', '/assets/waf/0000_Aspirin_sf2.js')
+  // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0000_Aspirin_sf2_file.js')
+  document.head.appendChild(script)
+
+  https://raw.githubusercontent.com/surikov/webaudiofontdata/master/sound/0000_FluidR3_GM_sf2_file.js
+
+  script = document.createElement('script')
+  // script.onload = () => res()
+  script.setAttribute('src', '/assets/waf/0250_SoundBlasterOld_sf2.js')
   // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0250_SoundBlasterOld_sf2.js')
   document.head.appendChild(script)
 }
