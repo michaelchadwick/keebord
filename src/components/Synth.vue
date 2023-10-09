@@ -732,7 +732,14 @@ const selectOptionChanged = function (controlGroup, controlName, newValue) {
   if (control) {
     nodeGroups[controlGroup].nodes[controlName].currentValue = newValue
 
+    noteResetAll()
+
     switch (controlName) {
+      case 'outputType':
+        updateOutputTypeHandler(newValue)
+
+        break
+
       case 'oscType':
         updateOscTypeHandler(newValue)
 
@@ -740,14 +747,7 @@ const selectOptionChanged = function (controlGroup, controlName, newValue) {
 
         break
 
-      case 'outputType':
-        updateOutputTypeHandler(newValue)
-
-        break
-
       case 'sf2Source':
-        noteResetAll()
-
         kbSettings.value.controls.sf2Source = newValue
 
         _initSF2()
@@ -757,13 +757,9 @@ const selectOptionChanged = function (controlGroup, controlName, newValue) {
       case 'sf2Preset':
         kbSettings.value.controls.sf2Preset = newValue
 
-        noteResetAll()
-
         break
 
       case 'wafSource':
-        noteResetAll()
-
         kbSettings.value.controls.wafSource = newValue
 
         _initWAF()
@@ -1450,14 +1446,18 @@ const updateScaleTypeHandler = () => {
 const updateOscTypeHandler = (type) => {
   // console.log('oscType changed:', type)
 
+  noteResetAll()
+
   oscType = type
 
-  kbSettings.value.controls.oscType = oscType
+  kbSettings.value.controls.oscType = type
 
   _saveToLocalStorage()
 }
 const updateOutputTypeHandler = (type) => {
   // console.log('outputType changed:', type)
+
+  noteResetAll()
 
   outputType = type
 
