@@ -2117,7 +2117,7 @@ onMounted(() => {
     #synth-controls-container {
       align-items: normal;
       flex-wrap: nowrap;
-      padding: 0 5px;
+      padding: 0 5px 5px;
     }
   }
   @media (min-width: 1024px) {
@@ -2171,6 +2171,17 @@ onMounted(() => {
   margin: 5px auto 0;
   width: 50%;
 }
+  @media (min-width: 768px) {
+    #visualizer-container {
+      margin: 0 2px;
+      width: auto;
+    }
+  }
+  @media (min-width: 1024px) {
+    #visualizer-container {
+      margin: 0 1.25em;
+    }
+  }
   #visualizer {
     border: 1px solid var(--black);
     border-radius: 4px;
@@ -2180,20 +2191,10 @@ onMounted(() => {
     position: relative;
     width: 100%;
   }
-
-@media (min-width: 768px) {
-  #visualizer-container {
-    margin: 0 2px;
-    width: auto;
-  }
-    #visualizer {
-      height: 100px;
+    @media (min-width: 768px) {
+      #visualizer {
+        height: 100px;
+      }
     }
-}
 
-@media (min-width: 1024px) {
-  #visualizer-container {
-    margin: 0 1.25em;
-  }
-}
 </style>
