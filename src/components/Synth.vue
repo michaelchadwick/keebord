@@ -1492,11 +1492,9 @@ const visualizerTypeChanged = (type) => {
 const updateVisualizerTypeEventHandler = () => {
   kbSettings.value.output.visualizerType = visualizerType
 
-  window.cancelAnimationFrame(drawVisual)
+  _saveToLocalStorage()
 
   _initVisualizer()
-
-  _saveToLocalStorage()
 }
 
 // INPUT CONTROLLERS
@@ -1639,6 +1637,8 @@ const updateOutputTypeHandler = (type) => {
 // //////////////// //
 
 const _initVisualizer = () => {
+  window.cancelAnimationFrame(drawVisual)
+
   const canvas = document.getElementById('visualizer')
   const canvasCtx = canvas.getContext('2d')
 
@@ -1755,6 +1755,8 @@ const _initOsc = () => {
 
   nodeGroups.filters.enabled = true
   nodeGroups.filters.visible = true
+
+  _initVisualizer()
 }
 const _initSF2 = () => {
   nodeGroups.output.nodes.oscType.enabled = false
@@ -1793,6 +1795,8 @@ const _initSF2 = () => {
     }
 
     sf2Presets.value = player.presets
+
+    _initVisualizer()
   })
 }
 const _initWAF = async () => {
@@ -1844,6 +1848,8 @@ const _initWAF = async () => {
     // switch instrument to new choice
     await wafPlayer.loader.startLoad(audioContext, wafToneUrl, wafToneName)
   }
+
+  _initVisualizer()
 }
 
 // convert midi note numbers into chords, if applicable
