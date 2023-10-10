@@ -24,7 +24,8 @@ export const kbSettings = ref({
     sf2Source: lsSettings ? (lsSettings.controls ? lsSettings.controls.sf2Source : 'super_mario_world') : 'super_mario_world',
     sf2Preset: lsSettings ? (lsSettings.controls ? lsSettings.controls.sf2Preset : 'SMW Piano') : 'SMW Piano',
     sustainLevel: lsSettings ? (lsSettings.controls ? lsSettings.controls.sustainLevel : 0.1) : 0.1,
-    wafSource: lsSettings ? (lsSettings.controls ? lsSettings.controls.wafSource : '_tone_0000_Aspirin_sf2') : '_tone_0000_Aspirin_sf2'
+    wafSource: lsSettings ? (lsSettings.controls ? lsSettings.controls.wafSource : 'Aspirin') : 'Aspirin',
+    wafPreset: lsSettings ? (lsSettings.controls ? lsSettings.controls.wafPreset : 'Acoustic Grand Piano: Piano') : 'Acoustic Grand Piano: Piano'
   },
   filter: {
     rootNote: lsSettings ? (lsSettings.filter ? lsSettings.filter.rootNote : 'C') : 'C',

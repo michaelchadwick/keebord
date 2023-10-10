@@ -8,9 +8,6 @@ import NodeControl from './NodeControl.vue'
 import Keyboard from './Keyboard.vue'
 import ADSREnvelope from 'adsr-envelope'
 
-// import webAudioFontLoader from '../assets/js/app/wafLoader.js'
-// import webAudioFontTonesLoader from '../assets/js/app/wafTonesLoader.js'
-
 const INTERVALS = {
   'major': [4, 3],
   'aug': [4, 4],
@@ -142,11 +139,168 @@ const MUSICAL_NOTES = [
   { name: 'Bb8', frequency: 7458.620, midi: 118 },
   { name: 'B8', frequency: 7902.130, midi: 119 },
 ]
+const WAF_DATA_PATH='https://surikov.github.io/webaudiofontdata/sound'
+const WAF_JS_LIB_PATH='https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js'
 
+const outputTypes = [
+  { text: 'Oscillator', value: 'osc' },
+  { text: 'Soundfont', value: 'sf2' },
+  { text: 'WebAudioFont', value: 'waf' }
+]
+const oscTypes = [
+  { text: 'Sine', value: 'sine' },
+  { text: 'Sawtooth', value: 'sawtooth' },
+  { text: 'Square', value: 'square' },
+  { text: 'Triangle', value: 'triangle' }
+]
 const oscNotes = reactive([])
 const sf2Notes = reactive([])
+const sf2Sources = [
+  { text: 'Default', value: '_default' },
+  { text: 'Donkey Kong Country', value: 'donkey_kong_country' },
+  { text: 'Earthbound', value: 'earthbound' },
+  { text: 'Super Mario World', value: 'super_mario_world' },
+  { text: 'Vintage Dreams', value: 'vintage_dreams_waves_v2' }
+]
 const sf2Presets = reactive([])
 const wafNotes = reactive([])
+const wafSources = [
+  { text: 'Aspirin', value: 'Aspirin' },
+  { text: 'FluidR3_GM', value: 'FluidR3_GM' },
+  { text: 'GeneralUserGS', value: 'GeneralUserGS' },
+  { text: 'SBLive', value: 'SBLive' },
+  { text: 'SoundBlasterOld', value: 'SoundBlasterOld' }
+]
+const wafPresets = [
+  { text: "Acoustic Grand Piano: Piano", value: "Acoustic Grand Piano: Piano" },
+  { text: "Bright Acoustic Piano: Piano", value: "Bright Acoustic Piano: Piano" },
+  { text: "Electric Grand Piano: Piano", value: "Electric Grand Piano: Piano" },
+  { text: "Honky-tonk Piano: Piano", value: "Honky-tonk Piano: Piano" },
+  { text: "Electric Piano 1: Piano", value: "Electric Piano 1: Piano" },
+  { text: "Electric Piano 2: Piano", value: "Electric Piano 2: Piano" },
+  { text: "Harpsichord: Piano", value: "Harpsichord: Piano" },
+  { text: "Clavinet: Piano", value: "Clavinet: Piano" },
+  { text: "Celesta: Chromatic Percussion", value: "Celesta: Chromatic Percussion" },
+  { text: "Glockenspiel: Chromatic Percussion", value: "Glockenspiel: Chromatic Percussion" },
+  { text: "Music Box: Chromatic Percussion", value: "Music Box: Chromatic Percussion" },
+  { text: "Vibraphone: Chromatic Percussion", value: "Vibraphone: Chromatic Percussion" },
+  { text: "Marimba: Chromatic Percussion", value: "Marimba: Chromatic Percussion" },
+  { text: "Xylophone: Chromatic Percussion", value: "Xylophone: Chromatic Percussion" },
+  { text: "Tubular Bells: Chromatic Percussion", value: "Tubular Bells: Chromatic Percussion" },
+  { text: "Dulcimer: Chromatic Percussion", value: "Dulcimer: Chromatic Percussion" },
+  { text: "Drawbar Organ: Organ", value: "Drawbar Organ: Organ" },
+  { text: "Percussive Organ: Organ", value: "Percussive Organ: Organ" },
+  { text: "Rock Organ: Organ", value: "Rock Organ: Organ" },
+  { text: "Church Organ: Organ", value: "Church Organ: Organ" },
+  { text: "Reed Organ: Organ", value: "Reed Organ: Organ" },
+  { text: "Accordion: Organ", value: "Accordion: Organ" },
+  { text: "Harmonica: Organ", value: "Harmonica: Organ" },
+  { text: "Tango Accordion: Organ", value: "Tango Accordion: Organ" },
+  { text: "Acoustic Guitar (nylon): Guitar", value: "Acoustic Guitar (nylon): Guitar" },
+  { text: "Acoustic Guitar (steel): Guitar", value: "Acoustic Guitar (steel): Guitar" },
+  { text: "Electric Guitar (jazz): Guitar", value: "Electric Guitar (jazz): Guitar" },
+  { text: "Electric Guitar (clean): Guitar", value: "Electric Guitar (clean): Guitar" },
+  { text: "Electric Guitar (muted): Guitar", value: "Electric Guitar (muted): Guitar" },
+  { text: "Overdriven Guitar: Guitar", value: "Overdriven Guitar: Guitar" },
+  { text: "Distortion Guitar: Guitar", value: "Distortion Guitar: Guitar" },
+  { text: "Guitar Harmonics: Guitar", value: "Guitar Harmonics: Guitar" },
+  { text: "Acoustic Bass: Bass", value: "Acoustic Bass: Bass" },
+  { text: "Electric Bass (finger): Bass", value: "Electric Bass (finger): Bass" },
+  { text: "Electric Bass (pick): Bass", value: "Electric Bass (pick): Bass" },
+  { text: "Fretless Bass: Bass", value: "Fretless Bass: Bass" },
+  { text: "Slap Bass 1: Bass", value: "Slap Bass 1: Bass" },
+  { text: "Slap Bass 2: Bass", value: "Slap Bass 2: Bass" },
+  { text: "Synth Bass 1: Bass", value: "Synth Bass 1: Bass" },
+  { text: "Synth Bass 2: Bass", value: "Synth Bass 2: Bass" },
+  { text: "Violin: Strings", value: "Violin: Strings" },
+  { text: "Viola: Strings", value: "Viola: Strings" },
+  { text: "Cello: Strings", value: "Cello: Strings" },
+  { text: "Contrabass: Strings", value: "Contrabass: Strings" },
+  { text: "Tremolo Strings: Strings", value: "Tremolo Strings: Strings" },
+  { text: "Pizzicato Strings: Strings", value: "Pizzicato Strings: Strings" },
+  { text: "Orchestral Harp: Strings", value: "Orchestral Harp: Strings" },
+  { text: "Timpani: Strings", value: "Timpani: Strings" },
+  { text: "String Ensemble 1: Ensemble", value: "String Ensemble 1: Ensemble" },
+  { text: "String Ensemble 2: Ensemble", value: "String Ensemble 2: Ensemble" },
+  { text: "Synth Strings 1: Ensemble", value: "Synth Strings 1: Ensemble" },
+  { text: "Synth Strings 2: Ensemble", value: "Synth Strings 2: Ensemble" },
+  { text: "Choir Aahs: Ensemble", value: "Choir Aahs: Ensemble" },
+  { text: "Voice Oohs: Ensemble", value: "Voice Oohs: Ensemble" },
+  { text: "Synth Choir: Ensemble", value: "Synth Choir: Ensemble" },
+  { text: "Orchestra Hit: Ensemble", value: "Orchestra Hit: Ensemble" },
+  { text: "Trumpet: Brass", value: "Trumpet: Brass" },
+  { text: "Trombone: Brass", value: "Trombone: Brass" },
+  { text: "Tuba: Brass", value: "Tuba: Brass" },
+  { text: "Muted Trumpet: Brass", value: "Muted Trumpet: Brass" },
+  { text: "French Horn: Brass", value: "French Horn: Brass" },
+  { text: "Brass Section: Brass", value: "Brass Section: Brass" },
+  { text: "Synth Brass 1: Brass", value: "Synth Brass 1: Brass" },
+  { text: "Synth Brass 2: Brass", value: "Synth Brass 2: Brass" },
+  { text: "Soprano Sax: Reed", value: "Soprano Sax: Reed" },
+  { text: "Alto Sax: Reed", value: "Alto Sax: Reed" },
+  { text: "Tenor Sax: Reed", value: "Tenor Sax: Reed" },
+  { text: "Baritone Sax: Reed", value: "Baritone Sax: Reed" },
+  { text: "Oboe: Reed", value: "Oboe: Reed" },
+  { text: "English Horn: Reed", value: "English Horn: Reed" },
+  { text: "Bassoon: Reed", value: "Bassoon: Reed" },
+  { text: "Clarinet: Reed", value: "Clarinet: Reed" },
+  { text: "Piccolo: Pipe", value: "Piccolo: Pipe" },
+  { text: "Flute: Pipe", value: "Flute: Pipe" },
+  { text: "Recorder: Pipe", value: "Recorder: Pipe" },
+  { text: "Pan Flute: Pipe", value: "Pan Flute: Pipe" },
+  { text: "Blown bottle: Pipe", value: "Blown bottle: Pipe" },
+  { text: "Shakuhachi: Pipe", value: "Shakuhachi: Pipe" },
+  { text: "Whistle: Pipe", value: "Whistle: Pipe" },
+  { text: "Ocarina: Pipe", value: "Ocarina: Pipe" },
+  { text: "Lead 1 (square): Synth Lead", value: "Lead 1 (square): Synth Lead" },
+  { text: "Lead 2 (sawtooth): Synth Lead", value: "Lead 2 (sawtooth): Synth Lead" },
+  { text: "Lead 3 (calliope): Synth Lead", value: "Lead 3 (calliope): Synth Lead" },
+  { text: "Lead 4 (chiff): Synth Lead", value: "Lead 4 (chiff): Synth Lead" },
+  { text: "Lead 5 (charang): Synth Lead", value: "Lead 5 (charang): Synth Lead" },
+  { text: "Lead 6 (voice): Synth Lead", value: "Lead 6 (voice): Synth Lead" },
+  { text: "Lead 7 (fifths): Synth Lead", value: "Lead 7 (fifths): Synth Lead" },
+  { text: "Lead 8 (bass + lead): Synth Lead", value: "Lead 8 (bass + lead): Synth Lead" },
+  { text: "Pad 1 (new age): Synth Pad", value: "Pad 1 (new age): Synth Pad" },
+  { text: "Pad 2 (warm): Synth Pad", value: "Pad 2 (warm): Synth Pad" },
+  { text: "Pad 3 (polysynth): Synth Pad", value: "Pad 3 (polysynth): Synth Pad" },
+  { text: "Pad 4 (choir): Synth Pad", value: "Pad 4 (choir): Synth Pad" },
+  { text: "Pad 5 (bowed): Synth Pad", value: "Pad 5 (bowed): Synth Pad" },
+  { text: "Pad 6 (metallic): Synth Pad", value: "Pad 6 (metallic): Synth Pad" },
+  { text: "Pad 7 (halo): Synth Pad", value: "Pad 7 (halo): Synth Pad" },
+  { text: "Pad 8 (sweep): Synth Pad", value: "Pad 8 (sweep): Synth Pad" },
+  { text: "FX 1 (rain): Synth Effects", value: "FX 1 (rain): Synth Effects" },
+  { text: "FX 2 (soundtrack): Synth Effects", value: "FX 2 (soundtrack): Synth Effects" },
+  { text: "FX 3 (crystal): Synth Effects", value: "FX 3 (crystal): Synth Effects" },
+  { text: "FX 4 (atmosphere): Synth Effects", value: "FX 4 (atmosphere): Synth Effects" },
+  { text: "FX 5 (brightness): Synth Effects", value: "FX 5 (brightness): Synth Effects" },
+  { text: "FX 6 (goblins): Synth Effects", value: "FX 6 (goblins): Synth Effects" },
+  { text: "FX 7 (echoes): Synth Effects", value: "FX 7 (echoes): Synth Effects" },
+  { text: "FX 8 (sci-fi): Synth Effects", value: "FX 8 (sci-fi): Synth Effects" },
+  { text: "Sitar: Ethnic", value: "Sitar: Ethnic" },
+  { text: "Banjo: Ethnic", value: "Banjo: Ethnic" },
+  { text: "Shamisen: Ethnic", value: "Shamisen: Ethnic" },
+  { text: "Koto: Ethnic", value: "Koto: Ethnic" },
+  { text: "Kalimba: Ethnic", value: "Kalimba: Ethnic" },
+  { text: "Bagpipe: Ethnic", value: "Bagpipe: Ethnic" },
+  { text: "Fiddle: Ethnic", value: "Fiddle: Ethnic" },
+  { text: "Shanai: Ethnic", value: "Shanai: Ethnic" },
+  { text: "Tinkle Bell: Percussive", value: "Tinkle Bell: Percussive" },
+  { text: "Agogo: Percussive", value: "Agogo: Percussive" },
+  { text: "Steel Drums: Percussive", value: "Steel Drums: Percussive" },
+  { text: "Woodblock: Percussive", value: "Woodblock: Percussive" },
+  { text: "Taiko Drum: Percussive", value: "Taiko Drum: Percussive" },
+  { text: "Melodic Tom: Percussive", value: "Melodic Tom: Percussive" },
+  { text: "Synth Drum: Percussive", value: "Synth Drum: Percussive" },
+  { text: "Reverse Cymbal: Percussive", value: "Reverse Cymbal: Percussive" },
+  { text: "Guitar Fret Noise: Sound effects", value: "Guitar Fret Noise: Sound effects" },
+  { text: "Breath Noise: Sound effects", value: "Breath Noise: Sound effects" },
+  { text: "Seashore: Sound effects", value: "Seashore: Sound effects" },
+  { text: "Bird Tweet: Sound effects", value: "Bird Tweet: Sound effects" },
+  { text: "Telephone Ring: Sound effects", value: "Telephone Ring: Sound effects" },
+  { text: "Helicopter: Sound effects", value: "Helicopter: Sound effects" },
+  { text: "Applause: Sound effects", value: "Applause: Sound effects" },
+  { text: "Gunshot: Sound effects", value: "Gunshot: Sound effects" }
+]
 
 // holds current notes being played; for chord recognition
 const currentNotes = ref([])
@@ -160,11 +314,7 @@ const nodeGroups = reactive({
         title: 'Output Type',
         type: 'select',
         selectId: 'output-type',
-        options: [
-          { text: 'Oscillator', value: 'osc' },
-          { text: 'Soundfont', value: 'sf2' },
-          { text: 'WebAudioFont', value: 'waf' }
-        ],
+        options: outputTypes,
         currentValue: kbSettings.value.controls.outputType,
         audioNode: '',
         parameter: 'type',
@@ -176,12 +326,7 @@ const nodeGroups = reactive({
         title: 'Osc Type',
         type: 'select',
         selectId: 'osc-type',
-        options: [
-          { text: 'Sine', value: 'sine' },
-          { text: 'Sawtooth', value: 'sawtooth' },
-          { text: 'Square', value: 'square' },
-          { text: 'Triangle', value: 'triangle' }
-        ],
+        options: oscTypes,
         currentValue: kbSettings.value.controls.oscType,
         audioNode: '',
         parameter: 'type',
@@ -193,13 +338,7 @@ const nodeGroups = reactive({
         title: 'SF2 Source',
         type: 'select',
         selectId: 'sf2-source',
-        options: [
-          { text: 'Default', value: '_default' },
-          { text: 'Donkey Kong Country', value: 'donkey_kong_country' },
-          { text: 'Earthbound', value: 'earthbound' },
-          { text: 'Super Mario World', value: 'super_mario_world' },
-          { text: 'Vintage Dreams', value: 'vintage_dreams_waves_v2' }
-        ],
+        options: sf2Sources,
         currentValue: kbSettings.value.controls.sf2Source,
         audioNode: '',
         parameter: 'type',
@@ -223,13 +362,20 @@ const nodeGroups = reactive({
         title: 'WAF Source',
         type: 'select',
         selectId: 'waf-source',
-        options: [
-          { text: 'Aspirin', value: '_tone_0000_Aspirin_sf2' },
-          { text: 'FluidR3_GM', value: '_tone_0000_FluidR3_GM_sf2' },
-          { text: 'GeneralUserGS', value: '_tone_0000_GeneralUserGS_sf2' },
-          { text: 'SoundBlasterOld', value: '_tone_0250_SoundBlasterOld_sf2' }
-        ],
+        options: wafSources,
         currentValue: kbSettings.value.controls.wafSource,
+        audioNode: '',
+        parameter: 'type',
+        visible: false,
+        enabled: false,
+        isVertical: false
+      },
+      wafPreset: {
+        title: 'WAF Instrument',
+        type: 'select',
+        selectId: 'waf-preset',
+        options: wafPresets,
+        currentValue: kbSettings.value.controls.wafPreset,
         audioNode: '',
         parameter: 'type',
         visible: false,
@@ -765,6 +911,13 @@ const selectOptionChanged = function (controlGroup, controlName, newValue) {
         _initWAF()
 
         break
+
+      case 'wafPreset':
+        kbSettings.value.controls.wafPreset = newValue
+
+        _initWAF()
+
+        break
     }
 
     _saveToLocalStorage()
@@ -1048,20 +1201,29 @@ const createSF2Node = function (noteNum, startTime) {
   // console.log('presetObj', presetObj)
 
   const stopHandle = startPresetNote(
-    audioContext,
-    presetObj,
-    noteNum,
-    (startTime || 0)
+    audioContext,       // AudioContext
+    presetObj,          // preset
+    noteNum,            // midi note number (0...127)
+    (startTime || 0)    // when
   )
 
+  // add a function that, when called, stops note
   sf2Notes[noteNum] = stopHandle
 
   // console.log('sf2Notes', sf2Notes)
 }
 const createWafNode = function (noteNum, startTime) {
-  const wafTone = nodeGroups.output.nodes.wafSource.currentValue
+  const wafToneInst = nodeGroups.output.nodes.wafSource.currentValue
+  const wafToneId = (document.getElementById('waf-preset').selectedIndex * 10).toString().padStart(4, '0')
+
+  // SB stuff doesn't have the '_file' on the end for some reason
+  let wafToneString = `_tone_${wafToneId}_${wafToneInst}_sf2_file`
+  if (wafToneInst == 'SoundBlasterOld' || wafToneInst == 'SBLive') {
+    wafToneString = wafToneString.substring(0, wafToneString.length - 5)
+  }
+
   // get _tone_####_Name_sf2 object from string
-  const wafToneObj = eval(wafTone)
+  const wafToneObj = eval(wafToneString)
 
   wafPlayer.loader.decodeAfterLoading(audioContext, wafToneObj)
 
@@ -1464,20 +1626,9 @@ const updateOutputTypeHandler = (type) => {
   kbSettings.value.controls.outputType = outputType
 
   switch (type) {
-    case 'sf2':
-      _initSF2()
-
-      break
-
-    case 'waf':
-      _initWAF()
-
-      break
-
-    default:
-      _initOsc()
-
-      break
+    case 'sf2': _initSF2(); break
+    case 'waf': _initWAF(); break
+    default: _initOsc(); break
   }
 
   _saveToLocalStorage()
@@ -1596,14 +1747,14 @@ const _initOsc = () => {
 
   nodeGroups.output.nodes.wafSource.enabled = false
   nodeGroups.output.nodes.wafSource.visible = false
+  nodeGroups.output.nodes.wafPreset.enabled = false
+  nodeGroups.output.nodes.wafPreset.visible = false
 
   nodeGroups.adsr.enabled = true
   nodeGroups.adsr.visible = true
 
   nodeGroups.filters.enabled = true
   nodeGroups.filters.visible = true
-
-  __removeWafScripts()
 }
 const _initSF2 = () => {
   nodeGroups.output.nodes.oscType.enabled = false
@@ -1616,14 +1767,14 @@ const _initSF2 = () => {
 
   nodeGroups.output.nodes.wafSource.enabled = false
   nodeGroups.output.nodes.wafSource.visible = false
+  nodeGroups.output.nodes.wafPreset.enabled = false
+  nodeGroups.output.nodes.wafPreset.visible = false
 
   nodeGroups.adsr.enabled = false
   nodeGroups.adsr.visible = false
 
   nodeGroups.filters.enabled = false
   nodeGroups.filters.visible = false
-
-  __removeWafScripts()
 
   loadSoundfont(`/assets/sf2/${nodeGroups.output.nodes.sf2Source.currentValue}.sf2`).then((player) => {
     let options = []
@@ -1655,6 +1806,8 @@ const _initWAF = async () => {
 
   nodeGroups.output.nodes.wafSource.enabled = true
   nodeGroups.output.nodes.wafSource.visible = true
+  nodeGroups.output.nodes.wafPreset.enabled = true
+  nodeGroups.output.nodes.wafPreset.visible = true
 
   nodeGroups.adsr.enabled = false
   nodeGroups.adsr.visible = false
@@ -1662,48 +1815,35 @@ const _initWAF = async () => {
   nodeGroups.filters.enabled = false
   nodeGroups.filters.visible = false
 
-  // load main file, and then tone files
-  // webAudioFontLoader.then(() => webAudioFontTonesLoader).then(() => {
-  //   wafPlayer = new WebAudioFontPlayer()
-  // })
-
   // if we don't have WAF main file loaded, load it
   const srcs = Array.from(document.querySelectorAll('script')).map(script => script.getAttribute('src'))
 
-  let script = null
+  const wafToneInst = nodeGroups.output.nodes.wafSource.currentValue
+  const wafToneId = (document.getElementById('waf-preset').selectedIndex * 10).toString().padStart(4, '0')
+
+  let wafToneString = `${wafToneId}_${wafToneInst}_sf2_file`
+  // SB stuff doesn't have the '_file' on the end for some reason
+  if (wafToneInst == 'SoundBlasterOld' || wafToneInst == 'SBLive') {
+    wafToneString = wafToneString.substring(0, wafToneString.length - 5)
+  }
+  const wafToneUrl = `${WAF_DATA_PATH}/${wafToneString}.js`
+  const wafToneName = `_tone_${wafToneString}`
 
   if (!srcs.some(src => src.includes('WebAudioFontPlayer.js'))) {
-    script = document.createElement('script')
-    script.onload = () => wafPlayer = new WebAudioFontPlayer()
-    // script.setAttribute('src', '/assets/js/vendor/WebAudioFontPlayer.js')
-    script.setAttribute('src', 'https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js')
-    document.head.appendChild(script)
+    let mainScript = document.createElement('script')
+    mainScript.setAttribute('src', WAF_JS_LIB_PATH)
+    document.head.appendChild(mainScript)
+
+    mainScript.onload = async () => {
+      wafPlayer = new WebAudioFontPlayer()
+
+      // switch instrument to new choice
+      await wafPlayer.loader.startLoad(audioContext, wafToneUrl, wafToneName)
+    }
+  } else {
+    // switch instrument to new choice
+    await wafPlayer.loader.startLoad(audioContext, wafToneUrl, wafToneName)
   }
-
-  // load all the Soundfont tones
-  script = document.createElement('script')
-  // script.onload = () => res()
-  script.setAttribute('src', '/assets/waf/0000_Aspirin_sf2.js')
-  // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0000_Aspirin_sf2_file.js')
-  document.head.appendChild(script)
-
-  script = document.createElement('script')
-  // script.onload = () => res()
-  script.setAttribute('src', '/assets/waf/0000_FluidR3_GM_sf2.js')
-  // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0000_FluidR3_GM_sf2_file.js')
-  document.head.appendChild(script)
-
-  script = document.createElement('script')
-  // script.onload = () => res()
-  script.setAttribute('src', '/assets/waf/0000_GeneralUserGS_sf2.js')
-  // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0000_GeneralUserGS_sf2_file.js')
-  document.head.appendChild(script)
-
-  script = document.createElement('script')
-  // script.onload = () => res()
-  script.setAttribute('src', '/assets/waf/0250_SoundBlasterOld_sf2.js')
-  // script.setAttribute('src', 'https://surikov.github.io/webaudiofontdata/sound/0250_SoundBlasterOld_sf2.js')
-  document.head.appendChild(script)
 }
 
 // convert midi note numbers into chords, if applicable
@@ -1809,22 +1949,6 @@ const _makeDistortionCurve = (amount) => {
 }
 const _saveToLocalStorage = () => {
   localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
-}
-
-// ///////////////////////// //
-// __PRIVATE _HELPER METHODS //
-// ///////////////////////// //
-
-const __removeWafScripts = () => {
-  const scripts = document.querySelectorAll('script')
-
-  Array.from(scripts).forEach(script => {
-    if (script.hasAttribute('src')) {
-      if (script.getAttribute('src').includes('assets/waf')) {
-        document.head.removeChild(script)
-      }
-    }
-  })
 }
 
 createMasterChain()
