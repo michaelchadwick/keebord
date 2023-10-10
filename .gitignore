@@ -28,3 +28,5 @@ coverage
 *.sw?
 
 REFERENCE.md
+
+!public/assets/icons
