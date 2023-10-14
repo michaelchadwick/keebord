@@ -5,6 +5,7 @@
 .eslintrc.json
 .eslintrc.yaml
 .gitignore
+*.icloud
 .jshintrc
 .sass-lint.yml
 CONTRIBUTING.md

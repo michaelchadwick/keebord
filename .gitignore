@@ -30,3 +30,6 @@ coverage
 REFERENCE.md
 
 !public/assets/icons
+
+# don't track SF2 files, as they will exist on the server
+public/assets/sf2
