@@ -4,13 +4,15 @@ Play piano using keyboard, mouse, touch or MIDI input. Built using [VueJS](https
 
 * 96-key piano roll
 * Responsive design
+* Multiple input support: computer keyboard, MIDI keyboard, mouse/touch
 * Use scroll buttons or swipe to move piano roll
 * Scale filter for easier jamming
-* Optional oscilloscope view
-* Note/chord recognition (basic stuff for now)
+* Optional oscilloscope or frequency bar visualizers
+* Note/chord recognition
 * Uses WebAudio OscillatorNode for synth output
-    * Use Synth Controls dropdown to adjust wave type, panning, pitch bend range, delay amount, 3-band EQ, compressor, and master volume
-    * Experimental support for [WebAudioFont](https://github.com/surikov/webaudiofont) (`?player=waf`)
+    * Use Synth Controls dropdown to adjust wave type, panning, ADSR, pitch bend range, delay amount, 3-band EQ, compressor, and master volume
+* Experimental support for [Sfumato](https://github.com/felixroos/sfumato)
+* Experimental support for [WebAudioFont](https://github.com/surikov/webaudiofont)
 
 ## Contributions
 
@@ -46,8 +48,3 @@ Much thanks to [dabbmedia/web-audio-synth](https://github.com/dabbmedia/web-audi
 * [List of musical scales and modes](https://en.wikipedia.org/wiki/List_of_musical_scales_and_modes)
 * [Interval_(music)](https://en.wikipedia.org/wiki/Interval_(music))
 * [Sinusoidal example](https://p5js.org/examples/math-sine-wave.html)
-
-## Dependencies (experimental for now)
-
-* [WebAudioFont](https://github.com/surikov/webaudiofont)
-    * [WebAudioFont Instruments](https://github.com/surikov/webaudiofont#catalog-of-instruments)
