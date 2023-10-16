@@ -410,92 +410,101 @@ onMounted(() => {
   </div>
 
   <div id="other-controls-container">
-    <label for="input-types" class="fieldset-label">Input</label>
-    <fieldset id="input-types">
-      <input
-        type="checkbox"
-        id="use-keyboard"
-        name="use-keyboard"
-        :checked="props.useKeyboard"
-        @change="updateUseKeyboardFlag($event.target.checked)"
-      />
-      <label for="use-keyboard" title="Enable keyboard support?">⌨️</label>
+    <div class="form-group">
+      <label for="input-types" class="fieldset-label label-text">Input</label>
+      <label for="input-types" class="fieldset-label label-image">🎙️</label>
+      <fieldset id="input-types">
+        <input
+          type="checkbox"
+          id="use-keyboard"
+          name="use-keyboard"
+          :checked="props.useKeyboard"
+          @change="updateUseKeyboardFlag($event.target.checked)"
+        />
+        <label for="use-keyboard" title="Enable keyboard support?">⌨️</label>
 
-      <input
-        type="checkbox"
-        id="use-midi"
-        name="use-midi"
-        :checked="props.useMidi"
-        @change="updateUseMidiFlag($event.target.checked)"
-      />
-      <label for="use-midi" title="Enable MIDI keyboard support?">🎹</label>
+        <input
+          type="checkbox"
+          id="use-midi"
+          name="use-midi"
+          :checked="props.useMidi"
+          @change="updateUseMidiFlag($event.target.checked)"
+        />
+        <label for="use-midi" title="Enable MIDI keyboard support?">🎹</label>
 
-      <input
-        type="checkbox"
-        id="use-mouse"
-        name="use-mouse"
-        :checked="props.useMouse"
-        @change="updateUseMouseFlag($event.target.checked)"
-      />
-      <label for="use-mouse" title="Enable mouse/touch support?">🐭/🖐️</label>
-    </fieldset>
+        <input
+          type="checkbox"
+          id="use-mouse"
+          name="use-mouse"
+          :checked="props.useMouse"
+          @change="updateUseMouseFlag($event.target.checked)"
+        />
+        <label for="use-mouse" title="Enable mouse/touch support?">🖐️</label>
+      </fieldset>
+    </div>
 
-    <label for="root-scale" class="fieldset-label">Scale</label>
-    <fieldset id="root-scale">
-      <select
-        class="small"
-        id="root-note"
-        name="root-note"
-        v-model="rootNoteSelected"
-        @change="updateRootNoteValue($event.target.value)"
-      >
-        <option disabled value="">- Root -</option>
-        <option
-          v-for="val in notes"
-          :value="val"
-        >{{ val }}</option>
-      </select>
+    <div class="form-group">
+      <label for="root-scale" class="fieldset-label label-text">Scale</label>
+      <label for="root-scale" class="fieldset-label label-image">⚖️</label>
+      <fieldset id="root-scale">
+        <select
+          class="small"
+          id="root-note"
+          name="root-note"
+          v-model="rootNoteSelected"
+          @change="updateRootNoteValue($event.target.value)"
+        >
+          <option disabled value="">- Root -</option>
+          <option
+            v-for="val in notes"
+            :value="val"
+          >{{ val }}</option>
+        </select>
 
-      <select
-        class="small"
-        id="scale-type"
-        name="scale-type"
-        v-model="scaleTypeSelected"
-        @change="updateScaleTypeValue($event.target.value)"
-      >
-        <option disabled value="">- Scale -</option>
-        <option
-          v-for="key in Object.keys(scales)"
-          :value="key"
-        >{{ key }}</option>
-      </select>
-    </fieldset>
+        <select
+          class="small"
+          id="scale-type"
+          name="scale-type"
+          v-model="scaleTypeSelected"
+          @change="updateScaleTypeValue($event.target.value)"
+        >
+          <option disabled value="">- Scale -</option>
+          <option
+            v-for="key in Object.keys(scales)"
+            :value="key"
+          >{{ key }}</option>
+        </select>
+      </fieldset>
+    </div>
 
-    <label for="visualizer-types" class="fieldset-label">Visualizer</label>
-    <fieldset id="visualizer-types">
-      <input
-        type="checkbox"
-        id="use-visualizer"
-        name="use-visualizer"
-        :checked="props.useVisualizer"
-        @change="updateUseVisualizerFlag($event.target.checked)"
-      />
-      <label for="use-visualizer" title="Enable visualizer?">📈</label>
+    <div class="form-group">
+      <label for="visualizer-types" class="fieldset-label label-text">Visualizer</label>
+      <label for="visualizer-types" class="fieldset-label label-image">👀</label>
+      <fieldset id="visualizer-types">
+        <input
+          type="checkbox"
+          id="use-visualizer"
+          name="use-visualizer"
+          :checked="props.useVisualizer"
+          @change="updateUseVisualizerFlag($event.target.checked)"
+        />
+        <label for="use-visualizer" title="Enable visualizer?">📈</label>
 
-      <select
-        class="small"
-        id="visualizer-type"
-        name="visualizer-type"
-        v-model="visualizerTypeSelected"
-        @change="updateVisualuzerTypeValue($event.target.value)"
-      >
-        <option disabled value="">- Type -</option>
-        <option
-          v-for="val in vizTypes"
-          :value="val"
-        >{{ val }}</option>
-      </select>
-    </fieldset>
+        <select
+          class="small"
+          id="visualizer-type"
+          name="visualizer-type"
+          v-model="visualizerTypeSelected"
+          @change="updateVisualuzerTypeValue($event.target.value)"
+        >
+          <option disabled value="">- Type -</option>
+          <option
+            v-for="val in vizTypes"
+            :value="val"
+          >{{ val }}</option>
+        </select>
+      </fieldset>
+    </div>
   </div>
 
 </template>
@@ -761,44 +770,73 @@ onMounted(() => {
   }
   @media (min-width: 1024px) {
     #other-controls-container {
-      margin: 5px 20px;
+      margin: 5px 20px 0;
     }
   }
-  #other-controls-container fieldset {
+
+  #other-controls-container .form-group {
     align-items: center;
     background-color: var(--color-background-soft);
     border: 1px solid #aaaaaa;
-    border-radius: 4px;
-    border-bottom-left-radius: 4px;
-    border-top-left-radius: 4px;
+    border-radius: 0;
     display: flex;
     height: 30px;
-    margin: 0 10px 0 0;
-    padding: 2px;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+    width: 100%;
   }
+    @media (min-width: 768px) {
+      #other-controls-container .form-group {
+        border-radius: 4px;
+        justify-content: left;
+        margin-right: 5px;
+        width: auto;
+      }
+    }
+    @media (max-width: 767px) {
+      #other-controls-container .form-group:first-of-type {
+        border-bottom: none;
+      }
+        #other-controls-container .form-group:first-of-type label.fieldset-label {
+          border-top: none;
+        }
+
+      #other-controls-container .form-group:last-of-type {
+        border-top: none;
+      }
+        #other-controls-container .form-group:last-of-type label.fieldset-label {
+          border-top: none;
+        }
+    }
+
+  #other-controls-container fieldset {
+    border-width: 0;
+    display: flex;
+    padding: 0 5px;
+  }
+    @media (min-width: 768px) {
+      #other-controls-container fieldset {
+        padding-right: 0;
+      }
+    }
+
   #other-controls-container input {
     margin: 0 0.35em;
   }
   #other-controls-container label {
-    margin-right: 0.2em;
     min-width: 20px;
   }
     @media (min-width: 768px) {
-      #other-controls-container fieldset {
-        border-bottom-left-radius: 0;
-        border-top-left-radius: 0;
-      }
       #other-controls-container label {
         margin-right: 0.5em;
       }
     }
     #other-controls-container label.fieldset-label {
-      background-color: var(--color-background-mute);
+      align-items: center;
+      background-color: var(--color-background-soft);
       border: 1px solid #aaaaaa;
-      border-radius: 4px;
-      border-bottom-right-radius: 0;
-      border-top-right-radius: 0;
-      border-right: none;
+      border-radius: 0;
       color: var(--color-text);
       display: none;
       font-size: 1.4rem;
@@ -807,18 +845,49 @@ onMounted(() => {
       padding: 0 5px;
       text-transform: uppercase;
     }
-    @media (min-width: 768px) {
-      #other-controls-container label.fieldset-label {
-        align-items: center;
-        display: flex;
-        margin-right: 0;
+      @media (min-width: 768px) {
+        #other-controls-container label.fieldset-label {
+          align-items: center;
+          display: flex;
+          margin-right: 0;
+        }
       }
-    }
+      #other-controls-container label.fieldset-label.label-text {
+        border-right: 0;
+        display: flex;
+        padding-right: 0;
+      }
+        @media (min-width: 768px) {
+          #other-controls-container label.fieldset-label.label-text {
+            border-left: 0;
+            border-bottom-left-radius: 4px;
+            border-right: 1px solid #aaaaaa;
+            border-top-left-radius: 4px;
+            display: flex;
+            padding-right: 5px;
+          }
+        }
+
+      #other-controls-container label.fieldset-label.label-image {
+        border-left: 0;
+        display: flex;
+      }
+        @media (min-width: 768px) {
+          #other-controls-container label.fieldset-label.label-image {
+            display: none;
+          }
+        }
+
     #other-controls-container label + select.small {
       margin-right: 5px;
     }
+
   #other-controls-container select.small {
-    height: 24px;
+    height: 26px;
     padding: 0;
   }
+    #other-controls-container select.small:last-of-type {
+      margin-right: 5px;
+    }
+
 </style>

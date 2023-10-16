@@ -2168,13 +2168,17 @@ onMounted(() => {
   }
 
 #visualizer-container {
-  margin: 5px auto 0;
-  width: 50%;
+  margin: 5px 0 0;
+  width: auto;
 }
+  @media (min-width: 481px) {
+    #visualizer-container {
+      margin: 5px 3px 0;
+    }
+  }
   @media (min-width: 768px) {
     #visualizer-container {
       margin: 0 2px;
-      width: auto;
     }
   }
   @media (min-width: 1024px) {
