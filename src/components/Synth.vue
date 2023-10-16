@@ -9,6 +9,7 @@ import Keyboard from './Keyboard.vue'
 import ADSREnvelope from 'adsr-envelope'
 
 const INTERVALS = {
+  '5': [7, 5],
   'major': [4, 3],
   'aug': [4, 4],
   'minor': [3, 4],
@@ -1872,7 +1873,10 @@ const _getChord = (midiNums) => {
         intval1 = midiNums[1] - midiNums[0]
         intval2 = midiNums[2] - midiNums[1]
 
-        if (_arraysAreEqual([intval1, intval2], INTERVALS['major'])) {
+        if (_arraysAreEqual([intval1, intval2], INTERVALS['5'])) {
+          chordName = `${_midi2Name(midiNums[0])}5`
+        }
+        else if (_arraysAreEqual([intval1, intval2], INTERVALS['major'])) {
           chordName = `${_midi2Name(midiNums[0])}maj`
         }
         else if (_arraysAreEqual([intval1, intval2], INTERVALS['aug'])) {
