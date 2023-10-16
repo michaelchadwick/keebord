@@ -656,6 +656,10 @@ const analyzerNode = new AnalyserNode(audioContext, {
   fftSize: 2048,
   smoothingTimeConstant: 1
 })
+// these are needed for frequency bars to work
+analyzerNode.minDecibels = -100
+analyzerNode.maxDecibels = 10
+analyzerNode.smoothingTimeConstant = 0.85
 
 const masterGainNode = audioContext.createGain()
 masterGainNode.gain.value = parseFloat(nodeGroups.output.nodes.masterGain.currentValue)
@@ -1693,12 +1697,14 @@ const _initVisualizer = () => {
       analyzerNode.fftSize = 256
       const bufferLengthBars = analyzerNode.frequencyBinCount
 
-      const dataArrayBars = new Uint8Array(bufferLengthBars)
-
       // initialize background and line styles
       canvasCtx.fillStyle = 'rgb(0, 0, 0)'
+      canvasCtx.lineWidth = 2
+      canvasCtx.strokeStyle = 'rgb(248, 248, 248)'
 
       canvasCtx.clearRect(0, 0, WIDTH, HEIGHT)
+
+      const dataArrayBars = new Uint8Array(bufferLengthBars)
 
       const drawBars = function () {
         drawVisual = requestAnimationFrame(drawBars)
