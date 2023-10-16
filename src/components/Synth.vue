@@ -1940,9 +1940,15 @@ const _arraysAreEqual = (arr1, arr2) => {
   return arr1.join() == arr2.join()
 }
 const _midi2Name = (midiNumber) => {
-  const name = MUSICAL_NOTES.filter(mNote => mNote.midi == midiNumber)[0].name
+  const note = MUSICAL_NOTES.filter(mNote => mNote.midi == midiNumber)
 
-  return name[1] == 'b' ? `${name[0]}${name[1]}` : `${name[0]}`
+  if (note.length) {
+    const name = note[0].name
+
+    return name[1] == 'b' ? `${name[0]}${name[1]}` : `${name[0]}`
+  } else {
+    return null
+  }
 }
 const _makeDistortionCurve = (amount) => {
   // https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createWaveShaper
