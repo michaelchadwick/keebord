@@ -1147,7 +1147,7 @@ const createOscNode = function (noteNum, startTime, envelope) {
   if (!oscNotes[noteNum]) {
     // create Web Audio oscillator
     const oscNode = audioContext.createOscillator()
-    const noteFreq = parseFloat(MUSICAL_NOTES[noteNum].frequency)
+    const noteFreq = parseFloat(MUSICAL_NOTES.filter(n => n.midi == noteNum)[0].frequency)
 
     // set oscillator wave type
     oscType = document.getElementById('osc-type')
