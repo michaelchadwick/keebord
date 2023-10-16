@@ -184,7 +184,7 @@ button#theme-toggler {
       display: none;
     }
 
-@media (min-width: 550px) {
+@media (min-width: 481px) {
   button#theme-toggler {
     width: 95px;
   }
