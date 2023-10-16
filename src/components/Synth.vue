@@ -1901,6 +1901,11 @@ const _getChord = (midiNums) => {
         intval2 = midiNums[2] - midiNums[1]
         intval3 = midiNums[3] - midiNums[2]
 
+        if (midiNums[3] - midiNums[0] == 12) {
+          // we have an octave, so return triad instead
+          return _getChord(midiNums.slice(0, midiNums.length - 1))
+        }
+
         if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS['dom7'])) {
           chordName = `${_midi2Name(midiNums[0])}7`
         }
