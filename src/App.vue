@@ -1,11 +1,11 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import { kbSettings } from './settings';
 import Modal from './components/Modal.vue'
 import Synth from './components/Synth.vue'
 import NebyooApps from './components/NebyooApps.vue'
 
 const KEEBORD_ENV_PROD_URL = [
+  'neb.host',
   'keebord.neb.host',
   'piano.neb.host'
 ]
@@ -28,8 +28,6 @@ const handleClickTouch = function(event) {
 }
 
 onMounted(() => {
-  // console.log('MOUNTED App.vue', kbSettings.value)
-
   // DOM > main divs/elements
   const dom = {
     "navOverlay": document.getElementById('nav-overlay'),

@@ -1,6 +1,5 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { kbSettings } from '../settings';
 
 const props = defineProps({
   musicalNotes: Array,
@@ -324,8 +323,6 @@ const scaleFilter = () => {
 const displayedNotes = ref(scaleFilter(props.musicalNotes))
 
 onMounted(() => {
-  // console.log('MOUNTED Keyboard.vue', kbSettings.value)
-
   // grab reference to on-screen keyboard
   pianoDiv = document.getElementById('keyboard')
   pianoDiv.scrollLeft = (pianoDiv.scrollWidth / 9) * 3
