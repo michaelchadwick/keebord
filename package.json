@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "dev": "vite --port 3333 --open http://localhost:3333",
     "build": "vite build",
     "preview": "vite preview",
@@ -12,12 +13,13 @@
     "adsr-envelope": "^1.0.0",
     "sfumato": "^0.1.2",
     "vue": "^3.2.45",
-    "webaudiofont":"^2.5.0"
+    "webaudiofont": "^2.5.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",
     "eslint": "^8.22.0",
     "eslint-plugin-vue": "^9.3.0",
     "vite": "^4.0.0"
-  }
+  },
+  "packageManager": "pnpm@9.0.6+sha512.f6d863130973207cb7a336d6b439a242a26ac8068077df530d6a86069419853dc1ffe64029ec594a9c505a3a410d19643c870aba6776330f5cfddcf10a9c1617"
 }
