@@ -675,17 +675,19 @@ const destinationMaster = audioContext.destination
 const createSendChain = function () {
   // console.log('creating send chain')
 
-  // TODO: distortion
+  // TODO: add distortion for all outputTypes
   // masterGain->distortion
   // const distortionNode = createDistNode('4x')
 
   // nodeGroups.filters.nodes.distortion.audioNode = distortionNode
   // nodeGroups.output.nodes.masterGain.audioNode.connect(nodeGroups.filters.nodes.distortion.audioNode)
 
-  // TODO: distortion->reverb
+  // TODO: add reverb for all outputTypes
   // const reverbNode = createReverbNode()
 
   // delay
+  // TODO: add delay for sf2 and waf
+  // TODO: add multiple delays
   // masterGain->delay->eqLow
   if (nodeGroups.filters.nodes.delay.enabled !== false && !nodeGroups.filters.nodes.delay.audioNode) {
     const delayNode = createDelayNode(nodeGroups.filters.nodes.delay.max)
@@ -694,7 +696,6 @@ const createSendChain = function () {
     const delayGainNode = audioContext.createGain()
     delayGainNode.gain.value = (parseFloat(nodeGroups.output.nodes.masterGain.currentValue) * 0.75).toFixed(1)
 
-    // TODO: distortion
     // nodeGroups.filters.nodes.distortion.audioNode.connect(delayGainNode)
     nodeGroups.output.nodes.masterGain.audioNode.connect(delayGainNode)
     delayGainNode.connect(nodeGroups.filters.nodes.delay.audioNode)
@@ -705,13 +706,11 @@ const createSendChain = function () {
   else if (nodeGroups.filters.nodes.delay.audioNode && !nodeGroups.filters.nodes.delay.enabled) {
     nodeGroups.filters.nodes.delay.audioNode.disconnect()
 
-    // TODO: distortion
     // nodeGroups.filters.nodes.distortion.audioNode.connect(nodeGroups.filters.nodes.eqLow.audioNode)
     nodeGroups.output.nodes.masterGain.audioNode.connect(nodeGroups.filters.nodes.eqLow.audioNode)
   }
   // masterGain->eqLow
   else {
-    // TODO: distortion
     // nodeGroups.filters.nodes.distortion.audioNode.connect(nodeGroups.filters.nodes.eqLow.audioNode)
     nodeGroups.output.nodes.masterGain.audioNode.connect(nodeGroups.filters.nodes.eqLow.audioNode)
   }
@@ -730,15 +729,18 @@ const createMasterChain = function () {
   nodeGroups.filters.nodes.compressor.audioNode = createCompNode(-50, 40, nodeGroups.filters.nodes.compressor.currentValue, 0, 0.25)
 
   // eqLow->eqMid->eqHigh->compressor
+  // TODO: added eq and compression for sf2 and waf
   nodeGroups.filters.nodes.eqLow.audioNode.connect(nodeGroups.filters.nodes.eqMid.audioNode)
   nodeGroups.filters.nodes.eqMid.audioNode.connect(nodeGroups.filters.nodes.eqHigh.audioNode)
   nodeGroups.filters.nodes.eqHigh.audioNode.connect(nodeGroups.filters.nodes.compressor.audioNode)
 
+  // TODO: add panning for sf2
   // if panning, then compressor->pan->destination
   if (audioContext.createStereoPanner && nodeGroups.output.nodes.pan) {
     nodeGroups.output.nodes.pan.audioNode = createPanNode(0)
 
     nodeGroups.filters.nodes.compressor.audioNode.connect(nodeGroups.output.nodes.pan.audioNode)
+    // TODO: master volume does not work for sf2
     nodeGroups.output.nodes.pan.audioNode.connect(analyzerNode)
     analyzerNode.connect(destinationMaster)
   }
@@ -991,6 +993,7 @@ const noteStart = function (noteNum, velocity = 64) {
   switch (nodeGroups.output.nodes.outputType.currentValue) {
     // use sfumato
     case 'sf2':
+      // TODO: add ADSR control (sf2)
       // console.log(`sf2Notes[${noteNum}] noteStart`, sf2Notes[noteNum])
 
       createSF2Node(noteNum, startTime)
@@ -1001,6 +1004,7 @@ const noteStart = function (noteNum, velocity = 64) {
 
     // use WebAudioFont
     case 'waf':
+      // TODO: add ADSR control (waf)
       // console.log(`wafNotes[${noteNum}] noteStart`)
 
       createWafNode(noteNum, startTime)
@@ -1012,6 +1016,8 @@ const noteStart = function (noteNum, velocity = 64) {
     // use OscillatorNodes
     default:
       // console.log(`oscNotes[${noteNum}] noteStart`)
+
+      // TODO: oscillator nodes get "stuck" on mobile
 
       createOscNode(noteNum, startTime, envelope)
 
@@ -1044,6 +1050,7 @@ const noteStop = function (noteNum, velocity = 64) {
       }
 
       // update chord recognition display
+      // TODO: chord recognition gets thrown off by multiple octaves
       currentNotes.value = _getChord(Object.keys(sf2Notes))
 
       break
@@ -1287,7 +1294,7 @@ const pitchBend = function (velocity) {
   })
 }
 const pitchMod = function (velocity) {
-  // TODO: pitchMod
+  // TODO: add pitch mod (sends same midi message as volume)
   //   sort of works, but effect is not quite correct yet
   //   also, setting to 0 does not reset properly
   //   and make pitchBend inoperable
@@ -1641,6 +1648,7 @@ const updateOutputTypeHandler = (type) => {
 // _PRIVATE METHODS //
 // //////////////// //
 
+// TODO: add oscilloscope view for sf2
 const _initVisualizer = () => {
   window.cancelAnimationFrame(drawVisual)
 
@@ -1695,6 +1703,7 @@ const _initVisualizer = () => {
 
       drawWaves()
     } else if (visualizerType == 'bars') {
+      // TODO: frequency bars don't work for sf2
       analyzerNode.fftSize = 256
       const bufferLengthBars = analyzerNode.frequencyBinCount
 

@@ -53,6 +53,8 @@ onMounted(() => {
   // When the user clicks or touches anywhere outside of the modal, close it
   window.addEventListener('click', handleClickTouch)
   window.addEventListener('touchend', handleClickTouch)
+
+  // TODO: make a more compact mobile interface
 })
 </script>
 
