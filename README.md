@@ -10,7 +10,7 @@ Play piano using keyboard, mouse, touch or MIDI input. Built using [VueJS](https
 * Optional oscilloscope or frequency bar visualizers
 * Note/chord recognition
 * Uses WebAudio OscillatorNode for synth output
-    * Use Synth Controls dropdown to adjust wave type, panning, ADSR, pitch bend range, delay amount, 3-band EQ, compressor, and master volume
+  * Use Synth Controls dropdown to adjust wave type, panning, ADSR, pitch bend range, delay amount, 3-band EQ, compressor, and master volume
 * Experimental support for [Sfumato](https://github.com/felixroos/sfumato)
 * Experimental support for [WebAudioFont](https://github.com/surikov/webaudiofont)
 
