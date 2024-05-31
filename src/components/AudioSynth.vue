@@ -867,7 +867,7 @@ const controlValueChanged = function (controlGroup, controlName, newValue) {
       }
     } else {
       nodeControl.currentValue = parseFloat(newValue).toFixed(1)
-      nodeControl.audioNode[control.parameter].setValueAtTime(
+      nodeControl.audioNode['control'].parameter.setValueAtTime(
         nodeControl.currentValue,
         audioContext.currentTime
       )
