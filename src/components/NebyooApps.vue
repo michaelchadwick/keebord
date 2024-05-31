@@ -18,7 +18,7 @@ onMounted(() => {
 
 <template>
   <div class="nav-list">
-    <a v-for="app in apps" :href="app.url" target="_blank">{{ app.title }}</a>
+    <a v-for="app in apps" :key="app.url" :href="app.url" target="_blank">{{ app.title }}</a>
   </div>
 </template>
 
