@@ -1,14 +1,33 @@
 {
   "name": "keebord",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
+  "description": "Node modules for VueJS Keebord project.",
+  "repository": "https://github.com/michaelchadwick/keebord",
+  "license": "MIT",
+  "author": {
+    "name": "Michael Chadwick",
+    "email": "mike@neb.host",
+    "url": "https://michaelchadwick.info"
+  },
+  "directories": {
+    "doc": "doc",
+    "test": "tests"
+  },
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "dev": "vite --port 3333 --open http://localhost:3333",
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "npx cypress run --env host=local",
+    "test-open": "npx cypress open --e2e -b electron --env host=local",
+    "test-open-prod": "npx cypress open --e2e -b electron --config baseUrl='https://keebord.neb.host' --env host=prod",
+    "test-run": "npx cypress run --env host=local",
+    "test-run-anon": "npx cypress run --spec='cypress/integration/anon/*.cy.js' --env host=local",
+    "test-run-prod": "npx cypress run --config baseUrl='https://keebord.neb.host' --env host=prod",
+    "test-run-prod-anon": "npx cypress run --config baseUrl='https://keebord.neb.host' --spec='cypress/integration/anon/*.cy.js' --env host=prod"
   },
   "dependencies": {
     "adsr-envelope": "^1.0.0",
@@ -18,10 +37,20 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",
-    "eslint": "^8.22.0",
+    "cypress": "^13.10.0",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-cypress": "^3.3.0",
+    "eslint-plugin-n": "^17.0.0",
+    "eslint-plugin-prettier": "^5.1.3",
     "eslint-plugin-vue": "^9.3.0",
+    "eslint-plugin-yml": "^1.14.0",
     "husky": "^9.0.11",
     "vite": "^4.0.0"
+  },
+  "engines": {
+    "node": ">=16",
+    "pnpm": ">=9"
   },
   "packageManager": "pnpm@9.0.6+sha512.f6d863130973207cb7a336d6b439a242a26ac8068077df530d6a86069419853dc1ffe64029ec594a9c505a3a410d19643c870aba6776330f5cfddcf10a9c1617"
 }
