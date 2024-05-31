@@ -11,6 +11,9 @@ importers:
       adsr-envelope:
         specifier: ^1.0.0
         version: 1.0.0
+      husky:
+        specifier: ^9.0.11
+        version: 9.0.11
       sfumato:
         specifier: ^0.1.2
         version: 0.1.2
@@ -446,6 +449,11 @@ packages:
   has-flag@4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
     engines: {node: '>=8'}
+
+  husky@9.0.11:
+    resolution: {integrity: sha512-AB6lFlbwwyIqMdHYhwPe+kjOC3Oc5P3nThEoW/AaO2BX3vJDjWPFxYLxokUZOo6RNX20He3AaT8sESs9NJcmEw==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   ignore@5.2.4:
     resolution: {integrity: sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==}
@@ -1157,6 +1165,8 @@ snapshots:
   grapheme-splitter@1.0.4: {}
 
   has-flag@4.0.0: {}
+
+  husky@9.0.11: {}
 
   ignore@5.2.4: {}
 

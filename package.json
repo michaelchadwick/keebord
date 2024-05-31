@@ -7,7 +7,8 @@
     "dev": "vite --port 3333 --open http://localhost:3333",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "prepare": "husky"
   },
   "dependencies": {
     "adsr-envelope": "^1.0.0",
@@ -19,6 +20,7 @@
     "@vitejs/plugin-vue": "^4.0.0",
     "eslint": "^8.22.0",
     "eslint-plugin-vue": "^9.3.0",
+    "husky": "^9.0.11",
     "vite": "^4.0.0"
   },
   "packageManager": "pnpm@9.0.6+sha512.f6d863130973207cb7a336d6b439a242a26ac8068077df530d6a86069419853dc1ffe64029ec594a9c505a3a410d19643c870aba6776330f5cfddcf10a9c1617"
