@@ -54,7 +54,11 @@ const emit = defineEmits([
               $event.target.value
             )"
           >
-            <option v-for="option in props.controlData.options" v-bind:value="option.value">
+            <option 
+              v-for="option in props.controlData.options" 
+              :key="option"
+              :value="option.value"
+            >
               {{ option.text }}
             </option>
           </select>
