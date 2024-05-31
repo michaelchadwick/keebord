@@ -32,7 +32,7 @@ let scaleTypeSelected = props.scaleType
 let visualizerTypeSelected = props.visualizerType
 
 let mousedown = false
-let hasTouch = 'ontouchstart' in window
+// let hasTouch = 'ontouchstart' in window
 let lastTouchLeave
 let lastTouchEnter
 let onTouchLeaveEvents = []
@@ -387,6 +387,7 @@ onMounted(() => {
     <div id="keyboard">
       <button
         v-for="(note, index) in displayedNotes"
+        :key="note"
         :data-noteid="note.midi"
         :class="{
           'key-white': note.name[1] != 'b' || scaleTypeSelected != 'chromatic',
@@ -457,6 +458,7 @@ onMounted(() => {
           <option disabled value="">- Root -</option>
           <option
             v-for="val in notes"
+            :key="val"
             :value="val"
           >{{ val }}</option>
         </select>
@@ -471,6 +473,7 @@ onMounted(() => {
           <option disabled value="">- Scale -</option>
           <option
             v-for="key in Object.keys(scales)"
+            :key="key"
             :value="key"
           >{{ key }}</option>
         </select>
@@ -500,6 +503,7 @@ onMounted(() => {
           <option disabled value="">- Type -</option>
           <option
             v-for="val in vizTypes"
+            :key="val"
             :value="val"
           >{{ val }}</option>
         </select>
