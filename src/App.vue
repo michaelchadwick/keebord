@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue';
-import Modal from './components/Modal.vue'
-import Synth from './components/Synth.vue'
+import Modal from './components/ModalDialog.vue'
+import Synth from './components/AudioSynth.vue'
 import NebyooApps from './components/NebyooApps.vue'
 
 const KEEBORD_ENV_PROD_URL = [

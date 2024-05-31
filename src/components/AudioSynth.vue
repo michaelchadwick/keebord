@@ -5,7 +5,7 @@ import { kbSettings } from '../settings'
 import { loadSoundfont, startPresetNote } from 'sfumato'
 
 import NodeControl from './NodeControl.vue'
-import Keyboard from './Keyboard.vue'
+import Keyboard from './KeyBoard.vue'
 import ADSREnvelope from 'adsr-envelope'
 
 const INTERVALS = {
