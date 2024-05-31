@@ -618,7 +618,6 @@ let midiAccess = null
 
 let startTime = 0
 let pitchBendRange = 2
-let modInterval = null
 let drawVisual = null
 let segmentWidth
 
@@ -753,6 +752,7 @@ const createMasterChain = function () {
 
 // FX NODE CREATORS
 
+/* TODO: Distortion/Reverb nodes
 const createDistNode = (oversample) => {
   const audioNode = audioContext.createWaveShaper()
 
@@ -762,11 +762,14 @@ const createDistNode = (oversample) => {
 
   return audioNode
 }
+
 const createReverbNode = () => {
   const audioNode = audioContext.createConvolver()
 
   return audioNode
 }
+*/
+
 const createDelayNode = (max) => {
   const audioNode = audioContext.createDelay(max)
 
@@ -1293,6 +1296,9 @@ const pitchBend = function (velocity) {
     // console.log(`pitchBend - cur: ${curFreq}, mult: ${pbCents}, new: ${newFreq}`)
   })
 }
+
+/* TODO PitchMod
+let modInterval = null
 const pitchMod = function (velocity) {
   // TODO: add pitch mod (sends same midi message as volume)
   //   sort of works, but effect is not quite correct yet
@@ -1376,6 +1382,7 @@ const pitchMod = function (velocity) {
     }
   }
 }
+*/
 
 // INPUT TOGGLES
 
@@ -1540,10 +1547,10 @@ const keyController = (e) => {
   }
 }
 const midiController = (e) => {
-  let timestamp = e.timeStamp
+  // let timestamp = e.timeStamp
   let data = e.data
-  let cmd = data[0] >> 4
-  let channel = data[0] & 0xf
+  // let cmd = data[0] >> 4
+  // let channel = data[0] & 0xf
   let type = data[0] & 0xf0
   let noteNum = data[1]
   let velocity = data[2]
@@ -1968,6 +1975,8 @@ const _midi2Name = (midiNumber) => {
     return null
   }
 }
+
+/* TODO: DistortionCurve
 const _makeDistortionCurve = (amount) => {
   // https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/createWaveShaper
 
@@ -1983,6 +1992,8 @@ const _makeDistortionCurve = (amount) => {
 
   return curve
 }
+*/
+
 const _saveToLocalStorage = () => {
   localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
 }
