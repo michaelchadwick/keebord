@@ -978,6 +978,9 @@ const toggleSynthControls = function () {
 
 // midi, keyboard, mouse, and touch inputs all come here to create actual sound
 const noteStart = function (noteNum, velocity = 64) {
+  if (!MUSICAL_NOTES.some(note => note.midi == noteNum)) {
+    return null
+  }
   // update UI
   const domKey = document.querySelectorAll(`button[data-noteid='${noteNum}']`)[0]
   if (domKey) {
