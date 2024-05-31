@@ -2055,6 +2055,7 @@ onMounted(() => {
 
   <div id="synth-controls-container">
     <div class="node-group" v-for="(group, name) in nodeGroups"
+      :key="group"
       :group="name"
       :class="{
         'enabled': group.enabled,
@@ -2062,6 +2063,7 @@ onMounted(() => {
       }"
     >
       <NodeControl v-for="(control, key) in group.nodes"
+        :key="control"
         :control-group="name"
         :control-key="key"
         :control-data="control"
