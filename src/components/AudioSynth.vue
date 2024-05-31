@@ -1865,6 +1865,7 @@ const _initWAF = async () => {
     document.head.appendChild(mainScript)
 
     mainScript.onload = async () => {
+      // eslint-disable-next-line no-undef
       wafPlayer = new WebAudioFontPlayer()
 
       // switch instrument to new choice

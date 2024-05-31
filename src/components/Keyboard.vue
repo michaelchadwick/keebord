@@ -25,10 +25,14 @@ const emit = defineEmits([
 ])
 
 let pianoDiv = null
-let useMouse = props.useMouse
 
+// eslint-disable-next-line vue/no-setup-props-destructure
+let useMouse = props.useMouse
+// eslint-disable-next-line vue/no-setup-props-destructure
 let rootNoteSelected = props.rootNote
+// eslint-disable-next-line vue/no-setup-props-destructure
 let scaleTypeSelected = props.scaleType
+// eslint-disable-next-line vue/no-setup-props-destructure
 let visualizerTypeSelected = props.visualizerType
 
 let mousedown = false
