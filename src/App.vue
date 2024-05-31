@@ -40,7 +40,9 @@ onMounted(() => {
   const env = KEEBORD_ENV_PROD_URL.includes(document.location.hostname) ? 'prod' : 'local'
 
   if (env == 'local') {
-    document.title = '(LH) ' + document.title
+    if (!document.title.includes('(LH)')) {
+      document.title = '(LH) ' + document.title
+    }
   }
 
   dom.btnNav.addEventListener('click', () => {
