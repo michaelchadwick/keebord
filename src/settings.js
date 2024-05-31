@@ -12,7 +12,6 @@ export const kbSettings = ref({
     delayCheck: lsSettings ? (lsSettings.controls ? lsSettings.controls.delayCheck : false) : false,
     eqCompressor: lsSettings ? (lsSettings.controls ? lsSettings.controls.eqCompressor : 3.0) : 3.0,
     eqLow: lsSettings ? (lsSettings.controls ? lsSettings.controls.eqLow : 0.5) : 0.5,
-    eqLow: lsSettings ? (lsSettings.controls ? lsSettings.controls.eqLow : 0.5) : 0.5,
     eqMid: lsSettings ? (lsSettings.controls ? lsSettings.controls.eqMid : 0.5) : 0.5,
     eqHigh: lsSettings ? (lsSettings.controls ? lsSettings.controls.eqHigh : 0.5) : 0.5,
     masterGain: lsSettings ? (lsSettings.controls ? lsSettings.controls.masterGain : 0.8) : 0.8,
