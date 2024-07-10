@@ -5,21 +5,15 @@ const emit = defineEmits(['close'])
 <template>
   <div class="modal-mask">
     <div class="modal-wrapper">
-
       <div class="modal-container">
         <div class="modal-header">
-          <slot name="header">
-            default header
-          </slot>
+          <slot name="header"> default header </slot>
         </div>
 
         <div class="modal-body">
-          <slot name="body">
-            default body
-          </slot>
+          <slot name="body"> default body </slot>
         </div>
       </div>
-
     </div>
   </div>
 </template>
@@ -47,17 +41,31 @@ const emit = defineEmits(['close'])
   background-color: #fff;
   border-radius: 2px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
-  font-family: Helvetica, Arial, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    Consolas,
+    'Segoe UI',
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    'Open Sans',
+    'Helvetica Neue',
+    sans-serif,
+    Arial,
+    sans-serif;
   margin: 0px auto;
   padding: 20px;
   transition: all 0.3s ease;
   width: 90%;
 }
-  @media (min-width: 768px) {
-    .modal-container {
-      width: 33%;
-    }
+@media (min-width: 768px) {
+  .modal-container {
+    width: 33%;
   }
+}
 
 .modal-header h3 {
   margin-top: 0;
@@ -80,7 +88,8 @@ const emit = defineEmits(['close'])
  * these styles.
  */
 
-.modal-enter-from, .modal-leave-to {
+.modal-enter-from,
+.modal-leave-to {
   opacity: 0;
 }
 
@@ -89,5 +98,4 @@ const emit = defineEmits(['close'])
   -webkit-transform: scale(1.1);
   transform: scale(1.1);
 }
-
 </style>
