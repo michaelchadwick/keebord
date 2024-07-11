@@ -9,150 +9,150 @@ import Keyboard from './KeyBoard.vue'
 import ADSREnvelope from 'adsr-envelope'
 
 const INTERVALS = {
-  '5': [7, 5],
-  'major': [4, 3],
-  'aug': [4, 4],
-  'minor': [3, 4],
-  'dim': [3, 3],
-  'sus2': [2, 5],
-  'sus4': [5, 2],
-  'dom7': [4, 3, 3],
-  'min7': [3, 4, 3],
-  'maj7': [4, 3, 4],
-  '7sus4': [5, 2, 3]
+  5: [7, 5],
+  major: [4, 3],
+  aug: [4, 4],
+  minor: [3, 4],
+  dim: [3, 3],
+  sus2: [2, 5],
+  sus4: [5, 2],
+  dom7: [4, 3, 3],
+  min7: [3, 4, 3],
+  maj7: [4, 3, 4],
+  '7sus4': [5, 2, 3],
 }
 const MUSICAL_NOTES = [
   // index 0
-  { name: 'C0', frequency: 16.350, midi: 12 },
-  { name: 'Db0', frequency: 17.320, midi: 13 },
-  { name: 'D0', frequency: 18.350, midi: 14 },
-  { name: 'Eb0', frequency: 19.450, midi: 15 },
-  { name: 'E0', frequency: 20.600, midi: 16 },
-  { name: 'F0', frequency: 21.830, midi: 17 },
-  { name: 'Gb0', frequency: 23.120, midi: 18 },
-  { name: 'G0', frequency: 24.500, midi: 19 },
-  { name: 'Ab0', frequency: 25.960, midi: 20 },
-  { name: 'A0', frequency: 27.500, midi: 21 },
-  { name: 'Bb0', frequency: 29.140, midi: 22 },
-  { name: 'B0', frequency: 30.870, midi: 23 },
+  { name: 'C0', frequency: 16.35, midi: 12 },
+  { name: 'Db0', frequency: 17.32, midi: 13 },
+  { name: 'D0', frequency: 18.35, midi: 14 },
+  { name: 'Eb0', frequency: 19.45, midi: 15 },
+  { name: 'E0', frequency: 20.6, midi: 16 },
+  { name: 'F0', frequency: 21.83, midi: 17 },
+  { name: 'Gb0', frequency: 23.12, midi: 18 },
+  { name: 'G0', frequency: 24.5, midi: 19 },
+  { name: 'Ab0', frequency: 25.96, midi: 20 },
+  { name: 'A0', frequency: 27.5, midi: 21 },
+  { name: 'Bb0', frequency: 29.14, midi: 22 },
+  { name: 'B0', frequency: 30.87, midi: 23 },
   // index 12
-  { name: 'C1', frequency: 32.700, midi: 24 },
-  { name: 'Db1', frequency: 34.650, midi: 25 },
-  { name: 'D1', frequency: 36.710, midi: 26 },
-  { name: 'Eb1', frequency: 38.890, midi: 27 },
-  { name: 'E1', frequency: 41.200, midi: 28 },
-  { name: 'F1', frequency: 43.650, midi: 29 },
-  { name: 'Gb1', frequency: 46.250, midi: 30 },
-  { name: 'G1', frequency: 49.000, midi: 31 },
-  { name: 'Ab1', frequency: 51.910, midi: 32 },
-  { name: 'A1', frequency: 55.000, midi: 33 },
-  { name: 'Bb1', frequency: 58.270, midi: 34 },
-  { name: 'B1', frequency: 61.740, midi: 35 },
+  { name: 'C1', frequency: 32.7, midi: 24 },
+  { name: 'Db1', frequency: 34.65, midi: 25 },
+  { name: 'D1', frequency: 36.71, midi: 26 },
+  { name: 'Eb1', frequency: 38.89, midi: 27 },
+  { name: 'E1', frequency: 41.2, midi: 28 },
+  { name: 'F1', frequency: 43.65, midi: 29 },
+  { name: 'Gb1', frequency: 46.25, midi: 30 },
+  { name: 'G1', frequency: 49.0, midi: 31 },
+  { name: 'Ab1', frequency: 51.91, midi: 32 },
+  { name: 'A1', frequency: 55.0, midi: 33 },
+  { name: 'Bb1', frequency: 58.27, midi: 34 },
+  { name: 'B1', frequency: 61.74, midi: 35 },
   // index 24
-  { name: 'C2', frequency: 65.410, midi: 36 },
-  { name: 'Db2', frequency: 69.300, midi: 37 },
-  { name: 'D2', frequency: 73.420, midi: 38 },
-  { name: 'Eb2', frequency: 77.780, midi: 39 },
-  { name: 'E2', frequency: 82.410, midi: 40 },
-  { name: 'F2', frequency: 87.310, midi: 41 },
-  { name: 'Gb2', frequency: 92.500, midi: 42 },
-  { name: 'G2', frequency: 98.000, midi: 43 },
-  { name: 'Ab2', frequency: 103.830, midi: 44 },
-  { name: 'A2', frequency: 110.000, midi: 45 },
-  { name: 'Bb2', frequency: 116.540, midi: 46 },
-  { name: 'B2', frequency: 123.470, midi: 47 },
+  { name: 'C2', frequency: 65.41, midi: 36 },
+  { name: 'Db2', frequency: 69.3, midi: 37 },
+  { name: 'D2', frequency: 73.42, midi: 38 },
+  { name: 'Eb2', frequency: 77.78, midi: 39 },
+  { name: 'E2', frequency: 82.41, midi: 40 },
+  { name: 'F2', frequency: 87.31, midi: 41 },
+  { name: 'Gb2', frequency: 92.5, midi: 42 },
+  { name: 'G2', frequency: 98.0, midi: 43 },
+  { name: 'Ab2', frequency: 103.83, midi: 44 },
+  { name: 'A2', frequency: 110.0, midi: 45 },
+  { name: 'Bb2', frequency: 116.54, midi: 46 },
+  { name: 'B2', frequency: 123.47, midi: 47 },
   // index 36
-  { name: 'C3', frequency: 130.810, midi: 48 },
-  { name: 'Db3', frequency: 138.590, midi: 49 },
-  { name: 'D3', frequency: 146.830, midi: 50 },
-  { name: 'Eb3', frequency: 155.560, midi: 51 },
-  { name: 'E3', frequency: 164.810, midi: 52 },
-  { name: 'F3', frequency: 174.610, midi: 53 },
-  { name: 'Gb3', frequency: 185.000, midi: 54 },
-  { name: 'G3', frequency: 196.000, midi: 55 },
-  { name: 'Ab3', frequency: 207.650, midi: 56 },
-  { name: 'A3', frequency: 220.000, midi: 57 },
-  { name: 'Bb3', frequency: 233.080, midi: 58 },
-  { name: 'B3', frequency: 246.940, midi: 59 },
+  { name: 'C3', frequency: 130.81, midi: 48 },
+  { name: 'Db3', frequency: 138.59, midi: 49 },
+  { name: 'D3', frequency: 146.83, midi: 50 },
+  { name: 'Eb3', frequency: 155.56, midi: 51 },
+  { name: 'E3', frequency: 164.81, midi: 52 },
+  { name: 'F3', frequency: 174.61, midi: 53 },
+  { name: 'Gb3', frequency: 185.0, midi: 54 },
+  { name: 'G3', frequency: 196.0, midi: 55 },
+  { name: 'Ab3', frequency: 207.65, midi: 56 },
+  { name: 'A3', frequency: 220.0, midi: 57 },
+  { name: 'Bb3', frequency: 233.08, midi: 58 },
+  { name: 'B3', frequency: 246.94, midi: 59 },
   // index 48
-  { name: 'C4', frequency: 261.630, midi: 60, key: 'z' },
-  { name: 'Db4', frequency: 277.180, midi: 61, key: 's' },
-  { name: 'D4', frequency: 293.660, midi: 62, key: 'x' },
-  { name: 'Eb4', frequency: 311.130, midi: 63, key: 'd' },
-  { name: 'E4', frequency: 329.630, midi: 64, key: 'c' },
-  { name: 'F4', frequency: 349.230, midi: 65, key: 'v' },
-  { name: 'Gb4', frequency: 369.990, midi: 66, key: 'g' },
-  { name: 'G4', frequency: 392.000, midi: 67, key: 'b' },
-  { name: 'Ab4', frequency: 415.300, midi: 68, key: 'h' },
-  { name: 'A4', frequency: 440.000, midi: 69, key: 'n' },
-  { name: 'Bb4', frequency: 466.160, midi: 70, key: 'j' },
-  { name: 'B4', frequency: 493.880, midi: 71, key: 'm' },
+  { name: 'C4', frequency: 261.63, midi: 60, key: 'z' },
+  { name: 'Db4', frequency: 277.18, midi: 61, key: 's' },
+  { name: 'D4', frequency: 293.66, midi: 62, key: 'x' },
+  { name: 'Eb4', frequency: 311.13, midi: 63, key: 'd' },
+  { name: 'E4', frequency: 329.63, midi: 64, key: 'c' },
+  { name: 'F4', frequency: 349.23, midi: 65, key: 'v' },
+  { name: 'Gb4', frequency: 369.99, midi: 66, key: 'g' },
+  { name: 'G4', frequency: 392.0, midi: 67, key: 'b' },
+  { name: 'Ab4', frequency: 415.3, midi: 68, key: 'h' },
+  { name: 'A4', frequency: 440.0, midi: 69, key: 'n' },
+  { name: 'Bb4', frequency: 466.16, midi: 70, key: 'j' },
+  { name: 'B4', frequency: 493.88, midi: 71, key: 'm' },
   // index 60
-  { name: 'C5', frequency: 523.250, midi: 72, key: 'q' },
-  { name: 'Db5', frequency: 554.370, midi: 73, key: '2' },
-  { name: 'D5', frequency: 587.330, midi: 74, key: 'w' },
-  { name: 'Eb5', frequency: 622.250, midi: 75, key: '3' },
-  { name: 'E5', frequency: 659.250, midi: 76, key: 'e' },
-  { name: 'F5', frequency: 698.460, midi: 77, key: 'r' },
-  { name: 'Gb5', frequency: 739.990, midi: 78, key: '5' },
-  { name: 'G5', frequency: 783.990, midi: 79, key: 't' },
-  { name: 'Ab5', frequency: 830.610, midi: 80, key: '6' },
-  { name: 'A5', frequency: 880.000, midi: 81, key: 'y' },
-  { name: 'Bb5', frequency: 932.330, midi: 82, key: 'u', },
-  { name: 'B5', frequency: 987.770, midi: 83, key: 'i' },
+  { name: 'C5', frequency: 523.25, midi: 72, key: 'q' },
+  { name: 'Db5', frequency: 554.37, midi: 73, key: '2' },
+  { name: 'D5', frequency: 587.33, midi: 74, key: 'w' },
+  { name: 'Eb5', frequency: 622.25, midi: 75, key: '3' },
+  { name: 'E5', frequency: 659.25, midi: 76, key: 'e' },
+  { name: 'F5', frequency: 698.46, midi: 77, key: 'r' },
+  { name: 'Gb5', frequency: 739.99, midi: 78, key: '5' },
+  { name: 'G5', frequency: 783.99, midi: 79, key: 't' },
+  { name: 'Ab5', frequency: 830.61, midi: 80, key: '6' },
+  { name: 'A5', frequency: 880.0, midi: 81, key: 'y' },
+  { name: 'Bb5', frequency: 932.33, midi: 82, key: 'u' },
+  { name: 'B5', frequency: 987.77, midi: 83, key: 'i' },
   // index 72
-  { name: 'C6', frequency: 1046.500, midi: 84, key: 'o' },
-  { name: 'Db6', frequency: 1108.730, midi: 85 },
-  { name: 'D6', frequency: 1174.660, midi: 86 },
-  { name: 'Eb6', frequency: 1244.510, midi: 87 },
-  { name: 'E6', frequency: 1318.510, midi: 88 },
-  { name: 'F6', frequency: 1396.910, midi: 89 },
-  { name: 'Gb6', frequency: 1479.980, midi: 90 },
-  { name: 'G6', frequency: 1567.980, midi: 91 },
-  { name: 'Ab6', frequency: 1661.220, midi: 92 },
-  { name: 'A6', frequency: 1760.000, midi: 93 },
-  { name: 'Bb6', frequency: 1864.660, midi: 94 },
-  { name: 'B6', frequency: 1975.530, midi: 95 },
+  { name: 'C6', frequency: 1046.5, midi: 84, key: 'o' },
+  { name: 'Db6', frequency: 1108.73, midi: 85 },
+  { name: 'D6', frequency: 1174.66, midi: 86 },
+  { name: 'Eb6', frequency: 1244.51, midi: 87 },
+  { name: 'E6', frequency: 1318.51, midi: 88 },
+  { name: 'F6', frequency: 1396.91, midi: 89 },
+  { name: 'Gb6', frequency: 1479.98, midi: 90 },
+  { name: 'G6', frequency: 1567.98, midi: 91 },
+  { name: 'Ab6', frequency: 1661.22, midi: 92 },
+  { name: 'A6', frequency: 1760.0, midi: 93 },
+  { name: 'Bb6', frequency: 1864.66, midi: 94 },
+  { name: 'B6', frequency: 1975.53, midi: 95 },
   // index 84
-  { name: 'C7', frequency: 2093.000, midi: 96 },
-  { name: 'Db7', frequency: 2217.460, midi: 97 },
-  { name: 'D7', frequency: 2349.320, midi: 98 },
-  { name: 'Eb7', frequency: 2489.020, midi: 99 },
-  { name: 'E7', frequency: 2637.020, midi: 100 },
-  { name: 'F7', frequency: 2793.830, midi: 101 },
-  { name: 'Gb7', frequency: 2959.960, midi: 102 },
-  { name: 'G7', frequency: 3135.960, midi: 103 },
-  { name: 'Ab7', frequency: 3322.440, midi: 104 },
-  { name: 'A7', frequency: 3520.000, midi: 105 },
-  { name: 'Bb7', frequency: 3729.310, midi: 106 },
-  { name: 'B7', frequency: 3951.070, midi: 107 },
+  { name: 'C7', frequency: 2093.0, midi: 96 },
+  { name: 'Db7', frequency: 2217.46, midi: 97 },
+  { name: 'D7', frequency: 2349.32, midi: 98 },
+  { name: 'Eb7', frequency: 2489.02, midi: 99 },
+  { name: 'E7', frequency: 2637.02, midi: 100 },
+  { name: 'F7', frequency: 2793.83, midi: 101 },
+  { name: 'Gb7', frequency: 2959.96, midi: 102 },
+  { name: 'G7', frequency: 3135.96, midi: 103 },
+  { name: 'Ab7', frequency: 3322.44, midi: 104 },
+  { name: 'A7', frequency: 3520.0, midi: 105 },
+  { name: 'Bb7', frequency: 3729.31, midi: 106 },
+  { name: 'B7', frequency: 3951.07, midi: 107 },
   // index 96
-  { name: 'C8', frequency: 4186.010, midi: 108 },
-  { name: 'Db8', frequency: 4434.920, midi: 109 },
-  { name: 'D8', frequency: 4698.630, midi: 110 },
-  { name: 'Eb8', frequency: 4978.030, midi: 111 },
-  { name: 'E8', frequency: 5274.040, midi: 112 },
-  { name: 'F8', frequency: 5587.650, midi: 113 },
-  { name: 'Gb8', frequency: 5919.910, midi: 114 },
-  { name: 'G8', frequency: 6271.930, midi: 115 },
-  { name: 'Ab8', frequency: 6644.880, midi: 116 },
-  { name: 'A8', frequency: 7040.000, midi: 117 },
-  { name: 'Bb8', frequency: 7458.620, midi: 118 },
-  { name: 'B8', frequency: 7902.130, midi: 119 },
+  { name: 'C8', frequency: 4186.01, midi: 108 },
+  { name: 'Db8', frequency: 4434.92, midi: 109 },
+  { name: 'D8', frequency: 4698.63, midi: 110 },
+  { name: 'Eb8', frequency: 4978.03, midi: 111 },
+  { name: 'E8', frequency: 5274.04, midi: 112 },
+  { name: 'F8', frequency: 5587.65, midi: 113 },
+  { name: 'Gb8', frequency: 5919.91, midi: 114 },
+  { name: 'G8', frequency: 6271.93, midi: 115 },
+  { name: 'Ab8', frequency: 6644.88, midi: 116 },
+  { name: 'A8', frequency: 7040.0, midi: 117 },
+  { name: 'Bb8', frequency: 7458.62, midi: 118 },
+  { name: 'B8', frequency: 7902.13, midi: 119 },
 ]
-const WAF_DATA_PATH='https://surikov.github.io/webaudiofontdata/sound'
-const WAF_JS_LIB_PATH='https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js'
+const WAF_DATA_PATH = 'https://surikov.github.io/webaudiofontdata/sound'
+const WAF_JS_LIB_PATH = 'https://surikov.github.io/webaudiofont/npm/dist/WebAudioFontPlayer.js'
 
 const outputTypes = [
   { text: 'Oscillator', value: 'osc' },
   { text: 'Soundfont', value: 'sf2' },
-  { text: 'WebAudioFont', value: 'waf' }
+  { text: 'WebAudioFont', value: 'waf' },
 ]
 const oscTypes = [
   { text: 'Sine', value: 'sine' },
   { text: 'Sawtooth', value: 'sawtooth' },
   { text: 'Square', value: 'square' },
-  { text: 'Triangle', value: 'triangle' }
+  { text: 'Triangle', value: 'triangle' },
 ]
 const oscNotes = reactive([])
 const sf2Notes = reactive([])
@@ -161,7 +161,7 @@ const sf2Sources = [
   { text: 'Donkey Kong Country', value: 'donkey_kong_country' },
   { text: 'Earthbound', value: 'earthbound' },
   { text: 'Super Mario World', value: 'super_mario_world' },
-  { text: 'Vintage Dreams', value: 'vintage_dreams_waves_v2' }
+  { text: 'Vintage Dreams', value: 'vintage_dreams_waves_v2' },
 ]
 const sf2Presets = reactive([])
 const wafNotes = reactive([])
@@ -170,137 +170,137 @@ const wafSources = [
   { text: 'FluidR3_GM', value: 'FluidR3_GM' },
   { text: 'GeneralUserGS', value: 'GeneralUserGS' },
   { text: 'SBLive', value: 'SBLive' },
-  { text: 'SoundBlasterOld', value: 'SoundBlasterOld' }
+  { text: 'SoundBlasterOld', value: 'SoundBlasterOld' },
 ]
 const wafPresets = [
-  { text: "Acoustic Grand Piano: Piano", value: "Acoustic Grand Piano: Piano" },
-  { text: "Bright Acoustic Piano: Piano", value: "Bright Acoustic Piano: Piano" },
-  { text: "Electric Grand Piano: Piano", value: "Electric Grand Piano: Piano" },
-  { text: "Honky-tonk Piano: Piano", value: "Honky-tonk Piano: Piano" },
-  { text: "Electric Piano 1: Piano", value: "Electric Piano 1: Piano" },
-  { text: "Electric Piano 2: Piano", value: "Electric Piano 2: Piano" },
-  { text: "Harpsichord: Piano", value: "Harpsichord: Piano" },
-  { text: "Clavinet: Piano", value: "Clavinet: Piano" },
-  { text: "Celesta: Chromatic Percussion", value: "Celesta: Chromatic Percussion" },
-  { text: "Glockenspiel: Chromatic Percussion", value: "Glockenspiel: Chromatic Percussion" },
-  { text: "Music Box: Chromatic Percussion", value: "Music Box: Chromatic Percussion" },
-  { text: "Vibraphone: Chromatic Percussion", value: "Vibraphone: Chromatic Percussion" },
-  { text: "Marimba: Chromatic Percussion", value: "Marimba: Chromatic Percussion" },
-  { text: "Xylophone: Chromatic Percussion", value: "Xylophone: Chromatic Percussion" },
-  { text: "Tubular Bells: Chromatic Percussion", value: "Tubular Bells: Chromatic Percussion" },
-  { text: "Dulcimer: Chromatic Percussion", value: "Dulcimer: Chromatic Percussion" },
-  { text: "Drawbar Organ: Organ", value: "Drawbar Organ: Organ" },
-  { text: "Percussive Organ: Organ", value: "Percussive Organ: Organ" },
-  { text: "Rock Organ: Organ", value: "Rock Organ: Organ" },
-  { text: "Church Organ: Organ", value: "Church Organ: Organ" },
-  { text: "Reed Organ: Organ", value: "Reed Organ: Organ" },
-  { text: "Accordion: Organ", value: "Accordion: Organ" },
-  { text: "Harmonica: Organ", value: "Harmonica: Organ" },
-  { text: "Tango Accordion: Organ", value: "Tango Accordion: Organ" },
-  { text: "Acoustic Guitar (nylon): Guitar", value: "Acoustic Guitar (nylon): Guitar" },
-  { text: "Acoustic Guitar (steel): Guitar", value: "Acoustic Guitar (steel): Guitar" },
-  { text: "Electric Guitar (jazz): Guitar", value: "Electric Guitar (jazz): Guitar" },
-  { text: "Electric Guitar (clean): Guitar", value: "Electric Guitar (clean): Guitar" },
-  { text: "Electric Guitar (muted): Guitar", value: "Electric Guitar (muted): Guitar" },
-  { text: "Overdriven Guitar: Guitar", value: "Overdriven Guitar: Guitar" },
-  { text: "Distortion Guitar: Guitar", value: "Distortion Guitar: Guitar" },
-  { text: "Guitar Harmonics: Guitar", value: "Guitar Harmonics: Guitar" },
-  { text: "Acoustic Bass: Bass", value: "Acoustic Bass: Bass" },
-  { text: "Electric Bass (finger): Bass", value: "Electric Bass (finger): Bass" },
-  { text: "Electric Bass (pick): Bass", value: "Electric Bass (pick): Bass" },
-  { text: "Fretless Bass: Bass", value: "Fretless Bass: Bass" },
-  { text: "Slap Bass 1: Bass", value: "Slap Bass 1: Bass" },
-  { text: "Slap Bass 2: Bass", value: "Slap Bass 2: Bass" },
-  { text: "Synth Bass 1: Bass", value: "Synth Bass 1: Bass" },
-  { text: "Synth Bass 2: Bass", value: "Synth Bass 2: Bass" },
-  { text: "Violin: Strings", value: "Violin: Strings" },
-  { text: "Viola: Strings", value: "Viola: Strings" },
-  { text: "Cello: Strings", value: "Cello: Strings" },
-  { text: "Contrabass: Strings", value: "Contrabass: Strings" },
-  { text: "Tremolo Strings: Strings", value: "Tremolo Strings: Strings" },
-  { text: "Pizzicato Strings: Strings", value: "Pizzicato Strings: Strings" },
-  { text: "Orchestral Harp: Strings", value: "Orchestral Harp: Strings" },
-  { text: "Timpani: Strings", value: "Timpani: Strings" },
-  { text: "String Ensemble 1: Ensemble", value: "String Ensemble 1: Ensemble" },
-  { text: "String Ensemble 2: Ensemble", value: "String Ensemble 2: Ensemble" },
-  { text: "Synth Strings 1: Ensemble", value: "Synth Strings 1: Ensemble" },
-  { text: "Synth Strings 2: Ensemble", value: "Synth Strings 2: Ensemble" },
-  { text: "Choir Aahs: Ensemble", value: "Choir Aahs: Ensemble" },
-  { text: "Voice Oohs: Ensemble", value: "Voice Oohs: Ensemble" },
-  { text: "Synth Choir: Ensemble", value: "Synth Choir: Ensemble" },
-  { text: "Orchestra Hit: Ensemble", value: "Orchestra Hit: Ensemble" },
-  { text: "Trumpet: Brass", value: "Trumpet: Brass" },
-  { text: "Trombone: Brass", value: "Trombone: Brass" },
-  { text: "Tuba: Brass", value: "Tuba: Brass" },
-  { text: "Muted Trumpet: Brass", value: "Muted Trumpet: Brass" },
-  { text: "French Horn: Brass", value: "French Horn: Brass" },
-  { text: "Brass Section: Brass", value: "Brass Section: Brass" },
-  { text: "Synth Brass 1: Brass", value: "Synth Brass 1: Brass" },
-  { text: "Synth Brass 2: Brass", value: "Synth Brass 2: Brass" },
-  { text: "Soprano Sax: Reed", value: "Soprano Sax: Reed" },
-  { text: "Alto Sax: Reed", value: "Alto Sax: Reed" },
-  { text: "Tenor Sax: Reed", value: "Tenor Sax: Reed" },
-  { text: "Baritone Sax: Reed", value: "Baritone Sax: Reed" },
-  { text: "Oboe: Reed", value: "Oboe: Reed" },
-  { text: "English Horn: Reed", value: "English Horn: Reed" },
-  { text: "Bassoon: Reed", value: "Bassoon: Reed" },
-  { text: "Clarinet: Reed", value: "Clarinet: Reed" },
-  { text: "Piccolo: Pipe", value: "Piccolo: Pipe" },
-  { text: "Flute: Pipe", value: "Flute: Pipe" },
-  { text: "Recorder: Pipe", value: "Recorder: Pipe" },
-  { text: "Pan Flute: Pipe", value: "Pan Flute: Pipe" },
-  { text: "Blown bottle: Pipe", value: "Blown bottle: Pipe" },
-  { text: "Shakuhachi: Pipe", value: "Shakuhachi: Pipe" },
-  { text: "Whistle: Pipe", value: "Whistle: Pipe" },
-  { text: "Ocarina: Pipe", value: "Ocarina: Pipe" },
-  { text: "Lead 1 (square): Synth Lead", value: "Lead 1 (square): Synth Lead" },
-  { text: "Lead 2 (sawtooth): Synth Lead", value: "Lead 2 (sawtooth): Synth Lead" },
-  { text: "Lead 3 (calliope): Synth Lead", value: "Lead 3 (calliope): Synth Lead" },
-  { text: "Lead 4 (chiff): Synth Lead", value: "Lead 4 (chiff): Synth Lead" },
-  { text: "Lead 5 (charang): Synth Lead", value: "Lead 5 (charang): Synth Lead" },
-  { text: "Lead 6 (voice): Synth Lead", value: "Lead 6 (voice): Synth Lead" },
-  { text: "Lead 7 (fifths): Synth Lead", value: "Lead 7 (fifths): Synth Lead" },
-  { text: "Lead 8 (bass + lead): Synth Lead", value: "Lead 8 (bass + lead): Synth Lead" },
-  { text: "Pad 1 (new age): Synth Pad", value: "Pad 1 (new age): Synth Pad" },
-  { text: "Pad 2 (warm): Synth Pad", value: "Pad 2 (warm): Synth Pad" },
-  { text: "Pad 3 (polysynth): Synth Pad", value: "Pad 3 (polysynth): Synth Pad" },
-  { text: "Pad 4 (choir): Synth Pad", value: "Pad 4 (choir): Synth Pad" },
-  { text: "Pad 5 (bowed): Synth Pad", value: "Pad 5 (bowed): Synth Pad" },
-  { text: "Pad 6 (metallic): Synth Pad", value: "Pad 6 (metallic): Synth Pad" },
-  { text: "Pad 7 (halo): Synth Pad", value: "Pad 7 (halo): Synth Pad" },
-  { text: "Pad 8 (sweep): Synth Pad", value: "Pad 8 (sweep): Synth Pad" },
-  { text: "FX 1 (rain): Synth Effects", value: "FX 1 (rain): Synth Effects" },
-  { text: "FX 2 (soundtrack): Synth Effects", value: "FX 2 (soundtrack): Synth Effects" },
-  { text: "FX 3 (crystal): Synth Effects", value: "FX 3 (crystal): Synth Effects" },
-  { text: "FX 4 (atmosphere): Synth Effects", value: "FX 4 (atmosphere): Synth Effects" },
-  { text: "FX 5 (brightness): Synth Effects", value: "FX 5 (brightness): Synth Effects" },
-  { text: "FX 6 (goblins): Synth Effects", value: "FX 6 (goblins): Synth Effects" },
-  { text: "FX 7 (echoes): Synth Effects", value: "FX 7 (echoes): Synth Effects" },
-  { text: "FX 8 (sci-fi): Synth Effects", value: "FX 8 (sci-fi): Synth Effects" },
-  { text: "Sitar: Ethnic", value: "Sitar: Ethnic" },
-  { text: "Banjo: Ethnic", value: "Banjo: Ethnic" },
-  { text: "Shamisen: Ethnic", value: "Shamisen: Ethnic" },
-  { text: "Koto: Ethnic", value: "Koto: Ethnic" },
-  { text: "Kalimba: Ethnic", value: "Kalimba: Ethnic" },
-  { text: "Bagpipe: Ethnic", value: "Bagpipe: Ethnic" },
-  { text: "Fiddle: Ethnic", value: "Fiddle: Ethnic" },
-  { text: "Shanai: Ethnic", value: "Shanai: Ethnic" },
-  { text: "Tinkle Bell: Percussive", value: "Tinkle Bell: Percussive" },
-  { text: "Agogo: Percussive", value: "Agogo: Percussive" },
-  { text: "Steel Drums: Percussive", value: "Steel Drums: Percussive" },
-  { text: "Woodblock: Percussive", value: "Woodblock: Percussive" },
-  { text: "Taiko Drum: Percussive", value: "Taiko Drum: Percussive" },
-  { text: "Melodic Tom: Percussive", value: "Melodic Tom: Percussive" },
-  { text: "Synth Drum: Percussive", value: "Synth Drum: Percussive" },
-  { text: "Reverse Cymbal: Percussive", value: "Reverse Cymbal: Percussive" },
-  { text: "Guitar Fret Noise: Sound effects", value: "Guitar Fret Noise: Sound effects" },
-  { text: "Breath Noise: Sound effects", value: "Breath Noise: Sound effects" },
-  { text: "Seashore: Sound effects", value: "Seashore: Sound effects" },
-  { text: "Bird Tweet: Sound effects", value: "Bird Tweet: Sound effects" },
-  { text: "Telephone Ring: Sound effects", value: "Telephone Ring: Sound effects" },
-  { text: "Helicopter: Sound effects", value: "Helicopter: Sound effects" },
-  { text: "Applause: Sound effects", value: "Applause: Sound effects" },
-  { text: "Gunshot: Sound effects", value: "Gunshot: Sound effects" }
+  { text: 'Acoustic Grand Piano: Piano', value: 'Acoustic Grand Piano: Piano' },
+  { text: 'Bright Acoustic Piano: Piano', value: 'Bright Acoustic Piano: Piano' },
+  { text: 'Electric Grand Piano: Piano', value: 'Electric Grand Piano: Piano' },
+  { text: 'Honky-tonk Piano: Piano', value: 'Honky-tonk Piano: Piano' },
+  { text: 'Electric Piano 1: Piano', value: 'Electric Piano 1: Piano' },
+  { text: 'Electric Piano 2: Piano', value: 'Electric Piano 2: Piano' },
+  { text: 'Harpsichord: Piano', value: 'Harpsichord: Piano' },
+  { text: 'Clavinet: Piano', value: 'Clavinet: Piano' },
+  { text: 'Celesta: Chromatic Percussion', value: 'Celesta: Chromatic Percussion' },
+  { text: 'Glockenspiel: Chromatic Percussion', value: 'Glockenspiel: Chromatic Percussion' },
+  { text: 'Music Box: Chromatic Percussion', value: 'Music Box: Chromatic Percussion' },
+  { text: 'Vibraphone: Chromatic Percussion', value: 'Vibraphone: Chromatic Percussion' },
+  { text: 'Marimba: Chromatic Percussion', value: 'Marimba: Chromatic Percussion' },
+  { text: 'Xylophone: Chromatic Percussion', value: 'Xylophone: Chromatic Percussion' },
+  { text: 'Tubular Bells: Chromatic Percussion', value: 'Tubular Bells: Chromatic Percussion' },
+  { text: 'Dulcimer: Chromatic Percussion', value: 'Dulcimer: Chromatic Percussion' },
+  { text: 'Drawbar Organ: Organ', value: 'Drawbar Organ: Organ' },
+  { text: 'Percussive Organ: Organ', value: 'Percussive Organ: Organ' },
+  { text: 'Rock Organ: Organ', value: 'Rock Organ: Organ' },
+  { text: 'Church Organ: Organ', value: 'Church Organ: Organ' },
+  { text: 'Reed Organ: Organ', value: 'Reed Organ: Organ' },
+  { text: 'Accordion: Organ', value: 'Accordion: Organ' },
+  { text: 'Harmonica: Organ', value: 'Harmonica: Organ' },
+  { text: 'Tango Accordion: Organ', value: 'Tango Accordion: Organ' },
+  { text: 'Acoustic Guitar (nylon): Guitar', value: 'Acoustic Guitar (nylon): Guitar' },
+  { text: 'Acoustic Guitar (steel): Guitar', value: 'Acoustic Guitar (steel): Guitar' },
+  { text: 'Electric Guitar (jazz): Guitar', value: 'Electric Guitar (jazz): Guitar' },
+  { text: 'Electric Guitar (clean): Guitar', value: 'Electric Guitar (clean): Guitar' },
+  { text: 'Electric Guitar (muted): Guitar', value: 'Electric Guitar (muted): Guitar' },
+  { text: 'Overdriven Guitar: Guitar', value: 'Overdriven Guitar: Guitar' },
+  { text: 'Distortion Guitar: Guitar', value: 'Distortion Guitar: Guitar' },
+  { text: 'Guitar Harmonics: Guitar', value: 'Guitar Harmonics: Guitar' },
+  { text: 'Acoustic Bass: Bass', value: 'Acoustic Bass: Bass' },
+  { text: 'Electric Bass (finger): Bass', value: 'Electric Bass (finger): Bass' },
+  { text: 'Electric Bass (pick): Bass', value: 'Electric Bass (pick): Bass' },
+  { text: 'Fretless Bass: Bass', value: 'Fretless Bass: Bass' },
+  { text: 'Slap Bass 1: Bass', value: 'Slap Bass 1: Bass' },
+  { text: 'Slap Bass 2: Bass', value: 'Slap Bass 2: Bass' },
+  { text: 'Synth Bass 1: Bass', value: 'Synth Bass 1: Bass' },
+  { text: 'Synth Bass 2: Bass', value: 'Synth Bass 2: Bass' },
+  { text: 'Violin: Strings', value: 'Violin: Strings' },
+  { text: 'Viola: Strings', value: 'Viola: Strings' },
+  { text: 'Cello: Strings', value: 'Cello: Strings' },
+  { text: 'Contrabass: Strings', value: 'Contrabass: Strings' },
+  { text: 'Tremolo Strings: Strings', value: 'Tremolo Strings: Strings' },
+  { text: 'Pizzicato Strings: Strings', value: 'Pizzicato Strings: Strings' },
+  { text: 'Orchestral Harp: Strings', value: 'Orchestral Harp: Strings' },
+  { text: 'Timpani: Strings', value: 'Timpani: Strings' },
+  { text: 'String Ensemble 1: Ensemble', value: 'String Ensemble 1: Ensemble' },
+  { text: 'String Ensemble 2: Ensemble', value: 'String Ensemble 2: Ensemble' },
+  { text: 'Synth Strings 1: Ensemble', value: 'Synth Strings 1: Ensemble' },
+  { text: 'Synth Strings 2: Ensemble', value: 'Synth Strings 2: Ensemble' },
+  { text: 'Choir Aahs: Ensemble', value: 'Choir Aahs: Ensemble' },
+  { text: 'Voice Oohs: Ensemble', value: 'Voice Oohs: Ensemble' },
+  { text: 'Synth Choir: Ensemble', value: 'Synth Choir: Ensemble' },
+  { text: 'Orchestra Hit: Ensemble', value: 'Orchestra Hit: Ensemble' },
+  { text: 'Trumpet: Brass', value: 'Trumpet: Brass' },
+  { text: 'Trombone: Brass', value: 'Trombone: Brass' },
+  { text: 'Tuba: Brass', value: 'Tuba: Brass' },
+  { text: 'Muted Trumpet: Brass', value: 'Muted Trumpet: Brass' },
+  { text: 'French Horn: Brass', value: 'French Horn: Brass' },
+  { text: 'Brass Section: Brass', value: 'Brass Section: Brass' },
+  { text: 'Synth Brass 1: Brass', value: 'Synth Brass 1: Brass' },
+  { text: 'Synth Brass 2: Brass', value: 'Synth Brass 2: Brass' },
+  { text: 'Soprano Sax: Reed', value: 'Soprano Sax: Reed' },
+  { text: 'Alto Sax: Reed', value: 'Alto Sax: Reed' },
+  { text: 'Tenor Sax: Reed', value: 'Tenor Sax: Reed' },
+  { text: 'Baritone Sax: Reed', value: 'Baritone Sax: Reed' },
+  { text: 'Oboe: Reed', value: 'Oboe: Reed' },
+  { text: 'English Horn: Reed', value: 'English Horn: Reed' },
+  { text: 'Bassoon: Reed', value: 'Bassoon: Reed' },
+  { text: 'Clarinet: Reed', value: 'Clarinet: Reed' },
+  { text: 'Piccolo: Pipe', value: 'Piccolo: Pipe' },
+  { text: 'Flute: Pipe', value: 'Flute: Pipe' },
+  { text: 'Recorder: Pipe', value: 'Recorder: Pipe' },
+  { text: 'Pan Flute: Pipe', value: 'Pan Flute: Pipe' },
+  { text: 'Blown bottle: Pipe', value: 'Blown bottle: Pipe' },
+  { text: 'Shakuhachi: Pipe', value: 'Shakuhachi: Pipe' },
+  { text: 'Whistle: Pipe', value: 'Whistle: Pipe' },
+  { text: 'Ocarina: Pipe', value: 'Ocarina: Pipe' },
+  { text: 'Lead 1 (square): Synth Lead', value: 'Lead 1 (square): Synth Lead' },
+  { text: 'Lead 2 (sawtooth): Synth Lead', value: 'Lead 2 (sawtooth): Synth Lead' },
+  { text: 'Lead 3 (calliope): Synth Lead', value: 'Lead 3 (calliope): Synth Lead' },
+  { text: 'Lead 4 (chiff): Synth Lead', value: 'Lead 4 (chiff): Synth Lead' },
+  { text: 'Lead 5 (charang): Synth Lead', value: 'Lead 5 (charang): Synth Lead' },
+  { text: 'Lead 6 (voice): Synth Lead', value: 'Lead 6 (voice): Synth Lead' },
+  { text: 'Lead 7 (fifths): Synth Lead', value: 'Lead 7 (fifths): Synth Lead' },
+  { text: 'Lead 8 (bass + lead): Synth Lead', value: 'Lead 8 (bass + lead): Synth Lead' },
+  { text: 'Pad 1 (new age): Synth Pad', value: 'Pad 1 (new age): Synth Pad' },
+  { text: 'Pad 2 (warm): Synth Pad', value: 'Pad 2 (warm): Synth Pad' },
+  { text: 'Pad 3 (polysynth): Synth Pad', value: 'Pad 3 (polysynth): Synth Pad' },
+  { text: 'Pad 4 (choir): Synth Pad', value: 'Pad 4 (choir): Synth Pad' },
+  { text: 'Pad 5 (bowed): Synth Pad', value: 'Pad 5 (bowed): Synth Pad' },
+  { text: 'Pad 6 (metallic): Synth Pad', value: 'Pad 6 (metallic): Synth Pad' },
+  { text: 'Pad 7 (halo): Synth Pad', value: 'Pad 7 (halo): Synth Pad' },
+  { text: 'Pad 8 (sweep): Synth Pad', value: 'Pad 8 (sweep): Synth Pad' },
+  { text: 'FX 1 (rain): Synth Effects', value: 'FX 1 (rain): Synth Effects' },
+  { text: 'FX 2 (soundtrack): Synth Effects', value: 'FX 2 (soundtrack): Synth Effects' },
+  { text: 'FX 3 (crystal): Synth Effects', value: 'FX 3 (crystal): Synth Effects' },
+  { text: 'FX 4 (atmosphere): Synth Effects', value: 'FX 4 (atmosphere): Synth Effects' },
+  { text: 'FX 5 (brightness): Synth Effects', value: 'FX 5 (brightness): Synth Effects' },
+  { text: 'FX 6 (goblins): Synth Effects', value: 'FX 6 (goblins): Synth Effects' },
+  { text: 'FX 7 (echoes): Synth Effects', value: 'FX 7 (echoes): Synth Effects' },
+  { text: 'FX 8 (sci-fi): Synth Effects', value: 'FX 8 (sci-fi): Synth Effects' },
+  { text: 'Sitar: Ethnic', value: 'Sitar: Ethnic' },
+  { text: 'Banjo: Ethnic', value: 'Banjo: Ethnic' },
+  { text: 'Shamisen: Ethnic', value: 'Shamisen: Ethnic' },
+  { text: 'Koto: Ethnic', value: 'Koto: Ethnic' },
+  { text: 'Kalimba: Ethnic', value: 'Kalimba: Ethnic' },
+  { text: 'Bagpipe: Ethnic', value: 'Bagpipe: Ethnic' },
+  { text: 'Fiddle: Ethnic', value: 'Fiddle: Ethnic' },
+  { text: 'Shanai: Ethnic', value: 'Shanai: Ethnic' },
+  { text: 'Tinkle Bell: Percussive', value: 'Tinkle Bell: Percussive' },
+  { text: 'Agogo: Percussive', value: 'Agogo: Percussive' },
+  { text: 'Steel Drums: Percussive', value: 'Steel Drums: Percussive' },
+  { text: 'Woodblock: Percussive', value: 'Woodblock: Percussive' },
+  { text: 'Taiko Drum: Percussive', value: 'Taiko Drum: Percussive' },
+  { text: 'Melodic Tom: Percussive', value: 'Melodic Tom: Percussive' },
+  { text: 'Synth Drum: Percussive', value: 'Synth Drum: Percussive' },
+  { text: 'Reverse Cymbal: Percussive', value: 'Reverse Cymbal: Percussive' },
+  { text: 'Guitar Fret Noise: Sound effects', value: 'Guitar Fret Noise: Sound effects' },
+  { text: 'Breath Noise: Sound effects', value: 'Breath Noise: Sound effects' },
+  { text: 'Seashore: Sound effects', value: 'Seashore: Sound effects' },
+  { text: 'Bird Tweet: Sound effects', value: 'Bird Tweet: Sound effects' },
+  { text: 'Telephone Ring: Sound effects', value: 'Telephone Ring: Sound effects' },
+  { text: 'Helicopter: Sound effects', value: 'Helicopter: Sound effects' },
+  { text: 'Applause: Sound effects', value: 'Applause: Sound effects' },
+  { text: 'Gunshot: Sound effects', value: 'Gunshot: Sound effects' },
 ]
 
 // holds current notes being played; for chord recognition
@@ -321,7 +321,7 @@ const nodeGroups = reactive({
         parameter: 'type',
         visible: true,
         enabled: true,
-        isVertical: true
+        isVertical: true,
       },
       oscType: {
         title: 'Osc Type',
@@ -333,7 +333,7 @@ const nodeGroups = reactive({
         parameter: 'type',
         visible: true,
         enabled: true,
-        isVertical: false
+        isVertical: false,
       },
       sf2Source: {
         title: 'SF2 Source',
@@ -345,7 +345,7 @@ const nodeGroups = reactive({
         parameter: 'type',
         visible: false,
         enabled: false,
-        isVertical: false
+        isVertical: false,
       },
       sf2Preset: {
         title: 'SF2 Instrument',
@@ -357,7 +357,7 @@ const nodeGroups = reactive({
         parameter: 'type',
         visible: false,
         enabled: false,
-        isVertical: false
+        isVertical: false,
       },
       wafSource: {
         title: 'WAF Source',
@@ -369,7 +369,7 @@ const nodeGroups = reactive({
         parameter: 'type',
         visible: false,
         enabled: false,
-        isVertical: false
+        isVertical: false,
       },
       wafPreset: {
         title: 'WAF Instrument',
@@ -381,7 +381,7 @@ const nodeGroups = reactive({
         parameter: 'type',
         visible: false,
         enabled: false,
-        isVertical: false
+        isVertical: false,
       },
       pan: {
         title: 'Pan',
@@ -396,24 +396,24 @@ const nodeGroups = reactive({
         parameter: 'pan',
         visible: true,
         enabled: true,
-        isVertical: false
+        isVertical: false,
       },
       masterGain: {
-      title: 'Volume',
-      type: 'range',
-      numberInputId: 'master-gain-value',
-      rangeInputId: 'master-gain-range',
-      currentValue: kbSettings.value.controls.masterGain,
-      audioNode: '',
-      step: '0.1',
-      min: '0.0',
-      max: '1.0',
-      parameter: 'gain',
-      visible: true,
-      enabled: true,
-      isVertical: false
-      }
-    }
+        title: 'Volume',
+        type: 'range',
+        numberInputId: 'master-gain-value',
+        rangeInputId: 'master-gain-range',
+        currentValue: kbSettings.value.controls.masterGain,
+        audioNode: '',
+        step: '0.1',
+        min: '0.0',
+        max: '1.0',
+        parameter: 'gain',
+        visible: true,
+        enabled: true,
+        isVertical: false,
+      },
+    },
   },
   adsr: {
     visible: true,
@@ -432,7 +432,7 @@ const nodeGroups = reactive({
         parameter: 'adsr',
         visible: true,
         enabled: true,
-        isVertical: false
+        isVertical: false,
       },
       decayTime: {
         title: 'Decay',
@@ -447,7 +447,7 @@ const nodeGroups = reactive({
         parameter: 'adsr',
         visible: true,
         enabled: true,
-        isVertical: false
+        isVertical: false,
       },
       sustainLevel: {
         title: 'Sustain',
@@ -462,7 +462,7 @@ const nodeGroups = reactive({
         parameter: 'adsr',
         visible: true,
         enabled: true,
-        isVertical: false
+        isVertical: false,
       },
       releaseTime: {
         title: 'Release',
@@ -477,28 +477,28 @@ const nodeGroups = reactive({
         parameter: 'adsr',
         visible: true,
         enabled: true,
-        isVertical: false
-      }
-    }
+        isVertical: false,
+      },
+    },
   },
   filters: {
     visible: true,
     enabled: true,
     nodes: {
       eqLow: {
-          title: 'EQ Low',
-          type: 'range',
-          numberInputId: 'eq-low-value',
-          rangeInputId: 'eq-low-range',
-          currentValue: kbSettings.value.controls.eqLow,
-          audioNode: '',
-          step: '0.1',
-          min: '0.0',
-          max: '1.0',
-          parameter: 'gain',
-          visible: true,
-          enabled: true,
-          isVertical: true
+        title: 'EQ Low',
+        type: 'range',
+        numberInputId: 'eq-low-value',
+        rangeInputId: 'eq-low-range',
+        currentValue: kbSettings.value.controls.eqLow,
+        audioNode: '',
+        step: '0.1',
+        min: '0.0',
+        max: '1.0',
+        parameter: 'gain',
+        visible: true,
+        enabled: true,
+        isVertical: true,
       },
       eqMid: {
         title: 'EQ Mid',
@@ -513,7 +513,7 @@ const nodeGroups = reactive({
         parameter: 'gain',
         visible: true,
         enabled: true,
-        isVertical: true
+        isVertical: true,
       },
       eqHigh: {
         title: 'EQ High',
@@ -528,7 +528,7 @@ const nodeGroups = reactive({
         parameter: 'gain',
         visible: true,
         enabled: true,
-        isVertical: true
+        isVertical: true,
       },
       compressor: {
         title: 'Compressor',
@@ -543,7 +543,7 @@ const nodeGroups = reactive({
         parameter: 'ratio',
         visible: true,
         enabled: true,
-        isVertical: true
+        isVertical: true,
       },
       pitchBend: {
         title: 'Pitch Bend',
@@ -558,7 +558,7 @@ const nodeGroups = reactive({
         parameter: 'pitch',
         visible: true,
         enabled: true,
-        isVertical: true
+        isVertical: true,
       },
       // distortion: {
       //   title: 'Distortion',
@@ -606,10 +606,10 @@ const nodeGroups = reactive({
         parameter: 'delayTime',
         visible: true,
         enabled: kbSettings.value.controls.delayCheck,
-        isVertical: true
-      }
-    }
-  }
+        isVertical: true,
+      },
+    },
+  },
 })
 
 const globalProps = getCurrentInstance().appContext.config.globalProperties
@@ -654,7 +654,7 @@ const adsr = new ADSREnvelope({
 })
 const analyzerNode = new AnalyserNode(audioContext, {
   fftSize: 2048,
-  smoothingTimeConstant: 1
+  smoothingTimeConstant: 1,
 })
 // these are needed for frequency bars to work
 analyzerNode.minDecibels = -100
@@ -665,7 +665,9 @@ const masterGainNode = audioContext.createGain()
 masterGainNode.gain.value = parseFloat(nodeGroups.output.nodes.masterGain.currentValue)
 
 nodeGroups.output.nodes.masterGain.audioNode = audioContext.createGain()
-nodeGroups.output.nodes.masterGain.audioNode.gain.value = parseFloat(nodeGroups.output.nodes.masterGain.currentValue)
+nodeGroups.output.nodes.masterGain.audioNode.gain.value = parseFloat(
+  nodeGroups.output.nodes.masterGain.currentValue
+)
 
 const destinationMaster = audioContext.destination
 
@@ -688,12 +690,17 @@ const createSendChain = function () {
   // TODO: add delay for sf2 and waf
   // TODO: add multiple delays
   // masterGain->delay->eqLow
-  if (nodeGroups.filters.nodes.delay.enabled !== false && !nodeGroups.filters.nodes.delay.audioNode) {
+  if (
+    nodeGroups.filters.nodes.delay.enabled !== false &&
+    !nodeGroups.filters.nodes.delay.audioNode
+  ) {
     const delayNode = createDelayNode(nodeGroups.filters.nodes.delay.max)
     nodeGroups.filters.nodes.delay.audioNode = delayNode
 
     const delayGainNode = audioContext.createGain()
-    delayGainNode.gain.value = (parseFloat(nodeGroups.output.nodes.masterGain.currentValue) * 0.75).toFixed(1)
+    delayGainNode.gain.value = (
+      parseFloat(nodeGroups.output.nodes.masterGain.currentValue) * 0.75
+    ).toFixed(1)
 
     // nodeGroups.filters.nodes.distortion.audioNode.connect(delayGainNode)
     nodeGroups.output.nodes.masterGain.audioNode.connect(delayGainNode)
@@ -725,7 +732,13 @@ const createMasterChain = function () {
   nodeGroups.filters.nodes.eqHigh.audioNode = createEQNode('highshelf', 4700, 0, 0.5)
 
   // compressor
-  nodeGroups.filters.nodes.compressor.audioNode = createCompNode(-50, 40, nodeGroups.filters.nodes.compressor.currentValue, 0, 0.25)
+  nodeGroups.filters.nodes.compressor.audioNode = createCompNode(
+    -50,
+    40,
+    nodeGroups.filters.nodes.compressor.currentValue,
+    0,
+    0.25
+  )
 
   // eqLow->eqMid->eqHigh->compressor
   // TODO: added eq and compression for sf2 and waf
@@ -773,7 +786,10 @@ const createReverbNode = () => {
 const createDelayNode = (max) => {
   const audioNode = audioContext.createDelay(max)
 
-  audioNode.delayTime.setValueAtTime(nodeGroups.filters.nodes.delay.currentValue, audioContext.currentTime)
+  audioNode.delayTime.setValueAtTime(
+    nodeGroups.filters.nodes.delay.currentValue,
+    audioContext.currentTime
+  )
 
   return audioNode
 }
@@ -835,8 +851,7 @@ const controlValueChanged = function (controlGroup, controlName, newValue) {
 
       _saveToLocalStorage()
     }
-  }
-  else if (nodeControl.parameter == 'adsr') {
+  } else if (nodeControl.parameter == 'adsr') {
     const newFloatValue = parseFloat(newValue).toFixed(1)
 
     if (newFloatValue <= nodeControl.max && newFloatValue >= nodeControl.min) {
@@ -877,7 +892,9 @@ const controlValueChanged = function (controlGroup, controlName, newValue) {
 
     _saveToLocalStorage()
   } else {
-    console.error(`nodeGrouos['${controlGroup}']['${controlName}'] not found, value could not be updated.`)
+    console.error(
+      `nodeGrouos['${controlGroup}']['${controlName}'] not found, value could not be updated.`
+    )
   }
 }
 const selectOptionChanged = function (controlGroup, controlName, newValue) {
@@ -938,26 +955,28 @@ const selectOptionChanged = function (controlGroup, controlName, newValue) {
   }
 }
 
-const controlIncreaseValue = function(controlGroup, controlKey) {
+const controlIncreaseValue = function (controlGroup, controlKey) {
   // console.log(`controlIncreaseValue(${controlGroup},${controlKey})`)
 
   controlValueChanged(
     controlGroup,
     controlKey,
-    (parseFloat(
-      nodeGroups[controlGroup].nodes[controlKey].currentValue) + parseFloat(nodeGroups[controlGroup].nodes[controlKey].step
-    )).toFixed(1)
+    (
+      parseFloat(nodeGroups[controlGroup].nodes[controlKey].currentValue) +
+      parseFloat(nodeGroups[controlGroup].nodes[controlKey].step)
+    ).toFixed(1)
   )
 }
-const controlDecreaseValue = function(controlGroup, controlKey) {
+const controlDecreaseValue = function (controlGroup, controlKey) {
   // console.log(`controlDecreaseValue(${controlKey})`)
 
   controlValueChanged(
     controlGroup,
     controlKey,
-    (parseFloat(
-      nodeGroups[controlGroup].nodes[controlKey].currentValue) - parseFloat(nodeGroups[controlGroup].nodes[controlKey].step
-    )).toFixed(1)
+    (
+      parseFloat(nodeGroups[controlGroup].nodes[controlKey].currentValue) -
+      parseFloat(nodeGroups[controlGroup].nodes[controlKey].step)
+    ).toFixed(1)
   )
 }
 
@@ -978,7 +997,7 @@ const toggleSynthControls = function () {
 
 // midi, keyboard, mouse, and touch inputs all come here to create actual sound
 const noteStart = function (noteNum, velocity = 64) {
-  if (!MUSICAL_NOTES.some(note => note.midi == noteNum)) {
+  if (!MUSICAL_NOTES.some((note) => note.midi == noteNum)) {
     return null
   }
   // update UI
@@ -991,7 +1010,8 @@ const noteStart = function (noteNum, velocity = 64) {
 
   // set note's volume envelope
   const envelope = adsr.clone()
-  envelope.peakLevel = (velocity / 127) * parseFloat(nodeGroups.output.nodes.masterGain.currentValue)
+  envelope.peakLevel =
+    (velocity / 127) * parseFloat(nodeGroups.output.nodes.masterGain.currentValue)
 
   // console.log('noteStart env:', envelope)
   // console.log(`A ${envelope.attackTime} / D ${envelope.decayTime} / S ${ envelope.sustainLevel} / R ${envelope.releaseTime}`)
@@ -1062,7 +1082,6 @@ const noteStop = function (noteNum, velocity = 64) {
       break
 
     case 'waf':
-
       wafNotes[noteNum] = null
       delete wafNotes[noteNum]
 
@@ -1085,7 +1104,8 @@ const noteStop = function (noteNum, velocity = 64) {
 
         // set note's volume envelope
         const envelope = adsr.clone()
-        envelope.peakLevel = (velocity / 127) * parseFloat(nodeGroups.output.nodes.masterGain.currentValue)
+        envelope.peakLevel =
+          (velocity / 127) * parseFloat(nodeGroups.output.nodes.masterGain.currentValue)
         envelope.gateTime = playbackTime - startTime
         envelope.applyTo(oscNotes[noteNum][1].gain, startTime)
 
@@ -1108,7 +1128,7 @@ const noteStop = function (noteNum, velocity = 64) {
 const noteResetAll = () => {
   switch (nodeGroups.output.nodes.outputType.currentValue) {
     case 'sf2':
-      sf2Notes.map(noteNum => {
+      sf2Notes.map((noteNum) => {
         sf2Notes[noteNum] = null
         delete sf2Notes[noteNum]
       })
@@ -1118,7 +1138,7 @@ const noteResetAll = () => {
       break
 
     case 'waf':
-      wafNotes.map(noteNum => {
+      wafNotes.map((noteNum) => {
         wafNotes[noteNum] = null
         delete wafNotes[noteNum]
       })
@@ -1130,7 +1150,7 @@ const noteResetAll = () => {
     default:
       // console.log('oscNotes existing', oscNotes)
 
-      Object.values(oscNotes).map(osc => {
+      Object.values(oscNotes).map((osc) => {
         // console.log('osc', osc)
 
         const playbackTime = audioContext.currentTime
@@ -1161,12 +1181,12 @@ const createOscNode = function (noteNum, startTime, envelope) {
   if (!oscNotes[noteNum]) {
     // create Web Audio oscillator
     const oscNode = audioContext.createOscillator()
-    const noteFreq = parseFloat(MUSICAL_NOTES.filter(n => n.midi == noteNum)[0].frequency)
+    const noteFreq = parseFloat(MUSICAL_NOTES.filter((n) => n.midi == noteNum)[0].frequency)
 
     // set oscillator wave type
-    oscType = document.getElementById('osc-type')
-      .options[document.getElementById('osc-type').selectedIndex]
-      .value
+    oscType =
+      document.getElementById('osc-type').options[document.getElementById('osc-type').selectedIndex]
+        .value
     oscNode.type = oscType
 
     // set oscillator frequency
@@ -1194,7 +1214,6 @@ const createOscNode = function (noteNum, startTime, envelope) {
 
     oscNotes[noteNum][0].onended = function () {
       // console.log(`oscNotes[${noteNum}] ended`)
-
       // if (oscNotes[noteNum] &&
       //   oscNotes[noteNum][1] &&
       //   oscNotes[noteNum][1].gain &&
@@ -1212,17 +1231,17 @@ const createOscNode = function (noteNum, startTime, envelope) {
 }
 const createSF2Node = function (noteNum, startTime) {
   const curPresetValue = nodeGroups.output.nodes.sf2Preset.currentValue
-  const presetObj = sf2Presets.value.filter(preset => preset.header.name == curPresetValue)[0]
+  const presetObj = sf2Presets.value.filter((preset) => preset.header.name == curPresetValue)[0]
 
   // console.log('curPresetValue', curPresetValue)
   // console.log('sf2Presets', sf2Presets)
   // console.log('presetObj', presetObj)
 
   const stopHandle = startPresetNote(
-    audioContext,       // AudioContext
-    presetObj,          // preset
-    noteNum,            // midi note number (0...127)
-    (startTime || 0)    // when
+    audioContext, // AudioContext
+    presetObj, // preset
+    noteNum, // midi note number (0...127)
+    startTime || 0 // when
   )
 
   // add a function that, when called, stops note
@@ -1232,7 +1251,9 @@ const createSF2Node = function (noteNum, startTime) {
 }
 const createWafNode = function (noteNum, startTime) {
   const wafToneInst = nodeGroups.output.nodes.wafSource.currentValue
-  const wafToneId = (document.getElementById('waf-preset').selectedIndex * 10).toString().padStart(4, '0')
+  const wafToneId = (document.getElementById('waf-preset').selectedIndex * 10)
+    .toString()
+    .padStart(4, '0')
 
   // SB stuff doesn't have the '_file' on the end for some reason
   let wafToneString = `_tone_${wafToneId}_${wafToneInst}_sf2_file`
@@ -1250,13 +1271,13 @@ const createWafNode = function (noteNum, startTime) {
   const wafDestination = nodeGroups.output.nodes.masterGain.audioNode
 
   const wafEnvelope = wafPlayer.queueWaveTable(
-    audioContext,       // AudioContext
-    wafDestination,     // destination
-    wafToneObj,         // preset
-    startTime,          // when
-    noteNum,            // midi note number (0..127)
-    wafDuration,        // duration (seconds)
-    wafGain             // volume (0..1)
+    audioContext, // AudioContext
+    wafDestination, // destination
+    wafToneObj, // preset
+    startTime, // when
+    noteNum, // midi note number (0..127)
+    wafDuration, // duration (seconds)
+    wafGain // volume (0..1)
   )
 
   // console.log('wafEnvelope', wafEnvelope)
@@ -1282,7 +1303,7 @@ const pitchBend = function (velocity) {
 
   // scale to useful multiplier
   // -1 (-1 octave) -> 0 (no bend) -> 1 (+1 octave)
-  let pbCents = (pbRaw - inMin) * (outMax - outMin) / (inMax - inMin) + outMin
+  let pbCents = ((pbRaw - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin
   pbCents = Math.round(pbCents * calcScale) / calcScale
 
   if (pbCents > 0 && pbCents <= 0.02) {
@@ -1291,7 +1312,7 @@ const pitchBend = function (velocity) {
 
   // console.log('pbCents', pbCents)
 
-  oscNotes.forEach(osc => {
+  oscNotes.forEach((osc) => {
     osc[0].detune.setValueAtTime(pbCents, audioContext.currentTime)
 
     // const curFreq = osc[0].frequency.value
@@ -1430,31 +1451,30 @@ const updateKeyboardEventHandler = () => {
 const updateMidiEventHandler = () => {
   if (useMidi) {
     if ('requestMIDIAccess' in navigator) {
-      navigator.requestMIDIAccess({ sysex: false })
-        .then(
-          (midi) => {
-            midiAccess = midi
+      navigator.requestMIDIAccess({ sysex: false }).then(
+        (midi) => {
+          midiAccess = midi
 
-            kbSettings.value.input.midi = true
+          kbSettings.value.input.midi = true
 
-            _saveToLocalStorage()
+          _saveToLocalStorage()
 
-            console.log('🎹 enabled', midiAccess)
+          console.log('🎹 enabled', midiAccess)
 
-            Array.from(midiAccess.inputs).forEach((input, index) => {
-              input[1].onmidimessage = midiController
+          Array.from(midiAccess.inputs).forEach((input, index) => {
+            input[1].onmidimessage = midiController
 
-              console.log(`midi input #${index} detected: ${input[1].name}`)
-            })
-          },
-          (error) => {
-            kbSettings.value.input.midi = false
+            console.log(`midi input #${index} detected: ${input[1].name}`)
+          })
+        },
+        (error) => {
+          kbSettings.value.input.midi = false
 
-            _saveToLocalStorage()
+          _saveToLocalStorage()
 
-            console.error('Failed to get MIDI access:', error)
-          }
-        )
+          console.error('Failed to get MIDI access:', error)
+        }
+      )
     } else {
       kbSettings.value.input.midi = false
 
@@ -1532,11 +1552,31 @@ const keyController = (e) => {
   // [60,    62,64,65,67,69,  71]
 
   const key2midi = {
-    'z': 60, 's': 61, 'x': 62, 'd': 63, 'c': 64, 'v': 65,
-    'g': 66, 'b': 67, 'h': 68, 'n': 69, 'j': 70, 'm': 71,
-    'q': 72, '2': 73, 'w': 74, '3': 75, 'e': 76, 'r': 77,
-    '5': 78, 't': 79, '6': 80, 'y': 81, '7': 82, 'u': 83,
-    'i': 84
+    z: 60,
+    s: 61,
+    x: 62,
+    d: 63,
+    c: 64,
+    v: 65,
+    g: 66,
+    b: 67,
+    h: 68,
+    n: 69,
+    j: 70,
+    m: 71,
+    q: 72,
+    2: 73,
+    w: 74,
+    3: 75,
+    e: 76,
+    r: 77,
+    5: 78,
+    t: 79,
+    6: 80,
+    y: 81,
+    7: 82,
+    u: 83,
+    i: 84,
   }
 
   const note = key2midi[e.key]
@@ -1646,9 +1686,15 @@ const updateOutputTypeHandler = (type) => {
   kbSettings.value.controls.outputType = outputType
 
   switch (type) {
-    case 'sf2': _initSF2(); break
-    case 'waf': _initWAF(); break
-    default: _initOsc(); break
+    case 'sf2':
+      _initSF2()
+      break
+    case 'waf':
+      _initWAF()
+      break
+    default:
+      _initOsc()
+      break
   }
 
   _saveToLocalStorage()
@@ -1742,12 +1788,7 @@ const _initVisualizer = () => {
           barHeight = dataArrayBars[i]
 
           canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)'
-          canvasCtx.fillRect(
-            x,
-            HEIGHT - barHeight / 2,
-            barWidth,
-            barHeight / 2
-          )
+          canvasCtx.fillRect(x, HEIGHT - barHeight / 2, barWidth, barHeight / 2)
 
           x += barWidth + 1
         }
@@ -1804,26 +1845,32 @@ const _initSF2 = () => {
   nodeGroups.filters.enabled = false
   nodeGroups.filters.visible = false
 
-  loadSoundfont(`/assets/sf2/${nodeGroups.output.nodes.sf2Source.currentValue}.sf2`).then((player) => {
-    let options = []
+  loadSoundfont(`/assets/sf2/${nodeGroups.output.nodes.sf2Source.currentValue}.sf2`).then(
+    (player) => {
+      let options = []
 
-    player.presets.map(preset => options.push({
-      text: preset.header.name,
-      value: preset.header.name
-    }))
+      player.presets.map((preset) =>
+        options.push({
+          text: preset.header.name,
+          value: preset.header.name,
+        })
+      )
 
-    nodeGroups.output.nodes.sf2Preset.options = options
+      nodeGroups.output.nodes.sf2Preset.options = options
 
-    if (Object.values(options).find(preset => preset.text == kbSettings.value.controls.sf2Preset)) {
-      nodeGroups.output.nodes.sf2Preset.currentValue = kbSettings.value.controls.sf2Preset
-    } else {
-      nodeGroups.output.nodes.sf2Preset.currentValue = options[0].text
+      if (
+        Object.values(options).find((preset) => preset.text == kbSettings.value.controls.sf2Preset)
+      ) {
+        nodeGroups.output.nodes.sf2Preset.currentValue = kbSettings.value.controls.sf2Preset
+      } else {
+        nodeGroups.output.nodes.sf2Preset.currentValue = options[0].text
+      }
+
+      sf2Presets.value = player.presets
+
+      _initVisualizer()
     }
-
-    sf2Presets.value = player.presets
-
-    _initVisualizer()
-  })
+  )
 }
 const _initWAF = async () => {
   nodeGroups.output.nodes.oscType.enabled = false
@@ -1846,10 +1893,14 @@ const _initWAF = async () => {
   nodeGroups.filters.visible = false
 
   // if we don't have WAF main file loaded, load it
-  const srcs = Array.from(document.querySelectorAll('script')).map(script => script.getAttribute('src'))
+  const srcs = Array.from(document.querySelectorAll('script')).map((script) =>
+    script.getAttribute('src')
+  )
 
   const wafToneInst = nodeGroups.output.nodes.wafSource.currentValue
-  const wafToneId = (document.getElementById('waf-preset').selectedIndex * 10).toString().padStart(4, '0')
+  const wafToneId = (document.getElementById('waf-preset').selectedIndex * 10)
+    .toString()
+    .padStart(4, '0')
 
   let wafToneString = `${wafToneId}_${wafToneInst}_sf2_file`
   // SB stuff doesn't have the '_file' on the end for some reason
@@ -1859,7 +1910,7 @@ const _initWAF = async () => {
   const wafToneUrl = `${WAF_DATA_PATH}/${wafToneString}.js`
   const wafToneName = `_tone_${wafToneString}`
 
-  if (!srcs.some(src => src.includes('WebAudioFontPlayer.js'))) {
+  if (!srcs.some((src) => src.includes('WebAudioFontPlayer.js'))) {
     let mainScript = document.createElement('script')
     mainScript.setAttribute('src', WAF_JS_LIB_PATH)
     document.head.appendChild(mainScript)
@@ -1895,26 +1946,19 @@ const _getChord = (midiNums) => {
 
         if (_arraysAreEqual([intval1, intval2], INTERVALS['5'])) {
           chordName = `${_midi2Name(midiNums[0])}5`
-        }
-        else if (_arraysAreEqual([intval1, intval2], INTERVALS['major'])) {
+        } else if (_arraysAreEqual([intval1, intval2], INTERVALS['major'])) {
           chordName = `${_midi2Name(midiNums[0])}maj`
-        }
-        else if (_arraysAreEqual([intval1, intval2], INTERVALS['aug'])) {
+        } else if (_arraysAreEqual([intval1, intval2], INTERVALS['aug'])) {
           chordName = `${_midi2Name(midiNums[0])}aug`
-        }
-        else if (_arraysAreEqual([intval1, intval2], INTERVALS['minor'])) {
+        } else if (_arraysAreEqual([intval1, intval2], INTERVALS['minor'])) {
           chordName = `${_midi2Name(midiNums[0])}min`
-        }
-        else if (_arraysAreEqual([intval1, intval2], INTERVALS['dim'])) {
+        } else if (_arraysAreEqual([intval1, intval2], INTERVALS['dim'])) {
           chordName = `${_midi2Name(midiNums[0])}dim`
-        }
-        else if (_arraysAreEqual([intval1, intval2], INTERVALS['sus2'])) {
+        } else if (_arraysAreEqual([intval1, intval2], INTERVALS['sus2'])) {
           chordName = `${_midi2Name(midiNums[0])}sus2`
-        }
-        else if (_arraysAreEqual([intval1, intval2], INTERVALS['sus4'])) {
+        } else if (_arraysAreEqual([intval1, intval2], INTERVALS['sus4'])) {
           chordName = `${_midi2Name(midiNums[0])}sus4`
-        }
-        else {
+        } else {
           chordName = `${_midi2Name(midiNums[0])}(unidentified)`
         }
 
@@ -1932,17 +1976,13 @@ const _getChord = (midiNums) => {
 
         if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS['dom7'])) {
           chordName = `${_midi2Name(midiNums[0])}7`
-        }
-        else if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS['min7'])) {
+        } else if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS['min7'])) {
           chordName = `${_midi2Name(midiNums[0])}min7`
-        }
-        else if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS['maj7'])) {
+        } else if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS['maj7'])) {
           chordName = `${_midi2Name(midiNums[0])}maj7`
-        }
-        else if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS['7sus4'])) {
+        } else if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS['7sus4'])) {
           chordName = `${_midi2Name(midiNums[0])}7sus4`
-        }
-        else {
+        } else {
           chordName = `${_midi2Name(midiNums[0])}(unidentified)`
         }
 
@@ -1958,7 +1998,7 @@ const _getChord = (midiNums) => {
   } else {
     const letters = []
 
-    midiNums.forEach(midi => {
+    midiNums.forEach((midi) => {
       letters.push(_midi2Name(midi))
     })
 
@@ -1969,7 +2009,7 @@ const _arraysAreEqual = (arr1, arr2) => {
   return arr1.join() == arr2.join()
 }
 const _midi2Name = (midiNumber) => {
-  const note = MUSICAL_NOTES.filter(mNote => mNote.midi == midiNumber)
+  const note = MUSICAL_NOTES.filter((mNote) => mNote.midi == midiNumber)
 
   if (note.length) {
     const name = note[0].name
@@ -2052,21 +2092,24 @@ onMounted(() => {
       Synth Controls
     </button>
 
-    <span id="note-recognition" :class="{ 'empty': !currentNotes.length }">
+    <span id="note-recognition" :class="{ empty: !currentNotes.length }">
       {{ currentNotes.length ? currentNotes : 'No notes.' }}
     </span>
   </div>
 
   <div id="synth-controls-container">
-    <div class="node-group" v-for="(group, name) in nodeGroups"
+    <div
+      class="node-group"
+      v-for="(group, name) in nodeGroups"
       :key="group"
       :group="name"
       :class="{
-        'enabled': group.enabled,
-        'visible': group.visible
+        enabled: group.enabled,
+        visible: group.visible,
       }"
     >
-      <NodeControl v-for="(control, key) in group.nodes"
+      <NodeControl
+        v-for="(control, key) in group.nodes"
         :key="control"
         :control-group="name"
         :control-key="key"
@@ -2088,67 +2131,67 @@ onMounted(() => {
   justify-content: flex-start;
   padding: 0 3px;
 }
-  @media (min-width: 1024px) {
-    #synth-controls-header {
-      padding: 0 20px;
-    }
+@media (min-width: 1024px) {
+  #synth-controls-header {
+    padding: 0 20px;
   }
-  #synth-controls-header button {
-    border: 2px solid var(--color-border);
-    color: var(--color-text);
-    font-size: 1.5rem;
-    height: 36px;
-    padding: 0.65rem;
+}
+#synth-controls-header button {
+  border: 2px solid var(--color-border);
+  color: var(--color-text);
+  font-size: 1.5rem;
+  height: 36px;
+  padding: 0.65rem;
+}
+@media (hover: hover) {
+  #synth-controls-header button:hover {
+    background-color: var(--green);
+    color: var(--green-bright-active);
   }
-    @media (hover: hover) {
-      #synth-controls-header button:hover {
-        background-color: var(--green);
-        color: var(--green-bright-active);
-      }
-    }
-    #synth-controls-header button img {
-      left: 0;
-      position: relative;
-      top: 2px;
-    }
+}
+#synth-controls-header button img {
+  left: 0;
+  position: relative;
+  top: 2px;
+}
 
-    body.dark-theme #synth-controls-header img {
-      filter: invert(100%) sepia(100%) saturate(13%) hue-rotate(237deg) brightness(104%) contrast(104%);
-    }
+body.dark-theme #synth-controls-header img {
+  filter: invert(100%) sepia(100%) saturate(13%) hue-rotate(237deg) brightness(104%) contrast(104%);
+}
 
+#synth-controls-header #note-recognition {
+  background-color: var(--green-bright-active);
+  border: 1px solid var(--gray-dark);
+  border-radius: 4px;
+  box-shadow: inset 0 0 5px 1px var(--green);
+  color: var(--black);
+  font-weight: bold;
+  height: 36px;
+  margin-left: 1rem;
+  padding: 0.4rem 0.75rem;
+  width: 100%;
+}
+body.dark-theme #synth-controls-header #note-recognition {
+  background-color: var(--green-deep-active);
+  border: 1px solid var(--gray-bright-active);
+  color: var(--green-bright-active);
+}
+@media (min-width: 768px) {
   #synth-controls-header #note-recognition {
-    background-color: var(--green-bright-active);
-    border: 1px solid var(--gray-dark);
-    border-radius: 4px;
-    box-shadow: inset 0 0 5px 1px var(--green);
-    color: var(--black);
-    font-weight: bold;
-    height: 36px;
-    margin-left: 1rem;
-    padding: 0.4rem 0.75rem;
-    width: 100%;
+    max-width: 150px;
   }
-    body.dark-theme #synth-controls-header #note-recognition {
-      background-color: var(--green-deep-active);
-      border: 1px solid var(--gray-bright-active);
-      color: var(--green-bright-active);
-    }
-    @media (min-width: 768px) {
-      #synth-controls-header #note-recognition {
-        max-width: 150px;
-      }
-    }
-    #synth-controls-header #note-recognition.empty {
-      background-color: var(--gray-light);
-      box-shadow: inset 0 0 5px 1px var(--gray);
-      color: var(--gray);
-      font-weight: normal;
-    }
-      body.dark-theme #synth-controls-header #note-recognition.empty {
-        background-color: var(--color-background-mute);
-        box-shadow: inset 0 0 5px 1px var(--color-text);
-        color: var(--color-text);
-      }
+}
+#synth-controls-header #note-recognition.empty {
+  background-color: var(--gray-light);
+  box-shadow: inset 0 0 5px 1px var(--gray);
+  color: var(--gray);
+  font-weight: normal;
+}
+body.dark-theme #synth-controls-header #note-recognition.empty {
+  background-color: var(--color-background-mute);
+  box-shadow: inset 0 0 5px 1px var(--color-text);
+  color: var(--color-text);
+}
 
 #synth-controls-container {
   background-color: var(--white-soft);
@@ -2160,92 +2203,91 @@ onMounted(() => {
   overflow-y: auto;
   padding: 5px;
 }
-  @media (min-width: 600px) {
-    #synth-controls-container {
-      align-items: normal;
-      flex-wrap: nowrap;
-      padding: 0 5px 5px;
-    }
+@media (min-width: 600px) {
+  #synth-controls-container {
+    align-items: normal;
+    flex-wrap: nowrap;
+    padding: 0 5px 5px;
   }
-  @media (min-width: 1024px) {
-    #synth-controls-container {
-      margin: 5px 20px;
-    }
+}
+@media (min-width: 1024px) {
+  #synth-controls-container {
+    margin: 5px 20px;
   }
+}
+#synth-controls-container .node-group {
+  display: none;
+  flex-direction: column;
+}
+#synth-controls-container .node-group.visible {
+  display: flex;
+}
+#synth-controls-container .node-group:first-of-type legend {
+  line-height: 1;
+}
+@media (min-width: 600px) {
   #synth-controls-container .node-group {
-    display: none;
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
   }
-    #synth-controls-container .node-group.visible {
-      display: flex;
-    }
-    #synth-controls-container .node-group:first-of-type legend {
-      line-height: 1;
-    }
-    @media (min-width: 600px) {
-      #synth-controls-container .node-group {
-        flex-direction: row;
-        flex-wrap: nowrap;
-        justify-content: space-between;
-      }
-    }
+}
 
-      @media (min-width: 375px) {
-        #synth-controls-container .node-group[group=adsr] {
-          flex-flow: wrap;
-        }
-          #synth-controls-container .node-group[group=adsr] .node-control {
-            padding: 0 0 5px;
-            width: 50%;
-          }
-      }
-      @media (min-width: 600px) {
-        #synth-controls-container .node-group[group=adsr] {
-          flex-flow: nowrap;
-          width: 100%;
-        }
-          #synth-controls-container .node-group[group=adsr] .node-control {
-            padding: 5px;
-            width: 100%;
-          }
-      }
-
-  body.dark-theme #synth-controls-container {
-    background-color: var(--black-mute);
+@media (min-width: 375px) {
+  #synth-controls-container .node-group[group='adsr'] {
+    flex-flow: wrap;
   }
+  #synth-controls-container .node-group[group='adsr'] .node-control {
+    padding: 0 0 5px;
+    width: 50%;
+  }
+}
+@media (min-width: 600px) {
+  #synth-controls-container .node-group[group='adsr'] {
+    flex-flow: nowrap;
+    width: 100%;
+  }
+  #synth-controls-container .node-group[group='adsr'] .node-control {
+    padding: 5px;
+    width: 100%;
+  }
+}
+
+body.dark-theme #synth-controls-container {
+  background-color: var(--black-mute);
+}
 
 #visualizer-container {
   margin: 5px 0 0;
   width: auto;
 }
-  @media (min-width: 481px) {
-    #visualizer-container {
-      margin: 5px 3px 0;
-    }
+@media (min-width: 481px) {
+  #visualizer-container {
+    margin: 5px 3px 0;
   }
-  @media (min-width: 768px) {
-    #visualizer-container {
-      margin: 0 2px;
-    }
+}
+@media (min-width: 768px) {
+  #visualizer-container {
+    margin: 0 2px;
   }
-  @media (min-width: 1024px) {
-    #visualizer-container {
-      margin: 0 1.25em;
-    }
+}
+@media (min-width: 1024px) {
+  #visualizer-container {
+    margin: 0 1.25em;
   }
+}
+#visualizer {
+  border: 1px solid var(--black);
+  border-radius: 4px;
+  height: 50px;
+  margin: 0;
+  padding: 0;
+  position: relative;
+  width: 100%;
+}
+@media (min-width: 768px) {
   #visualizer {
-    border: 1px solid var(--black);
-    border-radius: 4px;
-    height: 50px;
-    margin: 0;
-    padding: 0;
-    position: relative;
-    width: 100%;
+    height: 100px;
   }
-    @media (min-width: 768px) {
-      #visualizer {
-        height: 100px;
-      }
-    }
-
+}
 </style>

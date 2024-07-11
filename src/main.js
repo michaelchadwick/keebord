@@ -11,14 +11,16 @@ const KB_SETTINGS_KEY = 'keebord-settings'
 const SUN_EMOJI = '☀️'
 const MOON_EMOJI = '🌙'
 
-const lsSettings = localStorage.getItem(KB_SETTINGS_KEY) ? JSON.parse(localStorage.getItem(KB_SETTINGS_KEY)) : null
+const lsSettings = localStorage.getItem(KB_SETTINGS_KEY)
+  ? JSON.parse(localStorage.getItem(KB_SETTINGS_KEY))
+  : null
 
 // initialize VueJS
 const app = createApp(App)
 
 app.config.globalProperties.lsKey = KB_SETTINGS_KEY
 app.config.globalProperties.params = new Proxy(new URLSearchParams(window.location.search), {
-  get: (searchParams, prop) => searchParams.get(prop)
+  get: (searchParams, prop) => searchParams.get(prop),
 })
 
 app.mount('#app')
@@ -107,7 +109,7 @@ localStorage.setItem(KB_SETTINGS_KEY, JSON.stringify(kbSettings.value))
 
 // if such a theme toggler DOM element exists, enable it
 if (themeTogglerElem) {
-  themeTogglerElem.addEventListener('click', function() {
+  themeTogglerElem.addEventListener('click', function () {
     bodyClasses.toggle('dark-theme')
     bodyClasses.toggle('light-theme')
 

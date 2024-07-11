@@ -23,22 +23,22 @@ onMounted(() => {
 </template>
 
 <style scoped>
-  .nav-list a {
-    align-items: center;
-    background-color: transparent;
-    color: var(--green-bright);
-    display: flex;
-    font-size: 16px;
-    font-weight: bold;
-    height: 30px;
-    justify-content: left;
-    padding: 4px 0 4px 18px;
-    text-decoration: none;
+.nav-list a {
+  align-items: center;
+  background-color: transparent;
+  color: var(--green-bright);
+  display: flex;
+  font-size: 16px;
+  font-weight: bold;
+  height: 30px;
+  justify-content: left;
+  padding: 4px 0 4px 18px;
+  text-decoration: none;
+}
+@media (hover: hover) {
+  .nav-list a:hover {
+    background-color: var(--green-bright);
+    color: var(--color-text);
   }
-  @media (hover: hover) {
-    .nav-list a:hover {
-      background-color: var(--green-bright);
-      color: var(--color-text);
-    }
-  }
+}
 </style>

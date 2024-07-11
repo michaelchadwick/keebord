@@ -2,7 +2,9 @@
 import { ref } from 'vue'
 
 const KB_SETTINGS_KEY = 'keebord-settings'
-const lsSettings = localStorage.getItem(KB_SETTINGS_KEY) ? JSON.parse(localStorage.getItem(KB_SETTINGS_KEY)) : null
+const lsSettings = localStorage.getItem(KB_SETTINGS_KEY)
+  ? JSON.parse(localStorage.getItem(KB_SETTINGS_KEY))
+  : null
 
 export const kbSettings = ref({
   controls: {
@@ -20,24 +22,48 @@ export const kbSettings = ref({
     pan: lsSettings ? (lsSettings.controls ? lsSettings.controls.pan : 0.0) : 0.0,
     pitchBend: lsSettings ? (lsSettings.controls ? lsSettings.controls.pitchBend : 2) : 2,
     releaseTime: lsSettings ? (lsSettings.controls ? lsSettings.controls.releaseTime : 0.5) : 0.5,
-    sf2Source: lsSettings ? (lsSettings.controls ? lsSettings.controls.sf2Source : 'super_mario_world') : 'super_mario_world',
-    sf2Preset: lsSettings ? (lsSettings.controls ? lsSettings.controls.sf2Preset : 'SMW Piano') : 'SMW Piano',
+    sf2Source: lsSettings
+      ? lsSettings.controls
+        ? lsSettings.controls.sf2Source
+        : 'super_mario_world'
+      : 'super_mario_world',
+    sf2Preset: lsSettings
+      ? lsSettings.controls
+        ? lsSettings.controls.sf2Preset
+        : 'SMW Piano'
+      : 'SMW Piano',
     sustainLevel: lsSettings ? (lsSettings.controls ? lsSettings.controls.sustainLevel : 0.1) : 0.1,
-    wafSource: lsSettings ? (lsSettings.controls ? lsSettings.controls.wafSource : 'Aspirin') : 'Aspirin',
-    wafPreset: lsSettings ? (lsSettings.controls ? lsSettings.controls.wafPreset : 'Acoustic Grand Piano: Piano') : 'Acoustic Grand Piano: Piano'
+    wafSource: lsSettings
+      ? lsSettings.controls
+        ? lsSettings.controls.wafSource
+        : 'Aspirin'
+      : 'Aspirin',
+    wafPreset: lsSettings
+      ? lsSettings.controls
+        ? lsSettings.controls.wafPreset
+        : 'Acoustic Grand Piano: Piano'
+      : 'Acoustic Grand Piano: Piano',
   },
   filter: {
     rootNote: lsSettings ? (lsSettings.filter ? lsSettings.filter.rootNote : 'C') : 'C',
-    scaleType: lsSettings ? (lsSettings.filter ? lsSettings.filter.scaleType : 'chromatic') : 'chromatic',
+    scaleType: lsSettings
+      ? lsSettings.filter
+        ? lsSettings.filter.scaleType
+        : 'chromatic'
+      : 'chromatic',
   },
   input: {
     keyboard: lsSettings ? (lsSettings.input.keyboard ? true : false) : false,
     midi: lsSettings ? (lsSettings.input.midi ? true : false) : false,
-    mouse: lsSettings ? (lsSettings.input.mouse ? true : false) : false
+    mouse: lsSettings ? (lsSettings.input.mouse ? true : false) : false,
   },
   output: {
     visualizer: lsSettings ? (lsSettings.output.visualizer ? true : false) : false,
-    visualizerType: lsSettings ? (lsSettings.output.visualizerType ? lsSettings.output.visualizerType : 'waves') : 'waves'
+    visualizerType: lsSettings
+      ? lsSettings.output.visualizerType
+        ? lsSettings.output.visualizerType
+        : 'waves'
+      : 'waves',
   },
-  theme: 'light'
+  theme: 'light',
 })

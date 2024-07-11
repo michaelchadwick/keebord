@@ -9,7 +9,7 @@ const props = defineProps({
   useKeyboard: Boolean,
   useMidi: Boolean,
   useMouse: Boolean,
-  useVisualizer: Boolean
+  useVisualizer: Boolean,
 })
 const emit = defineEmits([
   'notePressed',
@@ -21,7 +21,7 @@ const emit = defineEmits([
   'useKeyboardChanged',
   'useMidiChanged',
   'useMouseChanged',
-  'useVisualizerChanged'
+  'useVisualizerChanged',
 ])
 
 let pianoDiv = null
@@ -127,11 +127,11 @@ const updateUseKeyboardFlag = (isChecked) => {
   const keyLabels = document.querySelectorAll('.key-label')
 
   if (isChecked) {
-    keyLabels.forEach(key => {
+    keyLabels.forEach((key) => {
       if (key.getAttribute('data-key')) key.classList.add('show')
     })
   } else {
-    keyLabels.forEach(key => {
+    keyLabels.forEach((key) => {
       if (key.getAttribute('data-key')) key.classList.remove('show')
     })
   }
@@ -169,7 +169,7 @@ const updateVisualuzerTypeValue = (type) => {
 const updateUseVisualizerFlag = (isChecked) => {
   const canvas = document.getElementById('visualizer-container')
 
-  isChecked ? canvas.style.display = 'block' : canvas.style.display = 'none'
+  isChecked ? (canvas.style.display = 'block') : (canvas.style.display = 'none')
 
   emit('useVisualizerChanged', isChecked)
 }
@@ -184,7 +184,7 @@ const updateMouseEventHandler = () => {
 
     document.addEventListener('touchmove', touchMoveController)
 
-    buttons.forEach(button => button.classList.add('enabled-mouse'))
+    buttons.forEach((button) => button.classList.add('enabled-mouse'))
 
     console.log('🐭/🖐️ enabled')
   } else {
@@ -193,7 +193,7 @@ const updateMouseEventHandler = () => {
 
     document.removeEventListener('touchmove', touchMoveController)
 
-    buttons.forEach(button => button.classList.remove('enabled-mouse'))
+    buttons.forEach((button) => button.classList.remove('enabled-mouse'))
 
     console.log('🐭/🖐️ disabled')
   }
@@ -218,7 +218,7 @@ const touchMoveController = (e) => {
         lastTouchEnter = null
       }
     }
-  });
+  })
 
   onTouchEnterEvents.map((event) => {
     if (el.matches(event[0]) && el !== lastTouchEnter) {
@@ -230,49 +230,49 @@ const touchMoveController = (e) => {
 }
 
 const onTouchEnter = (selector, fn) => {
-	onTouchEnterEvents.push([selector, fn]);
+  onTouchEnterEvents.push([selector, fn])
 
-	return function () {
-		onTouchEnterEvents.slice().map(function (e, i) {
-			if (e[0] === selector && e[1] === fn) {
-				onTouchEnterEvents.splice(1, i);
-			}
-		});
-	};
+  return function () {
+    onTouchEnterEvents.slice().map(function (e, i) {
+      if (e[0] === selector && e[1] === fn) {
+        onTouchEnterEvents.splice(1, i)
+      }
+    })
+  }
 }
 const onTouchLeave = (selector, fn) => {
-	onTouchLeaveEvents.push([selector, fn]);
+  onTouchLeaveEvents.push([selector, fn])
 
-	return function () {
-		onTouchLeaveEvents.slice().map(function (e, i) {
-			if (e[0] === selector && e[1] === fn) {
-				onTouchLeaveEvents.splice(1, i);
-			}
-		});
-	};
+  return function () {
+    onTouchLeaveEvents.slice().map(function (e, i) {
+      if (e[0] === selector && e[1] === fn) {
+        onTouchLeaveEvents.splice(1, i)
+      }
+    })
+  }
 }
 
 const notes = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
 const scales = {
-  'chromatic':          [1,1,1,1,1,1,1,1,1,1,1,1,1],
+  chromatic: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 
-  'bebop':              [2,2,1,2,2,1,1,1],  // Bebop dominant scale
-  'blues':              [3,2,1,1,3,2,3],
-  'dorian':             [2,1,2,2,2,1,2],    // Dorian mode
-  'flamenco':           [1,3,1,2,1,3,1],    // Flamenco mode
-  'harmonic-major':     [2,2,1,2,1,3,1],
-  'harmonic-minor':     [2,1,2,2,1,3,1],
-  'hungarian-major':    [3,1,2,1,2,1,2],
-  'hungarian-minor':    [2,1,3,1,1,3,1],
-  'major':              [2,2,1,2,2,2],      // Ionian mode
-  'melodic-minor':      [2,1,2,2,2,2,1],
-  'natural-minor':      [2,1,2,2,1,2,2],    // Aeolian mode
-  'pentatonic-major':   [2,2,3,2,3],
-  'pentatonic-minor':   [3,2,2,3,2],
-  'persian':            [1,3,1,1,2,3,1],    // Persian dominant scale
-  'phrygian':           [1,2,2,2,1,2,2,2],
-  'tritone':            [1,3,2,1,3,2],
-  'whole-tone':         [2,2,2,2,2,2,2],
+  bebop: [2, 2, 1, 2, 2, 1, 1, 1], // Bebop dominant scale
+  blues: [3, 2, 1, 1, 3, 2, 3],
+  dorian: [2, 1, 2, 2, 2, 1, 2], // Dorian mode
+  flamenco: [1, 3, 1, 2, 1, 3, 1], // Flamenco mode
+  'harmonic-major': [2, 2, 1, 2, 1, 3, 1],
+  'harmonic-minor': [2, 1, 2, 2, 1, 3, 1],
+  'hungarian-major': [3, 1, 2, 1, 2, 1, 2],
+  'hungarian-minor': [2, 1, 3, 1, 1, 3, 1],
+  major: [2, 2, 1, 2, 2, 2], // Ionian mode
+  'melodic-minor': [2, 1, 2, 2, 2, 2, 1],
+  'natural-minor': [2, 1, 2, 2, 1, 2, 2], // Aeolian mode
+  'pentatonic-major': [2, 2, 3, 2, 3],
+  'pentatonic-minor': [3, 2, 2, 3, 2],
+  persian: [1, 3, 1, 1, 2, 3, 1], // Persian dominant scale
+  phrygian: [1, 2, 2, 2, 1, 2, 2, 2],
+  tritone: [1, 3, 2, 1, 3, 2],
+  'whole-tone': [2, 2, 2, 2, 2, 2, 2],
 }
 const vizTypes = ['waves', 'bars']
 
@@ -287,9 +287,9 @@ const scaleFilter = () => {
   } else {
     let notes = Object.values(props.musicalNotes)
 
-    const startIndex = notes.map(
-      note => note.name[1] == 'b' ? `${note.name[0]}${note.name[1]}` : note.name[0]
-    ).indexOf(rootNoteSelected)
+    const startIndex = notes
+      .map((note) => (note.name[1] == 'b' ? `${note.name[0]}${note.name[1]}` : note.name[0]))
+      .indexOf(rootNoteSelected)
     const octaveCount = Object.keys(props.musicalNotes).length / 12
 
     // start scale on root note
@@ -300,7 +300,7 @@ const scaleFilter = () => {
       // console.log('filtering octave:', oct)
 
       const scaleSteps = scales[scaleTypeSelected]
-      const octIndex = (oct * 12) + 12
+      const octIndex = oct * 12 + 12
       let noteIndex = oct * 12
       let scaleStepIndex = 0
 
@@ -358,7 +358,6 @@ onMounted(() => {
 </script>
 
 <template>
-
   <div id="scroll-buttons">
     <button id="button-octave-left" title="scroll octave left">
       <i class="fa fa-arrow-left"></i>
@@ -396,8 +395,11 @@ onMounted(() => {
         :class="{
           'key-white': note.name[1] != 'b' || scaleTypeSelected != 'chromatic',
           'key-black': note.name[1] == 'b' && scaleTypeSelected == 'chromatic',
-          'root-note': note.name[1] == 'b' ? `${note.name[0]}${note.name[1]}` == rootNoteSelected : note.name[0] == rootNoteSelected,
-          'enabled-mouse': useMouse
+          'root-note':
+            note.name[1] == 'b'
+              ? `${note.name[0]}${note.name[1]}` == rootNoteSelected
+              : note.name[0] == rootNoteSelected,
+          'enabled-mouse': useMouse,
         }"
         @mousedown="emitPressed($event, index)"
         @mouseenter="emitPressed($event, index)"
@@ -460,11 +462,7 @@ onMounted(() => {
           @change="updateRootNoteValue($event.target.value)"
         >
           <option disabled value="">- Root -</option>
-          <option
-            v-for="val in notes"
-            :key="val"
-            :value="val"
-          >{{ val }}</option>
+          <option v-for="val in notes" :key="val" :value="val">{{ val }}</option>
         </select>
 
         <select
@@ -475,11 +473,7 @@ onMounted(() => {
           @change="updateScaleTypeValue($event.target.value)"
         >
           <option disabled value="">- Scale -</option>
-          <option
-            v-for="key in Object.keys(scales)"
-            :key="key"
-            :value="key"
-          >{{ key }}</option>
+          <option v-for="key in Object.keys(scales)" :key="key" :value="key">{{ key }}</option>
         </select>
       </fieldset>
     </div>
@@ -505,16 +499,11 @@ onMounted(() => {
           @change="updateVisualuzerTypeValue($event.target.value)"
         >
           <option disabled value="">- Type -</option>
-          <option
-            v-for="val in vizTypes"
-            :key="val"
-            :value="val"
-          >{{ val }}</option>
+          <option v-for="val in vizTypes" :key="val" :value="val">{{ val }}</option>
         </select>
       </fieldset>
     </div>
   </div>
-
 </template>
 
 <style scoped>
@@ -525,61 +514,61 @@ onMounted(() => {
   padding: 0 3px;
   width: 100%;
 }
-  @media (min-width: 1024px) {
-    #scroll-buttons {
-      padding: 5px 20px;
-    }
+@media (min-width: 1024px) {
+  #scroll-buttons {
+    padding: 5px 20px;
   }
+}
+#scroll-buttons button {
+  align-items: center;
+  border: 2px solid var(--color-border);
+  color: var(--color-text);
+  display: flex;
+  font-size: 1.5rem;
+  height: 32px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+}
+#scroll-buttons button i {
+  margin-right: 5px;
+}
+#scroll-buttons button i.fa-circle-stop {
+  margin-right: 0;
+}
+@media (min-width: 425px) {
+  #scroll-buttons button i.fa-circle-stop {
+    margin-right: 5px;
+  }
+}
+#scroll-buttons button > span {
+  font-weight: bold;
+}
+#scroll-buttons button > span.small {
+  display: inline;
+}
+#scroll-buttons button > span.large {
+  display: none;
+}
+@media (min-width: 425px) {
+  #scroll-buttons button > span.small {
+    display: none;
+  }
+  #scroll-buttons button > span.large {
+    display: inline;
+  }
+}
+@media (hover: hover) {
+  #scroll-buttons button:hover {
+    background-color: var(--green);
+    color: var(--green-bright-active);
+  }
+}
+@media (min-width: 768px) {
   #scroll-buttons button {
-    align-items: center;
-    border: 2px solid var(--color-border);
-    color: var(--color-text);
-    display: flex;
-    font-size: 1.5rem;
-    height: 32px;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
+    font-size: 1.75rem;
   }
-    #scroll-buttons button i {
-      margin-right: 5px;
-    }
-      #scroll-buttons button i.fa-circle-stop {
-        margin-right: 0;
-      }
-        @media (min-width: 425px) {
-          #scroll-buttons button i.fa-circle-stop {
-            margin-right: 5px;
-          }
-        }
-    #scroll-buttons button > span {
-      font-weight: bold;
-    }
-      #scroll-buttons button > span.small {
-        display: inline;
-      }
-      #scroll-buttons button > span.large {
-        display: none;
-      }
-      @media (min-width: 425px) {
-        #scroll-buttons button > span.small {
-          display: none;
-        }
-        #scroll-buttons button > span.large {
-          display: inline;
-        }
-      }
-    @media (hover: hover) {
-      #scroll-buttons button:hover {
-        background-color: var(--green);
-        color: var(--green-bright-active);
-      }
-    }
-    @media (min-width: 768px) {
-      #scroll-buttons button {
-        font-size: 1.75rem;
-      }
-    }
+}
 
 #keyboard-container {
   border-top: 1px solid var(--black);
@@ -588,179 +577,179 @@ onMounted(() => {
   margin: 0;
   white-space: nowrap;
 }
-  @media (min-width: 1024px) {
-    #other-controls-container {
-      margin-top: 10px;
-    }
-
-    #keyboard-container {
-      height: 300px;
-      margin: 0 20px;
-      -moz-box-shadow:    0 2px 4px 2px var(--color-shadow);
-      -webkit-box-shadow: 0 2px 4px 2px var(--color-shadow);
-      box-shadow:         0 2px 4px 2px var(--color-shadow);
-    }
+@media (min-width: 1024px) {
+  #other-controls-container {
+    margin-top: 10px;
   }
-  #keyboard {
-    background-color: transparent;
-    height: 100%;
-    overflow-x: scroll;
-    position: relative;
-    width: 100%;
+
+  #keyboard-container {
+    height: 300px;
+    margin: 0 20px;
+    -moz-box-shadow: 0 2px 4px 2px var(--color-shadow);
+    -webkit-box-shadow: 0 2px 4px 2px var(--color-shadow);
+    box-shadow: 0 2px 4px 2px var(--color-shadow);
   }
-    #keyboard button {
-      border: 2px solid var(--color-key-border);
-      border-top-left-radius: 0;
-      border-top-right-radius: 0;
-      cursor: auto;
-      display: inline-block;
-      font-size: 1.5rem;
-      font-weight: 700;
-      height: 300px;
-      margin: 0;
-      padding: 0;
-      position: relative;
-    }
-      @media (hover: hover) {
-        #keyboard button:not(.enabled-mouse):hover {
-          cursor: default;
-        }
-      }
-      #keyboard button div {
-        font-weight: bold;
-        line-height: 2;
-        margin: 0 auto;
-        position: absolute;
-        text-align: center;
-        width: 100%;
-      }
-        #keyboard button div.key-label {
-          border: 1px solid var(--color-text);
-          border-radius: 5px;
-          bottom: 40px;
-          display: none;
-          height: 24px;
-          padding: 5px;
-          width: 24px;
-        }
-          #keyboard button div.key-label.show {
-            display: block;
-          }
-        #keyboard button div.note-label {
-          bottom: 0;
-          color: var(--color-text);
-          text-transform: none;
-        }
+}
+#keyboard {
+  background-color: transparent;
+  height: 100%;
+  overflow-x: scroll;
+  position: relative;
+  width: 100%;
+}
+#keyboard button {
+  border: 2px solid var(--color-key-border);
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  cursor: auto;
+  display: inline-block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  height: 300px;
+  margin: 0;
+  padding: 0;
+  position: relative;
+}
+@media (hover: hover) {
+  #keyboard button:not(.enabled-mouse):hover {
+    cursor: default;
+  }
+}
+#keyboard button div {
+  font-weight: bold;
+  line-height: 2;
+  margin: 0 auto;
+  position: absolute;
+  text-align: center;
+  width: 100%;
+}
+#keyboard button div.key-label {
+  border: 1px solid var(--color-text);
+  border-radius: 5px;
+  bottom: 40px;
+  display: none;
+  height: 24px;
+  padding: 5px;
+  width: 24px;
+}
+#keyboard button div.key-label.show {
+  display: block;
+}
+#keyboard button div.note-label {
+  bottom: 0;
+  color: var(--color-text);
+  text-transform: none;
+}
 
-      #keyboard button.key-white {
-        background-color: var(--color-button-white-background);
-        border-top: 0;
-        height: 100%;
-        width: 47px;
-        z-index: 1;
-      }
-        @media (min-width: 768px) {
-          #keyboard button.key-white {
-            width: 40px;
-          }
-        }
-        #keyboard button.key-white.root-note {
-          background-color: var(--color-button-white-root-background);
-        }
+#keyboard button.key-white {
+  background-color: var(--color-button-white-background);
+  border-top: 0;
+  height: 100%;
+  width: 47px;
+  z-index: 1;
+}
+@media (min-width: 768px) {
+  #keyboard button.key-white {
+    width: 40px;
+  }
+}
+#keyboard button.key-white.root-note {
+  background-color: var(--color-button-white-root-background);
+}
 
-        body.dark-theme #keyboard button.key-white {
-          border-top: 1px solid var(--color-border);
-        }
-        body.dark-theme #keyboard button.key-white.root-note {
-          background-color: var(--color-background-light);
-        }
-        @media (hover: hover) {
-          #keyboard button.key-white.enabled-mouse:hover {
-            background-color: var(--green-bright);
-            color: var(--color-text);
-            cursor: pointer;
-          }
-            body.dark-theme #keyboard button.key-white.enabled-mouse:hover {
-              background-color: var(--green-deep-active);
-            }
-        }
-        #keyboard button.key-white.active {
-          background-color: var(--green-bright-active);
-          color: var(--color-text);
-        }
-          body.dark-theme #keyboard button.key-white.active {
-            background-color: var(--green-deep);
-          }
-          #keyboard button.key-white div {
-            color: var(--color-text);
-            padding: 0;
-          }
-            #keyboard button.key-white div.key-label {
-              height: 30px;
-              margin: 0 10px;
-            }
-            @media (min-width: 768px) {
-              #keyboard button.key-white div.key-label {
-                margin: 0 6px;
-              }
-            }
-            #keyboard button.key-white div.midi-label {
-              color: var(--gray);
-            }
+body.dark-theme #keyboard button.key-white {
+  border-top: 1px solid var(--color-border);
+}
+body.dark-theme #keyboard button.key-white.root-note {
+  background-color: var(--color-background-light);
+}
+@media (hover: hover) {
+  #keyboard button.key-white.enabled-mouse:hover {
+    background-color: var(--green-bright);
+    color: var(--color-text);
+    cursor: pointer;
+  }
+  body.dark-theme #keyboard button.key-white.enabled-mouse:hover {
+    background-color: var(--green-deep-active);
+  }
+}
+#keyboard button.key-white.active {
+  background-color: var(--green-bright-active);
+  color: var(--color-text);
+}
+body.dark-theme #keyboard button.key-white.active {
+  background-color: var(--green-deep);
+}
+#keyboard button.key-white div {
+  color: var(--color-text);
+  padding: 0;
+}
+#keyboard button.key-white div.key-label {
+  height: 30px;
+  margin: 0 10px;
+}
+@media (min-width: 768px) {
+  #keyboard button.key-white div.key-label {
+    margin: 0 6px;
+  }
+}
+#keyboard button.key-white div.midi-label {
+  color: var(--gray);
+}
 
-      #keyboard button.key-black {
-        background-color: var(--color-button-black-background);
-        color: var(--color-flatnote-text);
-        display: inline-flex;
-        font-size: 1.25rem;
-        height: 45%;
-        margin-left: -20px;
-        margin-right: -20px;
-        margin-top: 0;
-        position: absolute;
-        top: 0;
-        width: 43px;
-        z-index: 10;
-      }
-        @media (min-width: 768px) {
-          #keyboard button.key-black {
-            width: 36px;
-          }
-        }
-        #keyboard button.key-black.root-note {
-          background-color: var(--color-button-black-root-background);
-        }
+#keyboard button.key-black {
+  background-color: var(--color-button-black-background);
+  color: var(--color-flatnote-text);
+  display: inline-flex;
+  font-size: 1.25rem;
+  height: 45%;
+  margin-left: -20px;
+  margin-right: -20px;
+  margin-top: 0;
+  position: absolute;
+  top: 0;
+  width: 43px;
+  z-index: 10;
+}
+@media (min-width: 768px) {
+  #keyboard button.key-black {
+    width: 36px;
+  }
+}
+#keyboard button.key-black.root-note {
+  background-color: var(--color-button-black-root-background);
+}
 
-        body.dark-theme #keyboard button.key-black {
-          border-top: 1px solid var(--color-border);
-        }
-        @media (hover: hover) {
-          #keyboard button.key-black.enabled-mouse:hover {
-            background-color: var(--green-flat);
-            color: var(--color-flatnote-text);
-          }
-        }
-        #keyboard button.key-black.active {
-          background-color: var(--green-flat-active);
-          color: var(--color-flatnote-text);
-        }
-          #keyboard button.key-black div.key-label {
-            border: 1px solid var(--color-flatnote-text);
-            height: 24px;
-            line-height: 1;
-            margin: 0 7px;
-          }
-            @media (min-width: 768px) {
-              #keyboard button.key-black div.key-label {
-                margin: 0 4px;
-              }
-            }
-          #keyboard button.key-black div.note-label {
-            color: var(--color-flatnote-text);
-          }
-          #keyboard button div.midi-label {
-            color: var(--gray);
-          }
+body.dark-theme #keyboard button.key-black {
+  border-top: 1px solid var(--color-border);
+}
+@media (hover: hover) {
+  #keyboard button.key-black.enabled-mouse:hover {
+    background-color: var(--green-flat);
+    color: var(--color-flatnote-text);
+  }
+}
+#keyboard button.key-black.active {
+  background-color: var(--green-flat-active);
+  color: var(--color-flatnote-text);
+}
+#keyboard button.key-black div.key-label {
+  border: 1px solid var(--color-flatnote-text);
+  height: 24px;
+  line-height: 1;
+  margin: 0 7px;
+}
+@media (min-width: 768px) {
+  #keyboard button.key-black div.key-label {
+    margin: 0 4px;
+  }
+}
+#keyboard button.key-black div.note-label {
+  color: var(--color-flatnote-text);
+}
+#keyboard button div.midi-label {
+  color: var(--gray);
+}
 
 #other-controls-container {
   align-items: center;
@@ -769,133 +758,132 @@ onMounted(() => {
   height: 90px;
   margin: 5px 0;
 }
-  @media (min-width: 768px) {
-    #other-controls-container {
-      flex-direction: row;
-      height: 40px;
-      margin: 0 3px;
-    }
+@media (min-width: 768px) {
+  #other-controls-container {
+    flex-direction: row;
+    height: 40px;
+    margin: 0 3px;
   }
-  @media (min-width: 1024px) {
-    #other-controls-container {
-      margin: 5px 20px 0;
-    }
+}
+@media (min-width: 1024px) {
+  #other-controls-container {
+    margin: 5px 20px 0;
   }
+}
 
+#other-controls-container .form-group {
+  align-items: center;
+  background-color: var(--color-background-soft);
+  border: 1px solid #aaaaaa;
+  border-radius: 0;
+  display: flex;
+  height: 30px;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+@media (min-width: 768px) {
   #other-controls-container .form-group {
-    align-items: center;
-    background-color: var(--color-background-soft);
-    border: 1px solid #aaaaaa;
-    border-radius: 0;
-    display: flex;
-    height: 30px;
-    justify-content: center;
-    margin: 0;
-    padding: 0;
-    width: 100%;
+    border-radius: 4px;
+    justify-content: left;
+    margin-right: 5px;
+    width: auto;
   }
-    @media (min-width: 768px) {
-      #other-controls-container .form-group {
-        border-radius: 4px;
-        justify-content: left;
-        margin-right: 5px;
-        width: auto;
-      }
-    }
-    @media (max-width: 767px) {
-      #other-controls-container .form-group:first-of-type {
-        border-bottom: none;
-      }
-        #other-controls-container .form-group:first-of-type label.fieldset-label {
-          border-top: none;
-        }
+}
+@media (max-width: 767px) {
+  #other-controls-container .form-group:first-of-type {
+    border-bottom: none;
+  }
+  #other-controls-container .form-group:first-of-type label.fieldset-label {
+    border-top: none;
+  }
 
-      #other-controls-container .form-group:last-of-type {
-        border-top: none;
-      }
-        #other-controls-container .form-group:last-of-type label.fieldset-label {
-          border-top: none;
-        }
-    }
+  #other-controls-container .form-group:last-of-type {
+    border-top: none;
+  }
+  #other-controls-container .form-group:last-of-type label.fieldset-label {
+    border-top: none;
+  }
+}
 
+#other-controls-container fieldset {
+  border-width: 0;
+  display: flex;
+  padding: 0 5px;
+}
+@media (min-width: 768px) {
   #other-controls-container fieldset {
-    border-width: 0;
-    display: flex;
-    padding: 0 5px;
+    padding-right: 0;
   }
-    @media (min-width: 768px) {
-      #other-controls-container fieldset {
-        padding-right: 0;
-      }
-    }
+}
 
-  #other-controls-container input {
-    margin: 0 0.35em;
-  }
+#other-controls-container input {
+  margin: 0 0.35em;
+}
+#other-controls-container label {
+  min-width: 20px;
+}
+@media (min-width: 768px) {
   #other-controls-container label {
-    min-width: 20px;
+    margin-right: 0.5em;
   }
-    @media (min-width: 768px) {
-      #other-controls-container label {
-        margin-right: 0.5em;
-      }
-    }
-    #other-controls-container label.fieldset-label {
-      align-items: center;
-      background-color: var(--color-background-soft);
-      border: 1px solid #aaaaaa;
-      border-radius: 0;
-      color: var(--color-text);
-      display: none;
-      font-size: 1.4rem;
-      font-weight: bold;
-      height: 30px;
-      padding: 0 5px;
-      text-transform: uppercase;
-    }
-      @media (min-width: 768px) {
-        #other-controls-container label.fieldset-label {
-          align-items: center;
-          display: flex;
-          margin-right: 0;
-        }
-      }
-      #other-controls-container label.fieldset-label.label-text {
-        border-right: 0;
-        display: flex;
-        padding-right: 0;
-      }
-        @media (min-width: 768px) {
-          #other-controls-container label.fieldset-label.label-text {
-            border-left: 0;
-            border-bottom-left-radius: 4px;
-            border-right: 1px solid #aaaaaa;
-            border-top-left-radius: 4px;
-            display: flex;
-            padding-right: 5px;
-          }
-        }
-
-      #other-controls-container label.fieldset-label.label-image {
-        border-left: 0;
-        display: flex;
-      }
-        @media (min-width: 768px) {
-          #other-controls-container label.fieldset-label.label-image {
-            display: none;
-          }
-        }
-
-    #other-controls-container label + select.small {
-      margin-right: 5px;
-    }
-
-  #other-controls-container select.small {
-    height: 26px;
-    padding: 0;
+}
+#other-controls-container label.fieldset-label {
+  align-items: center;
+  background-color: var(--color-background-soft);
+  border: 1px solid #aaaaaa;
+  border-radius: 0;
+  color: var(--color-text);
+  display: none;
+  font-size: 1.4rem;
+  font-weight: bold;
+  height: 30px;
+  padding: 0 5px;
+  text-transform: uppercase;
+}
+@media (min-width: 768px) {
+  #other-controls-container label.fieldset-label {
+    align-items: center;
+    display: flex;
+    margin-right: 0;
   }
-    #other-controls-container select.small:last-of-type {
-      margin-right: 5px;
-    }
+}
+#other-controls-container label.fieldset-label.label-text {
+  border-right: 0;
+  display: flex;
+  padding-right: 0;
+}
+@media (min-width: 768px) {
+  #other-controls-container label.fieldset-label.label-text {
+    border-left: 0;
+    border-bottom-left-radius: 4px;
+    border-right: 1px solid #aaaaaa;
+    border-top-left-radius: 4px;
+    display: flex;
+    padding-right: 5px;
+  }
+}
 
+#other-controls-container label.fieldset-label.label-image {
+  border-left: 0;
+  display: flex;
+}
+@media (min-width: 768px) {
+  #other-controls-container label.fieldset-label.label-image {
+    display: none;
+  }
+}
+
+#other-controls-container label + select.small {
+  margin-right: 5px;
+}
+
+#other-controls-container select.small {
+  height: 26px;
+  padding: 0;
+}
+#other-controls-container select.small:last-of-type {
+  margin-right: 5px;
+}
 </style>
