@@ -10,6 +10,7 @@ import ADSREnvelope from 'adsr-envelope'
 
 const INTERVALS = {
   5: [7, 5],
+  6: [4, 5],
   major: [4, 3],
   aug: [4, 4],
   minor: [3, 4],
@@ -19,6 +20,7 @@ const INTERVALS = {
   dom7: [4, 3, 3],
   min7: [3, 4, 3],
   maj7: [4, 3, 4],
+  maj9: [4, 7, 3],
   '7sus4': [5, 2, 3],
 }
 const MUSICAL_NOTES = [
@@ -1946,6 +1948,8 @@ const _getChord = (midiNums) => {
 
         if (_arraysAreEqual([intval1, intval2], INTERVALS['5'])) {
           chordName = `${_midi2Name(midiNums[0])}5`
+        } else if (_arraysAreEqual([intval1, intval2], INTERVALS['6'])) {
+          chordName = `${_midi2Name(midiNums[0])}6`
         } else if (_arraysAreEqual([intval1, intval2], INTERVALS['major'])) {
           chordName = `${_midi2Name(midiNums[0])}maj`
         } else if (_arraysAreEqual([intval1, intval2], INTERVALS['aug'])) {
@@ -1980,6 +1984,8 @@ const _getChord = (midiNums) => {
           chordName = `${_midi2Name(midiNums[0])}min7`
         } else if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS['maj7'])) {
           chordName = `${_midi2Name(midiNums[0])}maj7`
+        } else if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS['maj9'])) {
+          chordName = `${_midi2Name(midiNums[0])}maj9`
         } else if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS['7sus4'])) {
           chordName = `${_midi2Name(midiNums[0])}7sus4`
         } else {
