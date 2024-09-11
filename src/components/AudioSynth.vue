@@ -22,6 +22,7 @@ const INTERVALS = {
   maj7: [4, 3, 4],
   maj9: [4, 7, 3],
   '7sus4': [5, 2, 3],
+  '9sus4': [2, 3, 5],
 }
 const MUSICAL_NOTES = [
   // index 0
@@ -1988,6 +1989,8 @@ const _getChord = (midiNums) => {
           chordName = `${_midi2Name(midiNums[0])}maj9`
         } else if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS['7sus4'])) {
           chordName = `${_midi2Name(midiNums[0])}7sus4`
+        } else if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS['9sus4'])) {
+          chordName = `${_midi2Name(midiNums[0])}9sus4`
         } else {
           chordName = `${_midi2Name(midiNums[0])}(unidentified)`
         }
