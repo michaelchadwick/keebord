@@ -19,14 +19,14 @@ Play piano using keyboard, mouse, touch or MIDI input. Built using [VueJS](https
 ```sh
 git clone git@github.com:michaelchadwick/keebord.git
 cd keebord
-npm install
-npm run dev
+pnpm install
+pnpm run dev
 ```
 
 ### Compile and Minify for Production
 
 ```sh
-npm run build
+pnpm run build
 cd /path/to/keebord/public
 scp . user@host:/path/to/keebord
 sudo systemctl restart [httpd|apache2|nginx]
@@ -35,7 +35,7 @@ sudo systemctl restart [httpd|apache2|nginx]
 ### Lint with [ESLint](https://eslint.org/)
 
 ```sh
-npm run lint
+pnpm run lint
 ```
 
 ## Credits
