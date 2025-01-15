@@ -264,6 +264,7 @@ const scales = {
   'harmonic-minor': [2, 1, 2, 2, 1, 3, 1],
   'hungarian-major': [3, 1, 2, 1, 2, 1, 2],
   'hungarian-minor': [2, 1, 3, 1, 1, 3, 1],
+  insen: [1, 4, 2, 3],
   major: [2, 2, 1, 2, 2, 2], // Ionian mode
   'melodic-minor': [2, 1, 2, 2, 2, 2, 1],
   'natural-minor': [2, 1, 2, 2, 1, 2, 2], // Aeolian mode
