@@ -32,21 +32,21 @@
   "dependencies": {
     "adsr-envelope": "^1.0.0",
     "sfumato": "^0.1.2",
-    "vue": "^3.2.45",
-    "webaudiofont": "^2.5.0"
+    "vue": "^3.5.13",
+    "webaudiofont": "^2.7.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.0.0",
-    "cypress": "^13.13.0",
-    "eslint": "^8.57.0",
+    "@vitejs/plugin-vue": "^4.6.2",
+    "cypress": "^13.17.0",
+    "eslint": "^8.57.1",
     "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-cypress": "^3.3.0",
-    "eslint-plugin-n": "^17.0.0",
-    "eslint-plugin-prettier": "^5.1.3",
-    "eslint-plugin-vue": "^9.3.0",
-    "eslint-plugin-yml": "^1.14.0",
-    "husky": "^9.0.11",
-    "vite": "^4.0.0"
+    "eslint-plugin-cypress": "^3.6.0",
+    "eslint-plugin-n": "^17.15.1",
+    "eslint-plugin-prettier": "^5.2.2",
+    "eslint-plugin-vue": "^9.32.0",
+    "eslint-plugin-yml": "^1.16.0",
+    "husky": "^9.1.7",
+    "vite": "^4.5.5"
   },
   "engines": {
     "node": ">=16",
