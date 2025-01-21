@@ -1439,14 +1439,18 @@ const updateKeyboardEventHandler = () => {
 
     kbSettings.value.input.keyboard = true
 
-    console.log('⌨️ enabled')
+    if (document.referrer.indexOf('omni.neb.host') < 0) {
+      console.log('⌨️ enabled')
+    }
   } else {
     document.removeEventListener('keydown', keyController)
     document.removeEventListener('keyup', keyController)
 
     kbSettings.value.input.keyboard = false
 
-    console.log('⌨️ disabled')
+    if (document.referrer.indexOf('omni.neb.host') < 0) {
+      console.log('⌨️ disabled')
+    }
   }
 
   _saveToLocalStorage()
@@ -1462,12 +1466,16 @@ const updateMidiEventHandler = () => {
 
           _saveToLocalStorage()
 
-          console.log('🎹 enabled', midiAccess)
+          if (document.referrer.indexOf('omni.neb.host') < 0) {
+            console.log('🎹 enabled', midiAccess)
+          }
 
           Array.from(midiAccess.inputs).forEach((input, index) => {
             input[1].onmidimessage = midiController
 
-            console.log(`midi input #${index} detected: ${input[1].name}`)
+            if (document.referrer.indexOf('omni.neb.host') < 0) {
+              console.log(`midi input #${index} detected: ${input[1].name}`)
+            }
           })
         },
         (error) => {
@@ -1494,11 +1502,15 @@ const updateMidiEventHandler = () => {
 
       kbSettings.value.input.midi = false
 
-      console.log('🎹 disabled')
+      if (document.referrer.indexOf('omni.neb.host') < 0) {
+        console.log('🎹 disabled')
+      }
     } else {
       kbSettings.value.input.midi = false
 
-      console.log('🎹 disabled')
+      if (document.referrer.indexOf('omni.neb.host') < 0) {
+        console.log('🎹 disabled')
+      }
     }
 
     _saveToLocalStorage()
@@ -1517,11 +1529,15 @@ const updateVisualizerEventHandler = () => {
   if (useVisualizer) {
     kbSettings.value.output.visualizer = true
 
-    console.log('📈 enabled')
+    if (document.referrer.indexOf('omni.neb.host') < 0) {
+      console.log('📈 enabled')
+    }
   } else {
     kbSettings.value.output.visualizer = false
 
-    console.log('📈 disabled')
+    if (document.referrer.indexOf('omni.neb.host') < 0) {
+      console.log('📈 disabled')
+    }
   }
 
   _saveToLocalStorage()
