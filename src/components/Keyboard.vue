@@ -186,7 +186,9 @@ const updateMouseEventHandler = () => {
 
     buttons.forEach((button) => button.classList.add('enabled-mouse'))
 
-    console.log('🐭/🖐️ enabled')
+    if (document.referrer.indexOf('omni.neb.host') < 0) {
+      console.log('🐭/🖐️ enabled')
+    }
   } else {
     document.body.removeEventListener('mousedown', mouseController)
     document.body.removeEventListener('mouseup', mouseController)
@@ -195,7 +197,9 @@ const updateMouseEventHandler = () => {
 
     buttons.forEach((button) => button.classList.remove('enabled-mouse'))
 
-    console.log('🐭/🖐️ disabled')
+    if (document.referrer.indexOf('omni.neb.host') < 0) {
+      console.log('🐭/🖐️ disabled')
+    }
   }
 }
 const mouseController = (e) => {
