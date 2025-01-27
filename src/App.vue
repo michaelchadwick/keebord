@@ -129,6 +129,8 @@ onMounted(() => {
 
             <strong>Dev</strong>:
             <a href="https://michaelchadwick.info" target="_blank">Michael Chadwick</a>.
+            <strong>Src</strong>:
+            <a href="https://github.com/michaelchadwick/keebord" target="_blank">Github</a>
           </template>
         </modal>
       </Transition>
