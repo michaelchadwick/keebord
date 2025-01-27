@@ -127,10 +127,12 @@ onMounted(() => {
 
             <hr />
 
-            <strong>Dev</strong>:
-            <a href="https://michaelchadwick.info" target="_blank">Michael Chadwick</a>.
-            <strong>Src</strong>:
-            <a href="https://github.com/michaelchadwick/keebord" target="_blank">Github</a>
+            <strong>Developer</strong>:
+            <a href="https://michaelchadwick.info" target="_blank">Michael Chadwick</a><br />
+            <strong>Source</strong>:
+            <a href="https://github.com/michaelchadwick/keebord" target="_blank">Github</a><br />
+            <strong>Sounds used</strong>: <a href="https://felixroos.github.io/sfumato/">SF2</a>,
+            <a href="https://surikov.github.io/webaudiofontdata/sound/">WAF</a>
           </template>
         </modal>
       </Transition>
