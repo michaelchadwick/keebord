@@ -987,17 +987,25 @@ const controlDecreaseValue = function (controlGroup, controlKey) {
 
 // expand/collapse Synth Controls section
 const toggleSynthControls = function () {
-  let toggleSynthControl = document.getElementById('synth-controls-container')
+  kbSettings.value.global.showSynthControls = !kbSettings.value.global.showSynthControls
 
-  if (toggleSynthControl.style.display === 'none') {
+  _setSynthControlDisplay()
+}
+
+const _setSynthControlDisplay = function () {
+  let synthControlsContainer = document.getElementById('synth-controls-container')
+
+  if (kbSettings.value.global.showSynthControls) {
     document.getElementById('toggle-synth-controls').src = '/assets/svg/bi-caret-down-fill.svg'
 
-    toggleSynthControl.style.display = 'flex'
+    synthControlsContainer.style.display = 'flex'
   } else {
     document.getElementById('toggle-synth-controls').src = '/assets/svg/bi-caret-right-fill.svg'
 
-    toggleSynthControl.style.display = 'none'
+    synthControlsContainer.style.display = 'none'
   }
+
+  _saveToLocalStorage()
 }
 
 // midi, keyboard, mouse, and touch inputs all come here to create actual sound
@@ -2096,6 +2104,8 @@ onMounted(() => {
   if (nodeGroups.output.nodes.outputType.currentValue == 'waf') {
     _initWAF()
   }
+
+  _setSynthControlDisplay()
 })
 </script>
 

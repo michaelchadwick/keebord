@@ -65,5 +65,8 @@ export const kbSettings = ref({
         : 'waves'
       : 'waves',
   },
+  global: {
+    showSynthControls: lsSettings ? (lsSettings.global.showSynthControls ? true : false) : true,
+  },
   theme: 'light',
 })

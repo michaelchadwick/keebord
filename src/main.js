@@ -43,9 +43,10 @@ if (!lsSettings) {
 
   themeTogglerElemImg.innerHTML = SUN_EMOJI
 
+  kbSettings.value.global.showSynthControls = true
   kbSettings.value.theme = 'light'
 
-  console.log('kbSettings', kbSettings.value)
+  // console.log('kbSettings', kbSettings.value)
 }
 // return visit
 else {
@@ -83,6 +84,10 @@ else {
   if (lsSettings.output) {
     kbSettings.value.output.visualizer = lsSettings.output.visualizer ? true : false
     kbSettings.value.output.visualizerType = lsSettings.output.visualizerType
+  }
+
+  if (lsSettings.global) {
+    kbSettings.value.global.showSynthControls = lsSettings.global.showSynthControls ? true : false
   }
 
   if (lsSettings.theme == 'dark') {
