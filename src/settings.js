@@ -55,7 +55,7 @@ export const kbSettings = ref({
   input: {
     keyboard: lsSettings ? (lsSettings.input.keyboard ? true : false) : false,
     midi: lsSettings ? (lsSettings.input.midi ? true : false) : false,
-    mouse: lsSettings ? (lsSettings.input.mouse ? true : false) : false,
+    mouse: lsSettings ? (lsSettings.input.mouse ? true : false) : true,
   },
   output: {
     visualizer: lsSettings ? (lsSettings.output.visualizer ? true : false) : false,
