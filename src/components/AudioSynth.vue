@@ -619,6 +619,8 @@ const globalProps = getCurrentInstance().appContext.config.globalProperties
 
 let midiAccess = null
 
+let lastNoteStartNum = null
+let lastNoteStopNum = null
 let startTime = 0
 let pitchBendRange = 2
 let drawVisual = null
@@ -1000,6 +1002,12 @@ const toggleSynthControls = function () {
 
 // midi, keyboard, mouse, and touch inputs all come here to create actual sound
 const noteStart = function (noteNum, velocity = 64) {
+  if (noteNum != lastNoteStartNum) {
+    // console.log('noteStart', noteNum, velocity)
+    lastNoteStartNum = noteNum
+    lastNoteStopNum = null
+  }
+
   if (!MUSICAL_NOTES.some((note) => note.midi == noteNum)) {
     return null
   }
@@ -1056,6 +1064,12 @@ const noteStart = function (noteNum, velocity = 64) {
   }
 }
 const noteStop = function (noteNum, velocity = 64) {
+  if (noteNum != lastNoteStopNum) {
+    // console.log('noteStop', noteNum, velocity)
+    lastNoteStopNum = noteNum
+    lastNoteStartNum = null
+  }
+
   // update UI
   const domKey = document.querySelectorAll(`button[data-noteid='${noteNum}']`)[0]
   if (domKey) {
