@@ -456,6 +456,32 @@ onMounted(() => {
     </div>
 
     <div class="form-group">
+      <label for="visualizer-types" class="fieldset-label label-text">Visualizer</label>
+      <label for="visualizer-types" class="fieldset-label label-image">👀</label>
+      <fieldset id="visualizer-types">
+        <input
+          type="checkbox"
+          id="use-visualizer"
+          name="use-visualizer"
+          :checked="props.useVisualizer"
+          @change="updateUseVisualizerFlag($event.target.checked)"
+        />
+        <label for="use-visualizer" title="Enable visualizer?">📈</label>
+
+        <select
+          class="small"
+          id="visualizer-type"
+          name="visualizer-type"
+          v-model="visualizerTypeSelected"
+          @change="updateVisualuzerTypeValue($event.target.value)"
+        >
+          <option disabled value="">- Type -</option>
+          <option v-for="val in vizTypes" :key="val" :value="val">{{ val }}</option>
+        </select>
+      </fieldset>
+    </div>
+
+    <div class="form-group">
       <label for="root-scale" class="fieldset-label label-text">Scale</label>
       <label for="root-scale" class="fieldset-label label-image">⚖️</label>
       <fieldset id="root-scale">
@@ -479,32 +505,6 @@ onMounted(() => {
         >
           <option disabled value="">- Scale -</option>
           <option v-for="key in Object.keys(scales)" :key="key" :value="key">{{ key }}</option>
-        </select>
-      </fieldset>
-    </div>
-
-    <div class="form-group">
-      <label for="visualizer-types" class="fieldset-label label-text">Visualizer</label>
-      <label for="visualizer-types" class="fieldset-label label-image">👀</label>
-      <fieldset id="visualizer-types">
-        <input
-          type="checkbox"
-          id="use-visualizer"
-          name="use-visualizer"
-          :checked="props.useVisualizer"
-          @change="updateUseVisualizerFlag($event.target.checked)"
-        />
-        <label for="use-visualizer" title="Enable visualizer?">📈</label>
-
-        <select
-          class="small"
-          id="visualizer-type"
-          name="visualizer-type"
-          v-model="visualizerTypeSelected"
-          @change="updateVisualuzerTypeValue($event.target.value)"
-        >
-          <option disabled value="">- Type -</option>
-          <option v-for="val in vizTypes" :key="val" :value="val">{{ val }}</option>
         </select>
       </fieldset>
     </div>
@@ -555,18 +555,18 @@ onMounted(() => {
 #scroll-buttons button > span.large {
   display: none;
 }
+@media (hover: hover) {
+  #scroll-buttons button:hover {
+    background-color: var(--green);
+    color: var(--green-bright-active);
+  }
+}
 @media (min-width: 425px) {
   #scroll-buttons button > span.small {
     display: none;
   }
   #scroll-buttons button > span.large {
     display: inline;
-  }
-}
-@media (hover: hover) {
-  #scroll-buttons button:hover {
-    background-color: var(--green);
-    color: var(--green-bright-active);
   }
 }
 @media (min-width: 768px) {
@@ -759,9 +759,8 @@ body.dark-theme #keyboard button.key-black {
 #other-controls-container {
   align-items: center;
   display: flex;
-  flex-direction: column;
-  height: 90px;
-  margin: 5px 0;
+  flex-wrap: wrap;
+  margin: 5px 0 5px 3px;
 }
 @media (min-width: 768px) {
   #other-controls-container {
@@ -780,42 +779,68 @@ body.dark-theme #keyboard button.key-black {
   align-items: center;
   background-color: var(--color-background-soft);
   border: 1px solid #aaaaaa;
-  border-radius: 0;
+  border-radius: 4px;
   display: flex;
   height: 30px;
   justify-content: center;
-  margin: 0;
+  margin: 0 5px 5px 0;
   padding: 0;
-  width: 100%;
 }
 @media (min-width: 768px) {
   #other-controls-container .form-group {
+    border: 1px solid #aaaaaa;
     border-radius: 4px;
     justify-content: left;
     margin-right: 5px;
     width: auto;
   }
 }
-@media (max-width: 767px) {
-  #other-controls-container .form-group:first-of-type {
-    border-bottom: none;
-  }
-  #other-controls-container .form-group:first-of-type label.fieldset-label {
-    border-top: none;
-  }
-
-  #other-controls-container .form-group:last-of-type {
-    border-top: none;
-  }
-  #other-controls-container .form-group:last-of-type label.fieldset-label {
-    border-top: none;
-  }
-}
 
 #other-controls-container fieldset {
   border-width: 0;
   display: flex;
-  padding: 0 5px;
+  padding: 5px 0;
+}
+#other-controls-container fieldset input[type='checkbox'] {
+  /* Add if not using autoprefixer */
+  -webkit-appearance: none;
+  /* Remove most all native input styles */
+  appearance: none;
+  /* For iOS < 15 */
+  background-color: #fff;
+  /* Not removed via appearance */
+  margin: 0 5px;
+
+  font: inherit;
+  width: 1.35rem;
+  height: 1.35rem;
+  border: 1px solid #000;
+  border-radius: 0.15em;
+  transform: translateY(0.55rem);
+
+  display: grid;
+  place-content: center;
+}
+#other-controls-container fieldset input[type='checkbox']::before {
+  content: '';
+  width: 0.65em;
+  height: 0.65em;
+  clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  transform: scale(0);
+  transform-origin: bottom left;
+  transition: 120ms transform ease-in-out;
+  box-shadow: inset 1em 1em var(--form-control-color);
+  /* Windows High Contrast Mode */
+  background-color: CanvasText;
+}
+
+#other-controls-container fieldset input[type='checkbox']:checked::before {
+  transform: scale(1);
+}
+
+#other-controls-container fieldset input[type='checkbox']:focus {
+  outline: max(2px, 0.1em) solid currentColor;
+  outline-offset: max(2px, 0.1em);
 }
 @media (min-width: 768px) {
   #other-controls-container fieldset {
@@ -856,7 +881,7 @@ body.dark-theme #keyboard button.key-black {
 }
 #other-controls-container label.fieldset-label.label-text {
   border-right: 0;
-  display: flex;
+  display: none;
   padding-right: 0;
 }
 @media (min-width: 768px) {
@@ -871,7 +896,10 @@ body.dark-theme #keyboard button.key-black {
 }
 
 #other-controls-container label.fieldset-label.label-image {
+  border: 1px solid #aaaaaa;
   border-left: 0;
+  border-bottom-left-radius: 4px;
+  border-top-left-radius: 4px;
   display: flex;
 }
 @media (min-width: 768px) {
