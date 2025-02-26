@@ -186,7 +186,7 @@ const updateMouseEventHandler = () => {
 
     buttons.forEach((button) => button.classList.add('enabled-mouse'))
 
-    if (document.referrer.indexOf('omni.neb.host') < 0) {
+    if (_notOmniEmbedded) {
       console.log('🐭/🖐️ enabled')
     }
   } else {
@@ -197,7 +197,7 @@ const updateMouseEventHandler = () => {
 
     buttons.forEach((button) => button.classList.remove('enabled-mouse'))
 
-    if (document.referrer.indexOf('omni.neb.host') < 0) {
+    if (_notOmniEmbedded) {
       console.log('🐭/🖐️ disabled')
     }
   }
@@ -330,6 +330,10 @@ const scaleFilter = () => {
 }
 
 const displayedNotes = ref(scaleFilter(props.musicalNotes))
+
+const _notOmniEmbedded = () => {
+  return document.referrer.indexOf('omni.neb.host') < 0
+}
 
 onMounted(() => {
   // grab reference to on-screen keyboard

@@ -1461,7 +1461,7 @@ const updateKeyboardEventHandler = () => {
 
     kbSettings.value.input.keyboard = true
 
-    if (document.referrer.indexOf('omni.neb.host') < 0) {
+    if (_notOmniEmbedded) {
       console.log('⌨️ enabled')
     }
   } else {
@@ -1470,7 +1470,7 @@ const updateKeyboardEventHandler = () => {
 
     kbSettings.value.input.keyboard = false
 
-    if (document.referrer.indexOf('omni.neb.host') < 0) {
+    if (_notOmniEmbedded) {
       console.log('⌨️ disabled')
     }
   }
@@ -1488,14 +1488,14 @@ const updateMidiEventHandler = () => {
 
           _saveToLocalStorage()
 
-          if (document.referrer.indexOf('omni.neb.host') < 0) {
+          if (_notOmniEmbedded) {
             console.log('🎹 enabled', midiAccess)
           }
 
           Array.from(midiAccess.inputs).forEach((input, index) => {
             input[1].onmidimessage = midiController
 
-            if (document.referrer.indexOf('omni.neb.host') < 0) {
+            if (_notOmniEmbedded) {
               console.log(`midi input #${index} detected: ${input[1].name}`)
             }
           })
@@ -1524,13 +1524,13 @@ const updateMidiEventHandler = () => {
 
       kbSettings.value.input.midi = false
 
-      if (document.referrer.indexOf('omni.neb.host') < 0) {
+      if (_notOmniEmbedded) {
         console.log('🎹 disabled')
       }
     } else {
       kbSettings.value.input.midi = false
 
-      if (document.referrer.indexOf('omni.neb.host') < 0) {
+      if (_notOmniEmbedded) {
         console.log('🎹 disabled')
       }
     }
@@ -1551,13 +1551,13 @@ const updateVisualizerEventHandler = () => {
   if (useVisualizer) {
     kbSettings.value.output.visualizer = true
 
-    if (document.referrer.indexOf('omni.neb.host') < 0) {
+    if (_notOmniEmbedded) {
       console.log('📈 enabled')
     }
   } else {
     kbSettings.value.output.visualizer = false
 
-    if (document.referrer.indexOf('omni.neb.host') < 0) {
+    if (_notOmniEmbedded) {
       console.log('📈 disabled')
     }
   }
@@ -2085,6 +2085,9 @@ const _makeDistortionCurve = (amount) => {
 }
 */
 
+const _notOmniEmbedded = () => {
+  return document.referrer.indexOf('omni.neb.host') < 0
+}
 const _saveToLocalStorage = () => {
   localStorage.setItem(globalProps.lsKey, JSON.stringify(kbSettings.value))
 }
