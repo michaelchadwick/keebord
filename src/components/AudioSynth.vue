@@ -1101,7 +1101,6 @@ const noteStop = function (noteNum, velocity = 64) {
       }
 
       // update chord recognition display
-      // TODO: chord recognition gets thrown off by multiple octaves
       currentNotes.value = _getChord(Object.keys(sf2Notes))
 
       break
@@ -1121,7 +1120,7 @@ const noteStop = function (noteNum, velocity = 64) {
 
         oscNotes[noteNum][1].gain.cancelScheduledValues(startTime)
 
-        // FIXME: potential popping fix?
+        // TODO: potential popping fix?
         // const stopTime = playbackTime + 0.08
         // oscNotes[noteNum][1].gain.setValueAtTime(oscNotes[noteNum][1].gain.currentValue, playbackTime)
         // oscNotes[noteNum][1].gain.exponentialRampToValueAtTime(0.0001, stopTime)
@@ -1973,8 +1972,6 @@ const _initWAF = async () => {
 
 // convert midi note numbers into chords, if applicable
 const _getChord = (midiNums) => {
-  // console.log('_getChord notes', midiNums)
-
   if (midiNums.length > 2) {
     const noteCount = midiNums.length
     let chordName
