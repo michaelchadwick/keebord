@@ -1,13 +1,13 @@
 <script setup>
-const props = defineProps(['controlGroup', 'controlKey', 'controlData'])
+const props = defineProps(["controlGroup", "controlKey", "controlData"]);
 
 const emit = defineEmits([
-  'controlValueChanged',
-  'checkEnabledChanged',
-  'selectOptionChanged',
-  'increaseValue',
-  'decreaseValue',
-])
+  "controlValueChanged",
+  "checkEnabledChanged",
+  "selectOptionChanged",
+  "increaseValue",
+  "decreaseValue",
+]);
 </script>
 
 <template>
@@ -28,9 +28,16 @@ const emit = defineEmits([
         :id="props.controlData.controlEnabledCheckId"
         :checked="props.controlData.enabled"
         @change="
-          $emit('checkEnabledChanged', props.controlGroup, props.controlKey, $event.target.checked)
+          $emit(
+            'checkEnabledChanged',
+            props.controlGroup,
+            props.controlKey,
+            $event.target.checked,
+          )
         "
-      /><label :for="props.controlData.controlEnabledCheckId">{{ props.controlData.title }}</label>
+      /><label :for="props.controlData.controlEnabledCheckId">{{
+        props.controlData.title
+      }}</label>
     </legend>
 
     <div class="node-values">
@@ -46,11 +53,15 @@ const emit = defineEmits([
                 'selectOptionChanged',
                 props.controlGroup,
                 props.controlKey,
-                $event.target.value
+                $event.target.value,
               )
             "
           >
-            <option v-for="option in props.controlData.options" :key="option" :value="option.value">
+            <option
+              v-for="option in props.controlData.options"
+              :key="option"
+              :value="option.value"
+            >
               {{ option.text }}
             </option>
           </select>
@@ -72,7 +83,7 @@ const emit = defineEmits([
                 'controlValueChanged',
                 props.controlGroup,
                 props.controlKey,
-                $event.target.value
+                $event.target.value,
               )
             "
           />
@@ -80,15 +91,19 @@ const emit = defineEmits([
           <div class="increase-decrease-container">
             <button
               class="control-value-increase"
-              @click="$emit('increaseValue', props.controlGroup, props.controlKey)"
+              @click="
+                $emit('increaseValue', props.controlGroup, props.controlKey)
+              "
             >
-              <img src="/assets/svg/bi-caret-up-fill.svg" />
+              <img src="/assets/svg/bi-caret-up-fill.svg" alt="" />
             </button>
             <button
               class="control-value-decrease"
-              @click="$emit('decreaseValue', props.controlGroup, props.controlKey)"
+              @click="
+                $emit('decreaseValue', props.controlGroup, props.controlKey)
+              "
             >
-              <img src="/assets/svg/bi-caret-down-fill.svg" />
+              <img src="/assets/svg/bi-caret-down-fill.svg" alt="" />
             </button>
           </div>
         </div>
@@ -109,7 +124,7 @@ const emit = defineEmits([
                 'controlValueChanged',
                 props.controlGroup,
                 props.controlKey,
-                $event.target.value
+                $event.target.value,
               )
             "
           />
@@ -118,16 +133,20 @@ const emit = defineEmits([
             <button
               class="control-value-increase"
               :disabled="!props.controlData.enabled"
-              @click="$emit('increaseValue', props.controlGroup, props.controlKey)"
+              @click="
+                $emit('increaseValue', props.controlGroup, props.controlKey)
+              "
             >
-              <img src="/assets/svg/bi-caret-up-fill.svg" />
+              <img src="/assets/svg/bi-caret-up-fill.svg" alt="" />
             </button>
             <button
               class="control-value-decrease"
               :disabled="!props.controlData.enabled"
-              @click="$emit('decreaseValue', props.controlGroup, props.controlKey)"
+              @click="
+                $emit('decreaseValue', props.controlGroup, props.controlKey)
+              "
             >
-              <img src="/assets/svg/bi-caret-down-fill.svg" />
+              <img src="/assets/svg/bi-caret-down-fill.svg" alt="" />
             </button>
           </div>
         </div>
@@ -142,7 +161,12 @@ const emit = defineEmits([
           :value="props.controlData.currentValue"
           :disabled="!props.controlData.enabled"
           @input="
-            $emit('controlValueChanged', props.controlGroup, props.controlKey, $event.target.value)
+            $emit(
+              'controlValueChanged',
+              props.controlGroup,
+              props.controlKey,
+              $event.target.value,
+            )
           "
         />
       </template>
@@ -170,12 +194,12 @@ const emit = defineEmits([
     width: 100%;
   }
   .node-control#pan .value-container::before {
-    content: 'L';
+    content: "L";
     left: -5px;
     position: relative;
   }
   .node-control#pan .value-container::after {
-    content: 'R';
+    content: "R";
     position: relative;
     right: -10px;
   }
@@ -186,21 +210,21 @@ const emit = defineEmits([
 body.dark-theme .node-control {
   background-color: var(--black-soft);
 }
-.node-control[group='adsr'] {
+.node-control[group="adsr"] {
   background-color: var(--group-adsr);
 }
-.node-control[group='adsr'] .value-container::after {
-  content: 's';
+.node-control[group="adsr"] .value-container::after {
+  content: "s";
   position: relative;
   right: -10px;
 }
-.node-control[group='adsr']#sustainLevel .value-container::after {
-  content: '';
+.node-control[group="adsr"]#sustainLevel .value-container::after {
+  content: "";
 }
-.node-control[group='filters'] {
+.node-control[group="filters"] {
   background-color: var(--group-filters);
 }
-.node-control[group='output'] {
+.node-control[group="output"] {
   background-color: var(--group-output);
 }
 
@@ -213,12 +237,12 @@ body.dark-theme .node-control {
 .node-control.horizontal-range {
   padding-bottom: 0;
 }
-.node-control.horizontal-range input[type='range'] {
+.node-control.horizontal-range input[type="range"] {
   height: auto;
   width: 90px;
 }
 @media (min-width: 600px) {
-  .node-control.horizontal-range input[type='range'] {
+  .node-control.horizontal-range input[type="range"] {
     height: 32px;
   }
 }
@@ -226,7 +250,7 @@ body.dark-theme .node-control {
 .node-control.vertical-range {
   padding-bottom: 8px;
 }
-.node-control.vertical-range input[type='range'] {
+.node-control.vertical-range input[type="range"] {
   -webkit-appearance: slider-vertical;
   appearance: slider-vertical;
   height: 60px;
@@ -278,7 +302,7 @@ body.dark-theme .node-control legend {
 .node-control .node-values .value-container select {
   font-size: 1.5rem;
 }
-.node-control .node-values .value-container input[type='text'] {
+.node-control .node-values .value-container input[type="text"] {
   border: 1px solid var(--color-text);
   border-radius: 0.15rem;
   font-size: 1.5rem;
@@ -288,13 +312,13 @@ body.dark-theme .node-control legend {
   width: 5rem;
   z-index: 1;
 }
-.node-control .node-values .value-container input[type='checkbox'] {
+.node-control .node-values .value-container input[type="checkbox"] {
   margin: 0 4px;
 }
-.node-control .node-values .value-container input[type='number'] {
+.node-control .node-values .value-container input[type="number"] {
   margin: 0 auto;
 }
-.node-control .node-values .value-container input[type='range'] {
+.node-control .node-values .value-container input[type="range"] {
   display: block;
   margin: 8px auto;
 }
@@ -305,8 +329,16 @@ body.dark-theme .node-control legend {
   margin-top: 0rem;
   z-index: 2;
 }
-.node-control .node-values .value-container .increase-decrease-container .control-value-increase,
-.node-control .node-values .value-container .increase-decrease-container .control-value-decrease {
+.node-control
+  .node-values
+  .value-container
+  .increase-decrease-container
+  .control-value-increase,
+.node-control
+  .node-values
+  .value-container
+  .increase-decrease-container
+  .control-value-decrease {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -332,7 +364,8 @@ body.dark-theme .node-control legend {
   .increase-decrease-container
   .control-value-decrease:disabled {
   cursor: default;
-  filter: invert(100%) sepia(1%) saturate(1895%) hue-rotate(235deg) brightness(111%) contrast(60%);
+  filter: invert(100%) sepia(1%) saturate(1895%) hue-rotate(235deg)
+    brightness(111%) contrast(60%);
 }
 .node-control
   .node-values
@@ -356,9 +389,18 @@ body.dark-theme .node-control legend {
   width: 16px;
 }
 @media (hover: hover) {
-  .node-control .node-values .value-container .control-value-increase:not(:disabled) img:hover,
-  .node-control .node-values .value-container .control-value-decrease:not(:disabled) img:hover {
-    filter: invert(63%) sepia(38%) saturate(649%) hue-rotate(99deg) brightness(89%) contrast(86%);
+  .node-control
+    .node-values
+    .value-container
+    .control-value-increase:not(:disabled)
+    img:hover,
+  .node-control
+    .node-values
+    .value-container
+    .control-value-decrease:not(:disabled)
+    img:hover {
+    filter: invert(63%) sepia(38%) saturate(649%) hue-rotate(99deg)
+      brightness(89%) contrast(86%);
   }
 }
 </style>
