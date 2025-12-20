@@ -2298,13 +2298,14 @@ onMounted(() => {
   </div>
 
   <div id="synth-controls-header">
-    <button @click="toggleSynthControls">
+    <button @click="toggleSynthControls" title="Synth Controls">
       <img
         id="toggle-synth-controls"
         src="/assets/svg/bi-caret-down-fill.svg"
         alt=""
       />
-      Synth Controls
+      <span class="label-image">⚙</span>
+      <span class="label-text">Synth Controls</span>
     </button>
 
     <span id="note-recognition" :class="{ empty: !currentNotes.length }">
@@ -2352,22 +2353,51 @@ onMounted(() => {
   }
 }
 #synth-controls-header button {
+  align-items: center;
   border: 2px solid var(--color-border);
   color: var(--color-text);
+  display: flex;
   font-size: 1.5rem;
   height: 36px;
   padding: 0.65rem;
 }
 @media (hover: hover) {
   #synth-controls-header button:hover {
-    background-color: var(--green);
+    background-color: var(--green-bright);
     color: var(--green-bright-active);
   }
 }
 #synth-controls-header button img {
   left: 0;
   position: relative;
-  top: 2px;
+  top: 0;
+}
+#synth-controls-header button span.label-image {
+  color: var(--black);
+  display: inline-block;
+  font-size: 2rem;
+  font-weight: bold;
+  left: 2px;
+  margin-right: 2px;
+  position: relative;
+  top: 0;
+
+  @media (min-width: 576px) {
+    display: none;
+  }
+}
+#synth-controls-header button span.label-text {
+  color: var(--black);
+  display: none;
+  font-weight: bold;
+  left: 2px;
+  padding-right: 3px;
+  position: relative;
+  top: 0;
+
+  @media (min-width: 576px) {
+    display: inline-block;
+  }
 }
 
 body.dark-theme #synth-controls-header img {
@@ -2383,7 +2413,7 @@ body.dark-theme #synth-controls-header img {
   color: var(--black);
   font-weight: bold;
   height: 36px;
-  margin-left: 1rem;
+  margin-left: 0.5rem;
   padding: 0.4rem 0.75rem;
   width: 100%;
 }
@@ -2484,7 +2514,7 @@ body.dark-theme #synth-controls-container {
 }
 @media (min-width: 768px) {
   #visualizer-container {
-    margin: 0 2px;
+    margin: 0 3px;
   }
 }
 @media (min-width: 1024px) {

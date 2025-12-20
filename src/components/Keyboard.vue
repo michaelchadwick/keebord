@@ -719,6 +719,12 @@ body.dark-theme #keyboard button.key-white.active {
   top: 0;
   width: 43px;
   z-index: 10;
+
+  @media (hover: hover) {
+    &:hover div.midi-label {
+      color: var(--black);
+    }
+  }
 }
 @media (min-width: 768px) {
   #keyboard button.key-black {
@@ -787,7 +793,7 @@ body.dark-theme #keyboard button.key-black {
   display: flex;
   height: 30px;
   justify-content: center;
-  margin: 0 5px 5px 0;
+  margin: 0 5px 0 0;
   padding: 0;
 }
 @media (min-width: 768px) {
