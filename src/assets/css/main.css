@@ -191,7 +191,7 @@ button#theme-toggler {
   z-index: 9997;
 }
 button#theme-toggler span.theme-image {
-  bottom: 0;
+  bottom: 2px;
   position: relative;
 }
 button#theme-toggler span.theme-image::after {
