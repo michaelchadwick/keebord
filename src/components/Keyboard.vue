@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 
 const props = defineProps({
   musicalNotes: Array,
+  currentNotes: String,
   rootNote: String,
   scaleType: String,
   visualizerType: String,
@@ -367,6 +368,10 @@ onMounted(() => {
 </script>
 
 <template>
+  <div id="note-recognition-top" :class="{ empty: !currentNotes.length }">
+    {{ currentNotes.length ? currentNotes : "No notes." }}
+  </div>
+
   <div id="scroll-buttons">
     <button id="button-octave-left" title="scroll octave left">
       <i class="fa fa-arrow-left"></i>
@@ -516,6 +521,29 @@ onMounted(() => {
 </template>
 
 <style scoped>
+#note-recognition-top {
+  background-color: var(--gray-light);
+  color: var(--black);
+  display: flex;
+  font-size: 12px;
+  font-weight: bold;
+  justify-content: center;
+  padding: 0 0.6rem;
+  width: 100%;
+}
+body.dark-theme #note-recognition-top {
+  background-color: var(--green-deep-active);
+  color: var(--green-bright-active);
+}
+#note-recognition-top.empty {
+  background-color: var(--gray-light);
+  color: var(--gray);
+  font-weight: normal;
+}
+body.dark-theme #note-recognition-top.empty {
+  background-color: var(--color-background-mute);
+  color: var(--color-text);
+}
 #scroll-buttons {
   display: flex;
   justify-content: space-between;

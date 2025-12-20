@@ -2303,8 +2303,15 @@ onMounted(() => {
 </script>
 
 <template>
+  <!-- contains the following ids:
+    #note-recognition-top,
+    #scroll-buttons,
+    #keyboard-container
+    #other-controls-container
+  -->
   <Keyboard
     :musical-notes="MUSICAL_NOTES"
+    :current-notes="currentNotes"
     :root-note="rootNote"
     :scale-type="scaleType"
     :use-keyboard="useKeyboard"
