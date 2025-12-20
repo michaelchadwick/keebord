@@ -2115,7 +2115,8 @@ const _getChord = (midiNums) => {
 
     const INTERVALS = {
       5: [7, 5],
-      add9: [2, 2],
+      "3add9": [2, 2],
+      "4add9": [2, 2, 3],
       major: [4, 3],
       aug: [4, 4],
       minor: [3, 4],
@@ -2139,7 +2140,7 @@ const _getChord = (midiNums) => {
 
         if (_arraysAreEqual([intval1, intval2], INTERVALS["5"])) {
           chordName = `${_midi2Name(midiNums[0])}5`;
-        } else if (_arraysAreEqual([intval1, intval2], INTERVALS["add9"])) {
+        } else if (_arraysAreEqual([intval1, intval2], INTERVALS["3add9"])) {
           chordName = `${_midi2Name(midiNums[0])}add9`;
         } else if (_arraysAreEqual([intval1, intval2], INTERVALS["major"])) {
           chordName = `${_midi2Name(midiNums[0])}maj`;
@@ -2169,8 +2170,9 @@ const _getChord = (midiNums) => {
           return _getChord(midiNums.slice(0, midiNums.length - 1));
         }
 
-        console.log([intval1, intval2, intval3])
-        if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS["6"])) {
+        if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS["4add9"])) {
+          chordName = `${_midi2Name(midiNums[0])}add9`;
+        } else if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS["6"])) {
           chordName = `${_midi2Name(midiNums[0])}6`;
         } else if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS["6sus2"])) {
           chordName = `${_midi2Name(midiNums[0])}6sus2`;
