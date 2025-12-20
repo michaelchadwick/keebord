@@ -2122,6 +2122,7 @@ const _getChord = (midiNums) => {
       sus2: [2, 5],
       sus4: [5, 2],
       6: [4, 3, 2],
+      "6sus2": [2, 5, 2],
       dom7: [4, 3, 3],
       min7: [3, 4, 3],
       maj7: [4, 3, 4],
@@ -2165,8 +2166,11 @@ const _getChord = (midiNums) => {
           return _getChord(midiNums.slice(0, midiNums.length - 1));
         }
 
+        console.log([intval1, intval2, intval3])
         if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS["6"])) {
           chordName = `${_midi2Name(midiNums[0])}6`;
+        } else if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS["6sus2"])) {
+          chordName = `${_midi2Name(midiNums[0])}6sus2`;
         } else if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS["dom7"])) {
           chordName = `${_midi2Name(midiNums[0])}7`;
         } else if (
