@@ -8,22 +8,6 @@ import NodeControl from "./NodeControl.vue";
 import Keyboard from "./KeyBoard.vue";
 import ADSREnvelope from "adsr-envelope";
 
-const INTERVALS = {
-  5: [7, 5],
-  6: [4, 5],
-  major: [4, 3],
-  aug: [4, 4],
-  minor: [3, 4],
-  dim: [3, 3],
-  sus2: [2, 5],
-  sus4: [5, 2],
-  dom7: [4, 3, 3],
-  min7: [3, 4, 3],
-  maj7: [4, 3, 4],
-  maj9: [4, 7, 3],
-  "7sus4": [5, 2, 3],
-  "9sus4": [2, 3, 5],
-};
 const MUSICAL_NOTES = [
   // index 0
   { name: "C0", frequency: 16.35, midi: 12 },
@@ -2129,6 +2113,23 @@ const _getChord = (midiNums) => {
     let chordName;
     let intval1, intval2, intval3;
 
+    const INTERVALS = {
+      5: [7, 5],
+      major: [4, 3],
+      aug: [4, 4],
+      minor: [3, 4],
+      dim: [3, 3],
+      sus2: [2, 5],
+      sus4: [5, 2],
+      6: [4, 3, 2],
+      dom7: [4, 3, 3],
+      min7: [3, 4, 3],
+      maj7: [4, 3, 4],
+      maj9: [4, 7, 3],
+      "7sus4": [5, 2, 3],
+      "9sus4": [2, 3, 5],
+    };
+
     switch (noteCount) {
       case 3: // triad
         intval1 = midiNums[1] - midiNums[0];
@@ -2136,8 +2137,6 @@ const _getChord = (midiNums) => {
 
         if (_arraysAreEqual([intval1, intval2], INTERVALS["5"])) {
           chordName = `${_midi2Name(midiNums[0])}5`;
-        } else if (_arraysAreEqual([intval1, intval2], INTERVALS["6"])) {
-          chordName = `${_midi2Name(midiNums[0])}6`;
         } else if (_arraysAreEqual([intval1, intval2], INTERVALS["major"])) {
           chordName = `${_midi2Name(midiNums[0])}maj`;
         } else if (_arraysAreEqual([intval1, intval2], INTERVALS["aug"])) {
@@ -2166,7 +2165,9 @@ const _getChord = (midiNums) => {
           return _getChord(midiNums.slice(0, midiNums.length - 1));
         }
 
-        if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS["dom7"])) {
+        if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS["6"])) {
+          chordName = `${_midi2Name(midiNums[0])}6`;
+        } else if (_arraysAreEqual([intval1, intval2, intval3], INTERVALS["dom7"])) {
           chordName = `${_midi2Name(midiNums[0])}7`;
         } else if (
           _arraysAreEqual([intval1, intval2, intval3], INTERVALS["min7"])
