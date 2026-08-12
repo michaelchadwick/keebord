@@ -13,7 +13,10 @@
 
     <!-- META
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-    <meta name="description" content="Play piano using keyboard, mouse, touch or MIDI input." />
+    <meta
+      name="description"
+      content="Play piano using keyboard, mouse, touch or MIDI input."
+    />
     <meta name="author" content="Michael Chadwick" />
     <meta name="application-name" content="Keebord" />
     <meta name="title" content="Keebord" />
@@ -30,11 +33,29 @@
 
     <!-- FAVICONS
   –––––––––––––––––––––––––––––––––––––––––––––––––– -->
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/icons/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/icons/favicon-16x16.png" />
+    <link
+      rel="apple-touch-icon"
+      sizes="180x180"
+      href="/assets/icons/apple-touch-icon.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/assets/icons/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/assets/icons/favicon-16x16.png"
+    />
     <link rel="manifest" href="/site.webmanifest" />
-    <link rel="mask-icon" href="/assets/icons/safari-pinned-tab.svg" color="#5bbad5" />
+    <link
+      rel="mask-icon"
+      href="/assets/icons/safari-pinned-tab.svg"
+      color="#5bbad5"
+    />
     <meta name="msapplication-TileColor" content="#da532c" />
     <meta name="theme-color" content="#ffffff" />
 
@@ -45,6 +66,83 @@
   </head>
   <body>
     <div id="app"></div>
+
+    <noscript>
+      <style type="text/css">
+        :root {
+          --white: #ffffff;
+          --green: #09714b;
+          --green-deep: #085b18;
+          --green-bright: #a3ffb6;
+        }
+        #app {
+          display: none !important;
+        }
+        header {
+          align-items: center;
+          background: var(--green);
+          border-bottom: 5px solid var(--green-deep);
+          color: var(--color-text);
+          display: flex;
+          flex-direction: row;
+          flex-wrap: nowrap;
+          font-family:
+            system-ui,
+            -apple-system,
+            BlinkMacSystemFont,
+            Consolas,
+            "Segoe UI",
+            Roboto,
+            Oxygen,
+            Ubuntu,
+            Cantarell,
+            "Open Sans",
+            "Helvetica Neue",
+            sans-serif;
+          height: 50px;
+          justify-content: space-between;
+          padding: 2px 16px;
+
+          .title {
+            font-weight: 700;
+            font-size: 14px;
+            line-height: 150%;
+            letter-spacing: 0.1em;
+            pointer-events: none;
+            text-align: center;
+            text-transform: uppercase;
+
+            @media (min-width: 768px) {
+              font-size: 20px;
+              line-height: 100%;
+              letter-spacing: 0.01em;
+            }
+
+            h1 span {
+              bottom: -2px;
+              color: var(--white);
+              position: relative;
+
+              &.flat {
+                bottom: 3px;
+                color: var(--green-bright);
+                position: relative;
+              }
+            }
+          }
+        }
+      </style>
+      <header>
+        <div class="title">
+          <h1>
+            <span class="flat">K</span><span>e</span><span class="flat">e</span
+            ><span>b</span><span class="flat">o</span><span>r</span
+            ><span class="flat">d</span>
+          </h1>
+        </div>
+      </header>
+      <div style="padding: 10px">Keebord requires JavaScript.</div>
+    </noscript>
 
     <script type="module" src="/src/main.js"></script>
   </body>
