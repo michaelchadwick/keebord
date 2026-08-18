@@ -32,7 +32,7 @@
   "dependencies": {
     "adsr-envelope": "^1.0.0",
     "sfumato": "^0.1.2",
-    "vue": "^3.5.38",
+    "vue": "^3.5.41",
     "webaudiofont": "^2.7.1"
   },
   "devDependencies": {
