@@ -30,7 +30,8 @@
       "src": "https://keebord.neb.host/assets/screens/desktop-open.png",
       "label": "Keeboard desktop interface, with synth controls open",
       "type": "image/png",
-      "sizes": "1141x801"
+      "sizes": "1141x801",
+      "form_factor": "wide"
     },
     {
       "src": "https://keebord.neb.host/assets/screens/tablet-compact.png",
