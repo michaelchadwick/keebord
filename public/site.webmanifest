@@ -1,19 +1,60 @@
 {
-    "name": "",
-    "short_name": "",
-    "icons": [
-        {
-            "src": "./assets/icons/android-chrome-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "./assets/icons/android-chrome-384x384.png",
-            "sizes": "384x384",
-            "type": "image/png"
-        }
-    ],
-    "theme_color": "#ffffff",
-    "background_color": "#ffffff",
-    "display": "standalone"
+  "name": "Keebord",
+  "short_name": "Keebord",
+  "description": "Play piano on the web!",
+  "icons": [
+    {
+      "src": "./assets/icons/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./assets/icons/android-chrome-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "https://keebord.neb.host",
+  "screenshots": [
+    {
+      "src": "https://keebord.neb.host/assets/screens/desktop-compact.png",
+      "label": "Keeboard desktop interface, with synth controls closed",
+      "type": "image/png",
+      "sizes": "1144x500",
+      "form_factor": "wide"
+    },
+    {
+      "src": "https://keebord.neb.host/assets/screens/desktop-open.png",
+      "label": "Keeboard desktop interface, with synth controls open",
+      "type": "image/png",
+      "sizes": "1141x801"
+    },
+    {
+      "src": "https://keebord.neb.host/assets/screens/tablet-compact.png",
+      "label": "Keeboard tablet interface, with synth controls closed",
+      "type": "image/png",
+      "sizes": "767x388"
+    },
+    {
+      "src": "https://keebord.neb.host/assets/screens/tablet-open.png",
+      "label": "Keeboard tablet interface, with synth controls open",
+      "type": "image/png",
+      "sizes": "768x688"
+    },
+    {
+      "src": "https://keebord.neb.host/assets/screens/mobile-compact.png",
+      "label": "Keeboard phone interface, with synth controls closed",
+      "type": "image/png",
+      "sizes": "424x416"
+    },
+    {
+      "src": "https://keebord.neb.host/assets/screens/mobile-open.png",
+      "label": "Keeboard mobile interface, with synth controls open",
+      "type": "image/png",
+      "sizes": "425x875"
+    }
+  ]
 }
