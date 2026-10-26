@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref } from "vue";
 
 const props = defineProps({
   musicalNotes: Array,
@@ -11,253 +11,266 @@ const props = defineProps({
   useMidi: Boolean,
   useMouse: Boolean,
   useVisualizer: Boolean,
-})
+});
 const emit = defineEmits([
-  'notePressed',
-  'noteReleased',
-  'noteResetAll',
-  'rootNoteChanged',
-  'scaleTypeChanged',
-  'visualizerTypeChanged',
-  'useKeyboardChanged',
-  'useMidiChanged',
-  'useMouseChanged',
-  'useVisualizerChanged',
-])
+  "notePressed",
+  "noteReleased",
+  "noteResetAll",
+  "rootNoteChanged",
+  "scaleTypeChanged",
+  "visualizerTypeChanged",
+  "useKeyboardChanged",
+  "useMidiChanged",
+  "useMouseChanged",
+  "useVisualizerChanged",
+]);
 
-let pianoDiv = null
+let pianoDiv = null;
 
-// eslint-disable-next-line vue/no-setup-props-destructure
-let useMouse = props.useMouse
-// eslint-disable-next-line vue/no-setup-props-destructure
-let rootNoteSelected = props.rootNote
-// eslint-disable-next-line vue/no-setup-props-destructure
-let scaleTypeSelected = props.scaleType
-// eslint-disable-next-line vue/no-setup-props-destructure
-let visualizerTypeSelected = props.visualizerType
+// eslint-disable-next-line vue/no-setup-props-reactivity-loss
+let useMouse = props.useMouse;
+// eslint-disable-next-line vue/no-setup-props-reactivity-loss
+let rootNoteSelected = props.rootNote;
+// eslint-disable-next-line vue/no-setup-props-reactivity-loss
+let scaleTypeSelected = props.scaleType;
+// eslint-disable-next-line vue/no-setup-props-reactivity-loss
+let visualizerTypeSelected = props.visualizerType;
 
-let mousedown = false
+let mousedown = false;
 // let hasTouch = 'ontouchstart' in window
-let lastTouchLeave
-let lastTouchEnter
-let onTouchLeaveEvents = []
-let onTouchEnterEvents = []
+let lastTouchLeave;
+let lastTouchEnter;
+let onTouchLeaveEvents = [];
+let onTouchEnterEvents = [];
 
 const emitPressed = (e) => {
-  e.preventDefault()
+  e.preventDefault();
 
   if (useMouse) {
-    let noteid = null
-    let target = e.target
-    let target_parent = e.target.parentElement
+    let noteid = null;
+    let target = e.target;
+    let target_parent = e.target.parentElement;
 
     if (target.dataset.noteid) {
-      if (e.type == 'mouseenter') {
+      if (e.type == "mouseenter") {
         if (mousedown) {
-          noteid = parseInt(target.dataset.noteid)
-          emit('notePressed', noteid)
-          target.classList.add('active')
+          noteid = parseInt(target.dataset.noteid);
+          emit("notePressed", noteid);
+          target.classList.add("active");
         }
       } else {
-        noteid = parseInt(target.dataset.noteid)
-        emit('notePressed', noteid)
-        target.classList.add('active')
+        noteid = parseInt(target.dataset.noteid);
+        emit("notePressed", noteid);
+        target.classList.add("active");
       }
     } else if (target_parent.dataset.noteid) {
-      noteid = parseInt(target_parent.dataset.noteid)
-      emit('notePressed', noteid)
-      target_parent.classList.add('active')
+      noteid = parseInt(target_parent.dataset.noteid);
+      emit("notePressed", noteid);
+      target_parent.classList.add("active");
     }
   }
-}
+};
 const emitReleased = (e) => {
-  e.preventDefault()
+  e.preventDefault();
 
   if (useMouse) {
-    let noteid = null
-    let target = e.target
-    let target_parent = e.target.parentElement
+    let noteid = null;
+    let target = e.target;
+    let target_parent = e.target.parentElement;
 
     if (target.dataset.noteid) {
-      noteid = target.dataset.noteid
-      emit('noteReleased', noteid)
-      target.classList.remove('active')
+      noteid = target.dataset.noteid;
+      emit("noteReleased", noteid);
+      target.classList.remove("active");
     } else if (target_parent.dataset.noteid) {
-      noteid = target_parent.dataset.noteid
-      emit('noteReleased', noteid)
-      target_parent.classList.remove('active')
+      noteid = target_parent.dataset.noteid;
+      emit("noteReleased", noteid);
+      target_parent.classList.remove("active");
     }
   }
-}
+};
 
 // add event listeners to all octave and note scroll buttons
 const addScrollHandlers = () => {
-  const octaveDistance = document.body.scrollWidth > 767 ? 280 : 329
-  const noteDistance = document.body.scrollWidth > 767 ? 40 : 47
+  const octaveDistance = document.body.scrollWidth > 767 ? 280 : 329;
+  const noteDistance = document.body.scrollWidth > 767 ? 40 : 47;
 
-  document.querySelector('#button-octave-left').addEventListener('click', () => {
+  document
+    .querySelector("#button-octave-left")
+    .addEventListener("click", () => {
+      if (pianoDiv.scrollLeft > 0) {
+        pianoDiv.scrollLeft -= octaveDistance;
+      }
+    });
+  document.querySelector("#button-note-left").addEventListener("click", () => {
     if (pianoDiv.scrollLeft > 0) {
-      pianoDiv.scrollLeft -= octaveDistance
+      pianoDiv.scrollLeft -= noteDistance;
     }
-  })
-  document.querySelector('#button-note-left').addEventListener('click', () => {
-    if (pianoDiv.scrollLeft > 0) {
-      pianoDiv.scrollLeft -= noteDistance
-    }
-  })
-  document.querySelector('#button-note-right').addEventListener('click', () => {
+  });
+  document.querySelector("#button-note-right").addEventListener("click", () => {
     if (pianoDiv.scrollLeft < pianoDiv.scrollWidth) {
-      pianoDiv.scrollLeft += noteDistance
+      pianoDiv.scrollLeft += noteDistance;
     }
-  })
-  document.querySelector('#button-octave-right').addEventListener('click', () => {
-    if (pianoDiv.scrollLeft < pianoDiv.scrollWidth) {
-      pianoDiv.scrollLeft += octaveDistance
-    }
-  })
-}
+  });
+  document
+    .querySelector("#button-octave-right")
+    .addEventListener("click", () => {
+      if (pianoDiv.scrollLeft < pianoDiv.scrollWidth) {
+        pianoDiv.scrollLeft += octaveDistance;
+      }
+    });
+};
 
 const handleNoteResetAll = () => {
-  emit('noteResetAll')
-}
+  emit("noteResetAll");
+};
 
 // show/hide computer keyboard key labels depending on checkbox
 const updateUseKeyboardFlag = (isChecked) => {
-  emit('useKeyboardChanged', isChecked)
+  emit("useKeyboardChanged", isChecked);
 
-  const keyLabels = document.querySelectorAll('.key-label')
+  const keyLabels = document.querySelectorAll(".key-label");
 
   if (isChecked) {
     keyLabels.forEach((key) => {
-      if (key.getAttribute('data-key')) key.classList.add('show')
-    })
+      if (key.getAttribute("data-key")) key.classList.add("show");
+    });
   } else {
     keyLabels.forEach((key) => {
-      if (key.getAttribute('data-key')) key.classList.remove('show')
-    })
+      if (key.getAttribute("data-key")) key.classList.remove("show");
+    });
   }
-}
+};
 const updateUseMidiFlag = (isChecked) => {
-  emit('useMidiChanged', isChecked)
-}
+  emit("useMidiChanged", isChecked);
+};
 const updateUseMouseFlag = (isChecked) => {
-  emit('useMouseChanged', isChecked)
+  emit("useMouseChanged", isChecked);
 
-  useMouse = isChecked
+  useMouse = isChecked;
 
-  updateMouseEventHandler()
-}
+  updateMouseEventHandler();
+};
 
 const updateRootNoteValue = (note) => {
-  rootNoteSelected = note
+  rootNoteSelected = note;
 
-  displayedNotes.value = scaleFilter(props.musicalNotes)
+  displayedNotes.value = scaleFilter(props.musicalNotes);
 
-  emit('rootNoteChanged', rootNoteSelected)
-}
+  emit("rootNoteChanged", rootNoteSelected);
+};
 const updateScaleTypeValue = (scale) => {
-  scaleTypeSelected = scale
+  scaleTypeSelected = scale;
 
-  displayedNotes.value = scaleFilter(props.musicalNotes)
+  displayedNotes.value = scaleFilter(props.musicalNotes);
 
-  emit('scaleTypeChanged', scaleTypeSelected)
-}
+  emit("scaleTypeChanged", scaleTypeSelected);
+};
 const updateVisualuzerTypeValue = (type) => {
-  visualizerTypeSelected = type
+  visualizerTypeSelected = type;
 
-  emit('visualizerTypeChanged', visualizerTypeSelected)
-}
+  emit("visualizerTypeChanged", visualizerTypeSelected);
+};
 const updateUseVisualizerFlag = (isChecked) => {
-  const canvas = document.getElementById('visualizer-container')
+  const canvas = document.getElementById("visualizer-container");
 
-  isChecked ? (canvas.style.display = 'block') : (canvas.style.display = 'none')
+  isChecked
+    ? (canvas.style.display = "block")
+    : (canvas.style.display = "none");
 
-  emit('useVisualizerChanged', isChecked)
-}
+  emit("useVisualizerChanged", isChecked);
+};
 
 // update computer mouse support
 const updateMouseEventHandler = () => {
-  const buttons = document.querySelectorAll('#keyboard button')
+  const buttons = document.querySelectorAll("#keyboard button");
 
   if (useMouse) {
-    document.body.addEventListener('mousedown', mouseController)
-    document.body.addEventListener('mouseup', mouseController)
+    document.body.addEventListener("mousedown", mouseController);
+    document.body.addEventListener("mouseup", mouseController);
 
-    document.addEventListener('touchmove', touchMoveController)
+    document.addEventListener("touchmove", touchMoveController);
 
-    buttons.forEach((button) => button.classList.add('enabled-mouse'))
+    buttons.forEach((button) => button.classList.add("enabled-mouse"));
 
     if (_notOmniEmbedded) {
-      console.log('🐭/🖐️ enabled')
+      console.log("🐭/🖐️ enabled");
     }
   } else {
-    document.body.removeEventListener('mousedown', mouseController)
-    document.body.removeEventListener('mouseup', mouseController)
+    document.body.removeEventListener("mousedown", mouseController);
+    document.body.removeEventListener("mouseup", mouseController);
 
-    document.removeEventListener('touchmove', touchMoveController)
+    document.removeEventListener("touchmove", touchMoveController);
 
-    buttons.forEach((button) => button.classList.remove('enabled-mouse'))
+    buttons.forEach((button) => button.classList.remove("enabled-mouse"));
 
     if (_notOmniEmbedded) {
-      console.log('🐭/🖐️ disabled')
+      console.log("🐭/🖐️ disabled");
     }
   }
-}
+};
 const mouseController = (e) => {
-  if (e.type == 'mousedown') {
-    mousedown = true
-  } else if (e.type == 'mouseup') {
-    mousedown = false
+  if (e.type == "mousedown") {
+    mousedown = true;
+  } else if (e.type == "mouseup") {
+    mousedown = false;
   }
-}
+};
 const touchMoveController = (e) => {
-  var el = document.elementFromPoint(e.touches[0].clientX, e.touches[0].clientY)
+  var el = document.elementFromPoint(
+    e.touches[0].clientX,
+    e.touches[0].clientY,
+  );
 
-  if (!el) return
+  if (!el) return;
 
   onTouchLeaveEvents.map((event) => {
-    if (el != lastTouchEnter && lastTouchEnter && lastTouchEnter.matches(event[0])) {
+    if (
+      el != lastTouchEnter &&
+      lastTouchEnter &&
+      lastTouchEnter.matches(event[0])
+    ) {
       if (lastTouchEnter !== lastTouchLeave) {
-        event[1](lastTouchEnter, e)
-        lastTouchLeave = lastTouchEnter
-        lastTouchEnter = null
+        event[1](lastTouchEnter, e);
+        lastTouchLeave = lastTouchEnter;
+        lastTouchEnter = null;
       }
     }
-  })
+  });
 
   onTouchEnterEvents.map((event) => {
     if (el.matches(event[0]) && el !== lastTouchEnter) {
-      lastTouchEnter = el
-      lastTouchLeave = null
-      event[1](el, e)
+      lastTouchEnter = el;
+      lastTouchLeave = null;
+      event[1](el, e);
     }
-  })
-}
+  });
+};
 
 const onTouchEnter = (selector, fn) => {
-  onTouchEnterEvents.push([selector, fn])
+  onTouchEnterEvents.push([selector, fn]);
 
   return function () {
     onTouchEnterEvents.slice().map(function (e, i) {
       if (e[0] === selector && e[1] === fn) {
-        onTouchEnterEvents.splice(1, i)
+        onTouchEnterEvents.splice(1, i);
       }
-    })
-  }
-}
+    });
+  };
+};
 const onTouchLeave = (selector, fn) => {
-  onTouchLeaveEvents.push([selector, fn])
+  onTouchLeaveEvents.push([selector, fn]);
 
   return function () {
     onTouchLeaveEvents.slice().map(function (e, i) {
       if (e[0] === selector && e[1] === fn) {
-        onTouchLeaveEvents.splice(1, i)
+        onTouchLeaveEvents.splice(1, i);
       }
-    })
-  }
-}
+    });
+  };
+};
 
-const notes = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+const notes = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 const scales = {
   chromatic: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 
@@ -265,50 +278,52 @@ const scales = {
   blues: [3, 2, 1, 1, 3, 2, 3],
   dorian: [2, 1, 2, 2, 2, 1, 2], // Dorian mode
   flamenco: [1, 3, 1, 2, 1, 3, 1], // Flamenco mode
-  'harmonic-major': [2, 2, 1, 2, 1, 3, 1],
-  'harmonic-minor': [2, 1, 2, 2, 1, 3, 1],
-  'hungarian-major': [3, 1, 2, 1, 2, 1, 2],
-  'hungarian-minor': [2, 1, 3, 1, 1, 3, 1],
+  "harmonic-major": [2, 2, 1, 2, 1, 3, 1],
+  "harmonic-minor": [2, 1, 2, 2, 1, 3, 1],
+  "hungarian-major": [3, 1, 2, 1, 2, 1, 2],
+  "hungarian-minor": [2, 1, 3, 1, 1, 3, 1],
   insen: [1, 4, 2, 3],
   major: [2, 2, 1, 2, 2, 2], // Ionian mode
-  'melodic-minor': [2, 1, 2, 2, 2, 2, 1],
-  'natural-minor': [2, 1, 2, 2, 1, 2, 2], // Aeolian mode
-  'pentatonic-major': [2, 2, 3, 2, 3],
-  'pentatonic-minor': [3, 2, 2, 3, 2],
+  "melodic-minor": [2, 1, 2, 2, 2, 2, 1],
+  "natural-minor": [2, 1, 2, 2, 1, 2, 2], // Aeolian mode
+  "pentatonic-major": [2, 2, 3, 2, 3],
+  "pentatonic-minor": [3, 2, 2, 3, 2],
   persian: [1, 3, 1, 1, 2, 3, 1], // Persian dominant scale
   phrygian: [1, 2, 2, 2, 1, 2, 2, 2],
   tritone: [1, 3, 2, 1, 3, 2],
-  'whole-tone': [2, 2, 2, 2, 2, 2, 2],
-}
-const vizTypes = ['waves', 'bars']
+  "whole-tone": [2, 2, 2, 2, 2, 2, 2],
+};
+const vizTypes = ["waves", "bars"];
 
 const scaleFilter = () => {
   // console.log(`scaleFilter changed: ${rootNoteSelected} ${scaleTypeSelected}`)
 
-  let filteredNotes = []
+  let filteredNotes = [];
 
   // default setting, so just ignore all the logic
-  if (rootNoteSelected == 'C' && scaleTypeSelected == 'chromatic') {
-    filteredNotes = Object.values(props.musicalNotes)
+  if (rootNoteSelected == "C" && scaleTypeSelected == "chromatic") {
+    filteredNotes = Object.values(props.musicalNotes);
   } else {
-    let notes = Object.values(props.musicalNotes)
+    let notes = Object.values(props.musicalNotes);
 
     const startIndex = notes
-      .map((note) => (note.name[1] == 'b' ? `${note.name[0]}${note.name[1]}` : note.name[0]))
-      .indexOf(rootNoteSelected)
-    const octaveCount = Object.keys(props.musicalNotes).length / 12
+      .map((note) =>
+        note.name[1] == "b" ? `${note.name[0]}${note.name[1]}` : note.name[0],
+      )
+      .indexOf(rootNoteSelected);
+    const octaveCount = Object.keys(props.musicalNotes).length / 12;
 
     // start scale on root note
-    notes = notes.slice(startIndex)
+    notes = notes.slice(startIndex);
 
     // cycle through other notes in each octave
     for (let oct = 0; oct < octaveCount; oct++) {
       // console.log('filtering octave:', oct)
 
-      const scaleSteps = scales[scaleTypeSelected]
-      const octIndex = oct * 12 + 12
-      let noteIndex = oct * 12
-      let scaleStepIndex = 0
+      const scaleSteps = scales[scaleTypeSelected];
+      const octIndex = oct * 12 + 12;
+      let noteIndex = oct * 12;
+      let scaleStepIndex = 0;
 
       while (noteIndex < octIndex) {
         // console.log('checking noteIndex:', noteIndex)
@@ -316,55 +331,55 @@ const scaleFilter = () => {
         // console.log('scaleSteps[scaleStepIndex]', scaleSteps[scaleStepIndex])
 
         if (notes[noteIndex]) {
-          filteredNotes.push(notes[noteIndex])
+          filteredNotes.push(notes[noteIndex]);
         }
 
-        noteIndex += scaleSteps[scaleStepIndex]
-        scaleStepIndex++
+        noteIndex += scaleSteps[scaleStepIndex];
+        scaleStepIndex++;
       }
     }
   }
 
   // console.log('filteredNotes', filteredNotes)
 
-  return filteredNotes
-}
+  return filteredNotes;
+};
 
-const displayedNotes = ref(scaleFilter(props.musicalNotes))
+const displayedNotes = ref(scaleFilter(props.musicalNotes));
 
 const _notOmniEmbedded = () => {
-  return document.referrer.indexOf('omni.neb.host') < 0
-}
+  return document.referrer.indexOf("omni.neb.host") < 0;
+};
 
 onMounted(() => {
   // grab reference to on-screen keyboard
-  pianoDiv = document.getElementById('keyboard')
-  pianoDiv.scrollLeft = (pianoDiv.scrollWidth / 9) * 3
+  pianoDiv = document.getElementById("keyboard");
+  pianoDiv.scrollLeft = (pianoDiv.scrollWidth / 9) * 3;
 
-  addScrollHandlers()
-  updateMouseEventHandler()
+  addScrollHandlers();
+  updateMouseEventHandler();
 
   // Simulation of onTouchEnter
-  onTouchEnter('#keyboard button', (el) => {
+  onTouchEnter("#keyboard button", (el) => {
     if (useMouse) {
-      emit('notePressed', el.dataset.noteid)
-      el.classList.add('active')
+      emit("notePressed", el.dataset.noteid);
+      el.classList.add("active");
     }
-  })
+  });
   // Simulation of onTouchLeave
-  onTouchLeave('#keyboard button', (el) => {
+  onTouchLeave("#keyboard button", (el) => {
     if (useMouse) {
-      emit('noteReleased', el.dataset.noteid)
-      el.classList.remove('active')
+      emit("noteReleased", el.dataset.noteid);
+      el.classList.remove("active");
     }
-  })
+  });
 
   // updateRootNoteValue(props.rootNote)
   // updateScaleTypeValue(props.scaleType)
-  updateUseKeyboardFlag(props.useKeyboard)
-  updateUseMidiFlag(props.useMidi)
-  updateUseVisualizerFlag(props.useVisualizer)
-})
+  updateUseKeyboardFlag(props.useKeyboard);
+  updateUseMidiFlag(props.useMidi);
+  updateUseVisualizerFlag(props.useVisualizer);
+});
 </script>
 
 <template>
@@ -383,7 +398,11 @@ onMounted(() => {
       <span class="small"> ♩</span>
       <span class="large"> NOTE</span>
     </button>
-    <button id="button-note-reset-all" title="clear all midi notes" @click="handleNoteResetAll">
+    <button
+      id="button-note-reset-all"
+      title="clear all midi notes"
+      @click="handleNoteResetAll"
+    >
       <i class="fa fa-circle-stop"></i>
       <span class="small"></span>
       <span class="large"> RESET</span>
@@ -465,8 +484,12 @@ onMounted(() => {
     </div>
 
     <div class="form-group">
-      <label for="visualizer-types" class="fieldset-label label-text">Visualizer</label>
-      <label for="visualizer-types" class="fieldset-label label-image">👀</label>
+      <label for="visualizer-types" class="fieldset-label label-text"
+        >Visualizer</label
+      >
+      <label for="visualizer-types" class="fieldset-label label-image"
+        >👀</label
+      >
       <fieldset id="visualizer-types">
         <input
           type="checkbox"
@@ -485,7 +508,9 @@ onMounted(() => {
           @change="updateVisualuzerTypeValue($event.target.value)"
         >
           <option disabled value="">- Type -</option>
-          <option v-for="val in vizTypes" :key="val" :value="val">{{ val }}</option>
+          <option v-for="val in vizTypes" :key="val" :value="val">
+            {{ val }}
+          </option>
         </select>
       </fieldset>
     </div>
@@ -502,7 +527,9 @@ onMounted(() => {
           @change="updateRootNoteValue($event.target.value)"
         >
           <option disabled value="">- Root -</option>
-          <option v-for="val in notes" :key="val" :value="val">{{ val }}</option>
+          <option v-for="val in notes" :key="val" :value="val">
+            {{ val }}
+          </option>
         </select>
 
         <select
@@ -513,7 +540,9 @@ onMounted(() => {
           @change="updateScaleTypeValue($event.target.value)"
         >
           <option disabled value="">- Scale -</option>
-          <option v-for="key in Object.keys(scales)" :key="key" :value="key">{{ key }}</option>
+          <option v-for="key in Object.keys(scales)" :key="key" :value="key">
+            {{ key }}
+          </option>
         </select>
       </fieldset>
     </div>
@@ -839,7 +868,7 @@ body.dark-theme #keyboard button.key-black {
   display: flex;
   padding: 5px 0;
 }
-#other-controls-container fieldset input[type='checkbox'] {
+#other-controls-container fieldset input[type="checkbox"] {
   /* Add if not using autoprefixer */
   -webkit-appearance: none;
   /* Remove most all native input styles */
@@ -859,8 +888,8 @@ body.dark-theme #keyboard button.key-black {
   display: grid;
   place-content: center;
 }
-#other-controls-container fieldset input[type='checkbox']::before {
-  content: '';
+#other-controls-container fieldset input[type="checkbox"]::before {
+  content: "";
   width: 0.65em;
   height: 0.65em;
   clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
@@ -872,11 +901,11 @@ body.dark-theme #keyboard button.key-black {
   background-color: CanvasText;
 }
 
-#other-controls-container fieldset input[type='checkbox']:checked::before {
+#other-controls-container fieldset input[type="checkbox"]:checked::before {
   transform: scale(1);
 }
 
-#other-controls-container fieldset input[type='checkbox']:focus {
+#other-controls-container fieldset input[type="checkbox"]:focus {
   outline: max(2px, 0.1em) solid currentColor;
   outline-offset: max(2px, 0.1em);
 }

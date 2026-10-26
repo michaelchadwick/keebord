@@ -5,6 +5,7 @@
   "description": "Node modules for VueJS Keebord project.",
   "repository": "https://github.com/michaelchadwick/keebord",
   "license": "MIT",
+  "type": "module",
   "author": {
     "name": "Michael Chadwick",
     "email": "mike@neb.host",
@@ -19,7 +20,8 @@
     "dev": "vite --port 3333 --open http://localhost:3333",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs",
+    "lint:fix": "eslint . --fix",
     "prepare": "husky",
     "test": "npx cypress run --env host=local",
     "test-open": "npx cypress open --e2e -b electron --env host=local",
@@ -36,17 +38,19 @@
     "webaudiofont": "^2.7.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^4.6.2",
-    "cypress": "^13.17.0",
-    "eslint": "^8.57.1",
-    "eslint-config-prettier": "^9.1.2",
-    "eslint-plugin-cypress": "^3.6.0",
-    "eslint-plugin-n": "^17.24.0",
+    "@eslint/js": "^10.0.1",
+    "@vitejs/plugin-vue": "^6.0.10",
+    "cypress": "^16.2.0",
+    "eslint": "^10.13.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-cypress": "^7.0.2",
+    "eslint-plugin-n": "^18.5.0",
     "eslint-plugin-prettier": "^5.5.7",
-    "eslint-plugin-vue": "^9.33.0",
-    "eslint-plugin-yml": "^1.19.1",
+    "eslint-plugin-vue": "^10.12.0",
+    "eslint-plugin-yml": "^3.9.0",
+    "globals": "^17.13.0",
     "husky": "^9.1.7",
-    "vite": "^4.5.14"
+    "vite": "^8.3.5"
   },
   "engines": {
     "node": ">= 24",

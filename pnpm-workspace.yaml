@@ -7,3 +7,5 @@ packages:
 allowBuilds:
   cypress: true
   esbuild: true
+minimumReleaseAgeExclude:
+  - eslint-plugin-vue@10.12.0
